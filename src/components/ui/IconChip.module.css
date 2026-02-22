@@ -1,0 +1,24 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--accent-1);
+    background: var(--accent-1);
+    color: var(--light);
+    cursor: default;
+  }
+}
+
+.icon {
+  width: 12px;
+  height: 12px;
+  -webkit-font-smoothing: antialiased;
+}

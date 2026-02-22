@@ -29,6 +29,46 @@ body {
   overflow-x: hidden;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  top: 10%;
+  right: -12%;
+  width: 400px;
+  height: 400px;
+  background: var(--accent-1);
+  border-radius: 42% 58% 70% 30% / 27% 32% 68% 73%;
+  opacity: 0.08;
+  pointer-events: none;
+  animation: float 22s ease-in-out infinite;
+  z-index: 0;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 15%;
+  left: -15%;
+  width: 380px;
+  height: 380px;
+  background: var(--accent-2);
+  border-radius: 63% 37% 54% 46% / 38% 58% 42% 62%;
+  opacity: 0.07;
+  pointer-events: none;
+  animation: float 28s ease-in-out infinite reverse;
+  z-index: 0;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(10deg);
+  }
+}
+
 main {
   max-width: 1200px;
   margin: 0 auto;
@@ -40,4 +80,152 @@ main {
 ::selection {
   background: var(--dark);
   color: var(--light);
+}
+
+/* Blob backgrounds for cards */
+.card-with-blobs {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Variation 1 */
+  &:nth-child(4n + 1) {
+    &::before {
+      width: 280px;
+      height: 280px;
+      top: 10%;
+      right: -20%;
+      background: radial-gradient(circle at center, var(--accent-2) 0%, transparent 70%);
+    }
+
+    &::after {
+      width: 200px;
+      height: 200px;
+      bottom: -10%;
+      left: 10%;
+      background: radial-gradient(circle at center, var(--accent-3) 0%, transparent 70%);
+    }
+
+    &:hover::before {
+      transform: translate(-35px, 25px);
+    }
+
+    &:hover::after {
+      transform: translate(15px, -20px);
+    }
+  }
+
+  /* Variation 2 */
+  &:nth-child(4n + 2) {
+    &::before {
+      width: 240px;
+      height: 240px;
+      top: -15%;
+      left: 5%;
+      background: radial-gradient(circle at center, var(--accent-3) 0%, transparent 70%);
+    }
+
+    &::after {
+      width: 190px;
+      height: 190px;
+      bottom: 10%;
+      right: -10%;
+      background: radial-gradient(circle at center, var(--accent-1) 0%, transparent 70%);
+    }
+
+    &:hover::before {
+      transform: translate(20px, 30px);
+    }
+
+    &:hover::after {
+      transform: translate(-25px, -15px);
+    }
+  }
+
+  /* Variation 3 */
+  &:nth-child(4n + 3) {
+    &::before {
+      width: 260px;
+      height: 260px;
+      top: 15%;
+      left: -15%;
+      background: radial-gradient(circle at center, var(--accent-1) 0%, transparent 70%);
+    }
+
+    &::after {
+      width: 210px;
+      height: 210px;
+      bottom: 5%;
+      right: 8%;
+      background: radial-gradient(circle at center, var(--accent-2) 0%, transparent 70%);
+    }
+
+    &:hover::before {
+      transform: translate(30px, -20px);
+    }
+
+    &:hover::after {
+      transform: translate(-15px, 25px);
+    }
+  }
+
+  /* Variation 4 */
+  &:nth-child(4n) {
+    &::before {
+      width: 250px;
+      height: 250px;
+      top: 25%;
+      right: 5%;
+      background: radial-gradient(circle at center, var(--accent-3) 0%, transparent 70%);
+    }
+
+    &::after {
+      width: 220px;
+      height: 220px;
+      bottom: 15%;
+      left: -12%;
+      background: radial-gradient(circle at center, var(--accent-2) 0%, transparent 70%);
+    }
+
+    &:hover::before {
+      transform: translate(-20px, -30px);
+    }
+
+    &:hover::after {
+      transform: translate(25px, 15px);
+    }
+  }
+
+  &:hover {
+    &::before {
+      opacity: 0.15;
+    }
+
+    &::after {
+      opacity: 0.12;
+    }
+  }
 }

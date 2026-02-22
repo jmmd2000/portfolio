@@ -10,5 +10,39 @@
       { "name": "LinkedIn", "url": "https://www.linkedin.com/in/jamesmddoyle/" },
       { "name": "Email", "url": "jamesmddoyle@gmail.com" }
     ]
-  }
+  },
+  "projects": [
+    {
+      "title": "JamesReviewsMusic",
+      "description": "Full-stack music blog using the Spotify API for album, track, and artist data.",
+      "imageURL": null,
+      "projectURL": "https://github.com/jmmd2000/album-review-fullstack",
+      "liveURL": "https://jamesreviewsmusic.com/",
+      "tags": ["React", "Express.js", "Typescript", "TailwindCSS", "Spotify API"]
+    },
+    {
+      "title": "SandSim",
+      "description": "Falling sand simulation with a number of different materials and interactions between them.",
+      "imageURL": null,
+      "projectURL": "https://github.com/jmmd2000/sand-sim",
+      "liveURL": "https://jamesmddoyle.com/sand-sim/",
+      "tags": ["Rust", "Typescript", "React", "WebAssembly"]
+    },
+    {
+      "title": "disk.js",
+      "description": "A custom frontend framework, built as a learning exercise.",
+      "imageURL": null,
+      "projectURL": "https://github.com/jmmd2000/disk",
+      "liveURL": "https://www.npmjs.com/package/disk-js",
+      "tags": ["Typescript"]
+    },
+    {
+      "title": "Vintage Recreations",
+      "description": "Pure HTML and CSS recreations of random documents, fliers and cards, a fun exercise.",
+      "imageURL": null,
+      "projectURL": null,
+      "liveURL": "https://codepen.io/jmmd2000",
+      "tags": ["HTML", "CSS"]
+    }
+  ]
 }
