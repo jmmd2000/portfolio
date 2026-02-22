@@ -51,7 +51,13 @@
       "company": "Ericsson",
       "period": "July 2023 - Present",
       "current": true,
-      "description": "Acting test lead responsible for defining test strategy, coordinating testing efforts, and ensuring release quality. Develop and maintain containerised PostgreSQL databases deployed using Helm and Kubernetes as part of a large-scale telecom management platform. Build and maintain Jenkins pipelines to support CI/CD workflows. Work across a multi-language codebase including Python and Go.",
+      "description": [
+        "Acting test lead for the team, responsible for defining test strategy, coordinating testing efforts, and ensuring release quality.",
+        "Develop and maintain a containerised PostgreSQL database deployed using Helm and Kubernetes as part of a large-scale telecom management platform.",
+        "Build and maintain Jenkins pipelines to support CI/CD workflows across development and testing.",
+        "Work across a multi-language codebase including Python and Go, contributing fixes and automation where required.",
+        "Improved team efficiency by cleaning up and restructuring technical documentation and Confluence spaces."
+      ],
       "tags": ["Kubernetes", "PostgreSQL", "Python", "Go", "Helm", "Jenkins"],
       "logoURL": "https://jamesmddoyle.com/assets/ericsson-vZu3qlLA.png"
     },
@@ -60,7 +66,12 @@
       "company": "Fusio",
       "period": "Jan 2022 — Jul 2022",
       "current": false,
-      "description": "Built UI components, processed client content, and tested pages across a range of client projects.",
+      "description": [
+        "Built reusable UI components to utilise across projects and minimise costs.",
+        "Maintained content for client websites via CMS or by editing raw HTML files.",
+        "Designed and implemented website interfaces for mobile, desktop, and tablets.",
+        "Responded to customer queries to address issues and resolve complaints."
+      ],
       "tags": ["HTML", "CSS", "Javascript", "Wordpress"],
       "logoURL": "https://jamesmddoyle.com/assets/fusio-eV2UCMog.png"
     }

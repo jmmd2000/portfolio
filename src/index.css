@@ -24,7 +24,7 @@ body {
   background: var(--light);
   color: var(--dark);
   line-height: 1.5;
-  font-size: clamp(14px, 2vw, 16px);
+  font-size: clamp(13px, calc(6.4px + 0.4vw), 22px);
   -webkit-font-smoothing: antialiased;
   position: relative;
   overflow-x: hidden;
@@ -34,12 +34,12 @@ body::before {
   content: "";
   position: fixed;
   top: 10%;
-  right: -12%;
-  width: 400px;
-  height: 400px;
+  right: -10rem;
+  width: 25rem;
+  height: 25rem;
   background: var(--accent-1);
   border-radius: 42% 58% 70% 30% / 27% 32% 68% 73%;
-  opacity: 0.08;
+  opacity: clamp(0.05, 0.15, 0.2);
   pointer-events: none;
   animation: float 22s ease-in-out infinite;
   z-index: 0;
@@ -49,12 +49,12 @@ body::after {
   content: "";
   position: fixed;
   bottom: 15%;
-  left: -15%;
-  width: 380px;
-  height: 380px;
+  left: -12rem;
+  width: 24rem;
+  height: 24rem;
   background: var(--accent-2);
   border-radius: 63% 37% 54% 46% / 38% 58% 42% 62%;
-  opacity: 0.07;
+  opacity: clamp(0.05, 0.15, 0.2);
   pointer-events: none;
   animation: float 28s ease-in-out infinite reverse;
   z-index: 0;
@@ -71,7 +71,7 @@ body::after {
 }
 
 main {
-  max-width: 1200px;
+  max-width: 75rem;
   margin: 0 auto;
   padding: 0 clamp(1rem, 5vw, 2rem);
   position: relative;

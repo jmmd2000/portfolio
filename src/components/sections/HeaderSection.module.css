@@ -9,14 +9,29 @@
     content: "";
     position: fixed;
     top: 5%;
-    left: -5%;
-    width: clamp(200px, 40vw, 360px);
+    left: -4rem;
+    width: clamp(12.5rem, 40vw, 22.5rem);
     aspect-ratio: 1/ 1;
     background-color: var(--accent-3);
     border-radius: 55% 45% 40% 65% / 40% 70% 30% 60%;
     opacity: clamp(0.05, 0.15, 0.2);
     pointer-events: none;
     animation: float 20s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  &::after {
+    content: "";
+    position: fixed;
+    top: 35%;
+    right: -9rem;
+    width: 22rem;
+    height: 22rem;
+    background: var(--accent-2);
+    border-radius: 40% 60% 55% 45% / 60% 40% 50% 50%;
+    opacity: clamp(0.05, 0.15, 0.2);
+    pointer-events: none;
+    animation: float 24s ease-in-out infinite reverse;
     z-index: 0;
   }
 
@@ -72,7 +87,7 @@ h1 {
   gap: 0.5rem;
 
   & .status_dot {
-    width: clamp(4px, 0.5vw, 6px);
+    width: 0.4rem;
     aspect-ratio: 1/1;
     display: block;
     border-radius: 50%;

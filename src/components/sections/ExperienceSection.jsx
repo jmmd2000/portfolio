@@ -15,6 +15,7 @@ const ExperienceSection = ({ experiences }) => {
             description={experience.description}
             tags={experience.tags}
             current={experience.current}
+            logoURL={experience.logoURL}
           />
         ))}
       </div>

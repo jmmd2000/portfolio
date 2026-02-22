@@ -2,16 +2,31 @@
   margin: 3rem 0;
   position: relative;
 
+  &::before {
+    content: "";
+    position: fixed;
+    top: 35%;
+    left: -11rem;
+    width: 21rem;
+    height: 21rem;
+    background: var(--accent-2);
+    border-radius: 50% 45% 40% 60% / 45% 55% 50% 50%;
+    opacity: clamp(0.05, 0.15, 0.2);
+    pointer-events: none;
+    animation: float 25s ease-in-out infinite;
+    z-index: 0;
+  }
+
   &::after {
     content: "";
     position: fixed;
     bottom: 20%;
-    right: -10%;
-    width: 320px;
-    height: 320px;
+    right: -8rem;
+    width: 20rem;
+    height: 20rem;
     background: var(--accent-3);
     border-radius: 45% 55% 60% 40% / 55% 45% 55% 45%;
-    opacity: 0.08;
+    opacity: clamp(0.05, 0.15, 0.2);
     pointer-events: none;
     animation: float 25s ease-in-out infinite reverse;
     z-index: 0;
@@ -26,6 +41,6 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
   gap: 2rem;
 }
