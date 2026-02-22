@@ -1,0 +1,68 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: clamp(0.5rem, 1vw, 0.75rem);
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem);
+  border-radius: 12px 2px 20px 4px;
+  border: 2px solid var(--border);
+  background: transparent;
+  color: var(--dark);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+  font-weight: 600;
+  text-decoration: none;
+  font-family: inherit;
+
+  &:hover {
+    border-color: var(--accent-1);
+    background: var(--accent-1);
+    color: var(--light);
+    transform: translateY(-4px);
+    box-shadow: 0 2px 4px var(--accent-1);
+  }
+
+  &:active {
+    transform: translateY(-2px);
+    box-shadow: 0 1px 2px var(--accent-1);
+  }
+
+  & svg {
+    flex-shrink: 0;
+    width: clamp(14px, 1.5vw, 16px);
+    height: clamp(14px, 1.5vw, 16px);
+  }
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1vw, 0.75rem);
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+.checkmark {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.35rem, 0.8vw, 0.6rem);
+  transition: opacity 0.3s ease;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.button.copied {
+  & .content {
+    opacity: 0;
+  }
+
+  & .checkmark {
+    opacity: 1;
+  }
+}
