@@ -1,0 +1,9 @@
+{
+  "header": {
+    "name": "James Doyle",
+    "role": "Software Engineer",
+    "bio": "I got into development through CoderDojo as a kid, studied Computer Science at Maynooth University, and now work as a Software Engineer at Ericsson. I like building for the web and messing around with side projects. When I’m not coding, I’m usually listening to music, playing games, or spending time with my partner.",
+    "location": "Dublin, Ireland ☘️",
+    "available": true
+  }
+}
