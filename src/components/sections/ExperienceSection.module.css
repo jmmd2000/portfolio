@@ -1,0 +1,46 @@
+.section {
+  margin: 2.2rem 0;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: fixed;
+    top: 80%;
+    left: -12%;
+    width: 300px;
+    height: 300px;
+    background: var(--accent-1);
+    border-radius: 50% 45% 45% 55% / 50% 55% 45% 55%;
+    opacity: 0.1;
+    pointer-events: none;
+    animation: float 25s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  &::after {
+    content: "";
+    position: fixed;
+    bottom: 5%;
+    right: -10%;
+    width: 280px;
+    height: 280px;
+    background: var(--accent-2);
+    border-radius: 45% 55% 55% 45% / 55% 50% 45% 55%;
+    opacity: 0.1;
+    pointer-events: none;
+    animation: float 28s ease-in-out infinite reverse;
+    z-index: 0;
+  }
+}
+
+.heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}

@@ -1,0 +1,76 @@
+.card {
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+@media (min-width: 2500px) {
+  .card {
+    padding: clamp(1.2rem, 1.5vw, 2rem);
+  }
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px var(--shadow-accent);
+  transform: translateY(-4px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.company_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.company {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--accent-1);
+  font-weight: 500;
+}
+
+.current {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent-3), var(--accent-1), var(--accent-2));
+  color: var(--light);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.period {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--grey);
+  white-space: nowrap;
+}
+
+.description {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--dark);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

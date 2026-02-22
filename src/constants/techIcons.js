@@ -16,6 +16,8 @@ import {
   SiDocker,
   SiNodedotjs,
   SiPostgresql,
+  SiJavascript,
+  SiWordpress,
 } from "react-icons/si";
 import { LiaJava } from "react-icons/lia";
 
@@ -25,6 +27,7 @@ const TECH_ICONS = {
   python: SiPython,
   "spotify api": SiSpotify,
   typescript: SiTypescript,
+  javascript: SiJavascript,
   react: SiReact,
   css: SiCss3,
   tailwindcss: SiTailwindcss,
@@ -36,8 +39,9 @@ const TECH_ICONS = {
   helm: SiHelm,
   docker: SiDocker,
   node: SiNodedotjs,
-  postgres: SiPostgresql,
+  postgresql: SiPostgresql,
   java: LiaJava,
+  wordpress: SiWordpress,
 };
 
 export default TECH_ICONS;

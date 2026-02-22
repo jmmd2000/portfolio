@@ -44,5 +44,25 @@
       "liveURL": "https://codepen.io/jmmd2000",
       "tags": ["HTML", "CSS"]
     }
+  ],
+  "experience": [
+    {
+      "title": "Software Engineer",
+      "company": "Ericsson",
+      "period": "July 2023 - Present",
+      "current": true,
+      "description": "Acting test lead responsible for defining test strategy, coordinating testing efforts, and ensuring release quality. Develop and maintain containerised PostgreSQL databases deployed using Helm and Kubernetes as part of a large-scale telecom management platform. Build and maintain Jenkins pipelines to support CI/CD workflows. Work across a multi-language codebase including Python and Go.",
+      "tags": ["Kubernetes", "PostgreSQL", "Python", "Go", "Helm", "Jenkins"],
+      "logoURL": "https://jamesmddoyle.com/assets/ericsson-vZu3qlLA.png"
+    },
+    {
+      "title": "Frontend Intern",
+      "company": "Fusio",
+      "period": "Jan 2022 — Jul 2022",
+      "current": false,
+      "description": "Built UI components, processed client content, and tested pages across a range of client projects.",
+      "tags": ["HTML", "CSS", "Javascript", "Wordpress"],
+      "logoURL": "https://jamesmddoyle.com/assets/fusio-eV2UCMog.png"
+    }
   ]
 }
