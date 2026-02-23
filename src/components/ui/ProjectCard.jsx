@@ -7,7 +7,7 @@ const PLACEHOLDER_IMAGE = "https://placehold.co/800x450?text=Project+Image";
 const ProjectCard = ({ title, description, imageURL, projectURL, liveURL, tags }) => {
   return (
     <div className={`${styles.card} card-with-blobs`}>
-      <img src={imageURL || PLACEHOLDER_IMAGE} alt={title} className={styles.image} />
+      <img src={imageURL || PLACEHOLDER_IMAGE} alt={title} className={styles.image} loading="lazy" />
       <div className={styles.content}>
         <h3 className={styles.title}>{title}</h3>
         <p className={styles.description}>{description}</p>
