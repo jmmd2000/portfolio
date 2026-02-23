@@ -7,13 +7,25 @@
   border: 0.1rem solid var(--border);
   border-radius: 0.625rem;
   font-size: 1rem;
-  cursor: pointer;
+  cursor: default;
+  transition: all 0.3s ease;
 
-  &:hover {
+  &:nth-child(3n + 1):hover {
     border-color: var(--accent-1);
     background: var(--accent-1);
     color: var(--light);
-    cursor: default;
+  }
+
+  &:nth-child(3n + 2):hover {
+    border-color: var(--accent-2);
+    background: var(--accent-2);
+    color: var(--light);
+  }
+
+  &:nth-child(3n + 3):hover {
+    border-color: var(--accent-3);
+    background: var(--accent-3);
+    color: var(--light);
   }
 }
 

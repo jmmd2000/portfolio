@@ -15,7 +15,7 @@
     {
       "title": "JamesReviewsMusic",
       "description": "Full-stack music blog using the Spotify API for album, track, and artist data.",
-      "imageURL": null,
+      "imageURL": "https://jamesmddoyle.com/assets/jrm.png",
       "projectURL": "https://github.com/jmmd2000/album-review-fullstack",
       "liveURL": "https://jamesreviewsmusic.com/",
       "tags": ["React", "Express.js", "Typescript", "TailwindCSS", "Spotify API"]
@@ -23,7 +23,7 @@
     {
       "title": "SandSim",
       "description": "Falling sand simulation with a number of different materials and interactions between them.",
-      "imageURL": null,
+      "imageURL": "https://jamesmddoyle.com/assets/sandsim.png",
       "projectURL": "https://github.com/jmmd2000/sand-sim",
       "liveURL": "https://jamesmddoyle.com/sand-sim/",
       "tags": ["Rust", "Typescript", "React", "WebAssembly"]
@@ -31,7 +31,7 @@
     {
       "title": "disk.js",
       "description": "A custom frontend framework, built as a learning exercise.",
-      "imageURL": null,
+      "imageURL": "https://jamesmddoyle.com/assets/disk.png",
       "projectURL": "https://github.com/jmmd2000/disk",
       "liveURL": "https://www.npmjs.com/package/disk-js",
       "tags": ["Typescript"]
@@ -39,7 +39,7 @@
     {
       "title": "Vintage Recreations",
       "description": "Pure HTML and CSS recreations of random documents, fliers and cards, a fun exercise.",
-      "imageURL": null,
+      "imageURL": "https://jamesmddoyle.com/assets/recreations.png",
       "projectURL": null,
       "liveURL": "https://codepen.io/jmmd2000",
       "tags": ["HTML", "CSS"]
@@ -76,6 +76,12 @@
       "logoURL": "https://jamesmddoyle.com/assets/fusio-eV2UCMog.png"
     }
   ],
+  "skills": {
+    "Frontend": ["React", "TypeScript", "HTML", "CSS"],
+    "Backend & Data": ["Node", "Express.js", "PostgreSQL"],
+    "DevOps & CI/CD": ["Docker", "Kubernetes", "Helm", "Jenkins"],
+    "Languages": ["TypeScript", "Python", "Go", "Rust", "Java"]
+  },
   "education": [
     {
       "degree": "BSc Computer Science & Software Engineering",
