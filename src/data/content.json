@@ -75,5 +75,19 @@
       "tags": ["HTML", "CSS", "Javascript", "Wordpress"],
       "logoURL": "https://jamesmddoyle.com/assets/fusio-eV2UCMog.png"
     }
+  ],
+  "education": [
+    {
+      "degree": "BSc Computer Science & Software Engineering",
+      "institution": "Maynooth University",
+      "period": "2019 — 2023",
+      "grade": "2.1 Honours"
+    },
+    {
+      "degree": "QQI Level 5 Computer Systems and Networks",
+      "institution": "Dunboyne College of Further Education",
+      "period": "2018 — 2019",
+      "grade": "Full Honours"
+    }
   ]
 }

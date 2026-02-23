@@ -30,35 +30,6 @@ body {
   overflow-x: hidden;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 10%;
-  right: -10rem;
-  width: 25rem;
-  height: 25rem;
-  background: var(--accent-1);
-  border-radius: 42% 58% 70% 30% / 27% 32% 68% 73%;
-  opacity: clamp(0.05, 0.15, 0.2);
-  pointer-events: none;
-  animation: float 22s ease-in-out infinite;
-  z-index: 0;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  bottom: 15%;
-  left: -12rem;
-  width: 24rem;
-  height: 24rem;
-  background: var(--accent-2);
-  border-radius: 63% 37% 54% 46% / 38% 58% 42% 62%;
-  opacity: clamp(0.05, 0.15, 0.2);
-  pointer-events: none;
-  animation: float 28s ease-in-out infinite reverse;
-  z-index: 0;
-}
 
 @keyframes float {
   0%,
@@ -77,6 +48,7 @@ main {
   position: relative;
   z-index: 1;
 }
+
 
 ::selection {
   background: var(--dark);

@@ -5,36 +5,6 @@
   position: relative;
   z-index: 1;
 
-  &::before {
-    content: "";
-    position: fixed;
-    top: 5%;
-    left: -4rem;
-    width: clamp(12.5rem, 40vw, 22.5rem);
-    aspect-ratio: 1/ 1;
-    background-color: var(--accent-3);
-    border-radius: 55% 45% 40% 65% / 40% 70% 30% 60%;
-    opacity: clamp(0.05, 0.15, 0.2);
-    pointer-events: none;
-    animation: float 20s ease-in-out infinite;
-    z-index: 0;
-  }
-
-  &::after {
-    content: "";
-    position: fixed;
-    top: 35%;
-    right: -9rem;
-    width: 22rem;
-    height: 22rem;
-    background: var(--accent-2);
-    border-radius: 40% 60% 55% 45% / 60% 40% 50% 50%;
-    opacity: clamp(0.05, 0.15, 0.2);
-    pointer-events: none;
-    animation: float 24s ease-in-out infinite reverse;
-    z-index: 0;
-  }
-
   & .header_top {
     margin-bottom: clamp(1rem, 3vh, 2rem);
   }
@@ -105,16 +75,6 @@ h1 {
   display: flex;
   gap: 0.5rem;
   margin: 1.5rem 0 1rem;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-30px) rotate(10deg);
-  }
 }
 
 @keyframes pulse {
