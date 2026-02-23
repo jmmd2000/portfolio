@@ -5,7 +5,7 @@
   padding: 0.25rem 0.625rem;
   background: var(--bg-light);
   border: 0.1rem solid var(--border);
-  border-radius: 0.625rem;
+  border-radius: 0.625rem 0.125rem 0.625rem 0.125rem;
   font-size: 1rem;
   cursor: default;
   transition: all 0.3s ease;
