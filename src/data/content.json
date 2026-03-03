@@ -13,6 +13,14 @@
   },
   "projects": [
     {
+      "title": "Phantom",
+      "description": "A low-level API mocker and traffic inspector that includes a built in dashboard for real-time monitoring and route configuration.",
+      "imageURL": "https://jamesmddoyle.com/assets/phantom.png",
+      "projectURL": "https://github.com/jmmd2000/phantom",
+      "liveURL": "https://www.npmjs.com/package/@jamesmddoyle/phantom",
+      "tags": ["Typescript", "Svelte", "Node.js"]
+    },
+    {
       "title": "JamesReviewsMusic",
       "description": "Full-stack music blog using the Spotify API for album, track, and artist data.",
       "imageURL": "https://jamesmddoyle.com/assets/jrm.png",
@@ -27,14 +35,6 @@
       "projectURL": "https://github.com/jmmd2000/sand-sim",
       "liveURL": "https://jamesmddoyle.com/sand-sim/",
       "tags": ["Rust", "Typescript", "React", "WebAssembly"]
-    },
-    {
-      "title": "disk.js",
-      "description": "A custom frontend framework, built as a learning exercise.",
-      "imageURL": "https://jamesmddoyle.com/assets/disk.png",
-      "projectURL": "https://github.com/jmmd2000/disk",
-      "liveURL": "https://www.npmjs.com/package/disk-js",
-      "tags": ["Typescript"]
     },
     {
       "title": "Vintage Recreations",

@@ -18,6 +18,7 @@ import {
   SiPostgresql,
   SiJavascript,
   SiWordpress,
+  SiSvelte,
 } from "react-icons/si";
 import { LiaJava } from "react-icons/lia";
 
@@ -42,6 +43,8 @@ const TECH_ICONS = {
   postgresql: SiPostgresql,
   java: LiaJava,
   wordpress: SiWordpress,
+  svelte: SiSvelte,
+  "node.js": SiNodedotjs,
 };
 
 export default TECH_ICONS;
