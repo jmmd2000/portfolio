@@ -15,7 +15,7 @@
     {
       "title": "Phantom",
       "description": "A low-level API mocker and traffic inspector that includes a built in dashboard for real-time monitoring and route configuration.",
-      "imageURL": "https://jamesmddoyle.com/assets/phantom.png",
+      "imageURL": "https://assets.jamesmddoyle.com/phantom.png",
       "projectURL": "https://github.com/jmmd2000/phantom",
       "liveURL": "https://www.npmjs.com/package/@jamesmddoyle/phantom",
       "tags": ["Typescript", "Svelte", "Node.js"]
@@ -23,7 +23,7 @@
     {
       "title": "JamesReviewsMusic",
       "description": "Full-stack music blog using the Spotify API for album, track, and artist data.",
-      "imageURL": "https://jamesmddoyle.com/assets/jrm.png",
+      "imageURL": "https://assets.jamesmddoyle.com/jrm.png",
       "projectURL": "https://github.com/jmmd2000/album-review-fullstack",
       "liveURL": "https://jamesreviewsmusic.com/",
       "tags": ["React", "Express.js", "Typescript", "TailwindCSS", "Spotify API"]
@@ -31,7 +31,7 @@
     {
       "title": "SandSim",
       "description": "Falling sand simulation with a number of different materials and interactions between them.",
-      "imageURL": "https://jamesmddoyle.com/assets/sandsim.png",
+      "imageURL": "https://assets.jamesmddoyle.com/sandsim.png",
       "projectURL": "https://github.com/jmmd2000/sand-sim",
       "liveURL": "https://jamesmddoyle.com/sand-sim/",
       "tags": ["Rust", "Typescript", "React", "WebAssembly"]
@@ -39,7 +39,7 @@
     {
       "title": "Vintage Recreations",
       "description": "Pure HTML and CSS recreations of random documents, fliers and cards, a fun exercise.",
-      "imageURL": "https://jamesmddoyle.com/assets/recreations.png",
+      "imageURL": "https://assets.jamesmddoyle.com/recreations.png",
       "projectURL": null,
       "liveURL": "https://codepen.io/jmmd2000",
       "tags": ["HTML", "CSS"]
@@ -59,7 +59,7 @@
         "Improved team efficiency by cleaning up and restructuring technical documentation and Confluence spaces."
       ],
       "tags": ["Kubernetes", "PostgreSQL", "Python", "Go", "Helm", "Jenkins"],
-      "logoURL": "https://jamesmddoyle.com/assets/ericsson-vZu3qlLA.png"
+      "logoURL": "https://assets.jamesmddoyle.com/ericsson-vZu3qlLA.png"
     },
     {
       "title": "Frontend Intern",
@@ -73,7 +73,7 @@
         "Responded to customer queries to address issues and resolve complaints."
       ],
       "tags": ["HTML", "CSS", "Javascript", "Wordpress"],
-      "logoURL": "https://jamesmddoyle.com/assets/fusio-eV2UCMog.png"
+      "logoURL": "https://assets.jamesmddoyle.com/fusio-eV2UCMog.png"
     }
   ],
   "skills": {
