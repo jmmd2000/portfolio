@@ -6,7 +6,7 @@ const PLACEHOLDER_IMAGE = "https://placehold.co/800x450?text=Project+Image";
 
 const ProjectCard = ({ title, description, imageURL, projectURL, liveURL, tags }) => {
   return (
-    <div className={`${styles.card} card-with-blobs`}>
+    <div className={styles.card}>
       <img src={imageURL || PLACEHOLDER_IMAGE} alt={title} className={styles.image} loading="lazy" />
       <div className={styles.content}>
         <h3 className={styles.title}>{title}</h3>
@@ -20,12 +20,12 @@ const ProjectCard = ({ title, description, imageURL, projectURL, liveURL, tags }
         )}
         <div className={styles.links}>
           {projectURL && (
-            <a href={projectURL} target="_blank" className={styles.link}>
+            <a href={projectURL} target="_blank" rel="noopener noreferrer" aria-label={`View ${title} source code`} className={styles.sourceLink}>
               Source
             </a>
           )}
           {liveURL && (
-            <a href={liveURL} target="_blank" className={styles.link}>
+            <a href={liveURL} target="_blank" rel="noopener noreferrer" aria-label={`View ${title} live`} className={styles.liveLink}>
               Live
             </a>
           )}

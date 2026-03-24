@@ -16,28 +16,11 @@
   text-decoration: none;
   font-family: inherit;
 
-  &:nth-child(1):hover {
-    border-color: var(--accent-1);
-    background: var(--accent-1);
-    color: var(--light);
-    box-shadow: 0 2px 4px var(--accent-1);
-  }
-
-  &:nth-child(2):hover {
-    border-color: var(--accent-2);
-    background: var(--accent-2);
-    color: var(--light);
-    box-shadow: 0 2px 4px var(--accent-2);
-  }
-
-  &:nth-child(3):hover {
-    border-color: var(--accent-3);
-    background: var(--accent-3);
-    color: var(--light);
-    box-shadow: 0 2px 4px var(--accent-3);
-  }
-
   &:hover {
+    border-color: var(--dark);
+    background: var(--dark);
+    color: var(--light);
+    box-shadow: 0 2px 4px var(--shadow-accent);
     transform: translateY(-4px);
   }
 

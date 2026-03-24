@@ -8,7 +8,7 @@ const SkillsSection = ({ skills }) => {
       <h2 className={styles.heading}>Skills</h2>
       <div className={styles.categories}>
         {Object.entries(skills).map(([category, items]) => (
-          <div key={category} className={`${styles.card} card-with-blobs`}>
+          <div key={category} className={styles.card}>
             <h3 className={styles.categoryLabel}>{category}</h3>
             <div className={styles.chips}>
               {items.map((skill) => (

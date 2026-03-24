@@ -23,10 +23,7 @@ h1 {
 .subtitle {
   font-size: clamp(0.95rem, 1.3vw, 1.5rem);
   font-weight: 600;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent-1);
   margin: 0;
   display: block;
   width: max-content;
@@ -61,13 +58,13 @@ h1 {
     aspect-ratio: 1/1;
     display: block;
     border-radius: 50%;
-    background: var(--gray);
+    background: var(--grey);
   }
 
   &.open .status_dot {
-    background: var(--accent-3);
+    background: var(--accent-1);
     animation: pulse 2s infinite;
-    box-shadow: 0 0 8px var(--accent-3);
+    box-shadow: 0 0 8px var(--accent-1);
   }
 }
 

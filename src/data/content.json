@@ -52,7 +52,7 @@
       "period": "July 2023 - Present",
       "current": true,
       "description": [
-        "Acting test lead for the team, responsible for defining test strategy, coordinating testing efforts, and ensuring release quality.",
+        "Test Lead for the team, responsible for defining test strategy, coordinating testing efforts, and ensuring release quality.",
         "Develop and maintain a containerised PostgreSQL database deployed using Helm and Kubernetes as part of a large-scale telecom management platform.",
         "Build and maintain Jenkins pipelines to support CI/CD workflows across development and testing.",
         "Work across a multi-language codebase including Python and Go, contributing fixes and automation where required.",
@@ -77,7 +77,7 @@
     }
   ],
   "skills": {
-    "Frontend": ["React", "TypeScript", "HTML", "CSS"],
+    "Frontend": ["React", "Svelte", "TypeScript", "HTML", "CSS"],
     "Backend & Data": ["Node", "Express.js", "PostgreSQL"],
     "DevOps & CI/CD": ["Docker", "Kubernetes", "Helm", "Jenkins"],
     "Languages": ["TypeScript", "Python", "Go", "Rust", "Java"]

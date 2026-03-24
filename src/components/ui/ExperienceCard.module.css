@@ -55,7 +55,7 @@
 
 .current {
   display: inline-block;
-  background: linear-gradient(135deg, var(--accent-3), var(--accent-1), var(--accent-2));
+  background: var(--dark);
   color: var(--light);
   padding: 0.2rem 0.6rem;
   border-radius: 0.25rem;

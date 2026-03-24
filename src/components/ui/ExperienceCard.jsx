@@ -4,7 +4,7 @@ import TECH_ICONS from "../../constants/techIcons";
 
 const ExperienceCard = ({ title, company, period, description, tags, current, logoURL }) => {
   return (
-    <div className={`${styles.card} card-with-blobs`}>
+    <div className={styles.card}>
       <div className={styles.header}>
         {logoURL && (
           <img src={logoURL} alt={`${company} logo`} className={styles.logo} />

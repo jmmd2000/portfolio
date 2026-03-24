@@ -6,7 +6,7 @@ const EducationSection = ({ education }) => {
       <h2 className={styles.heading}>Education</h2>
       <div className={styles.grid}>
         {education?.map((item, index) => (
-          <div key={index} className={`${styles.card} card-with-blobs`}>
+          <div key={index} className={styles.card}>
             <h3 className={styles.degree}>{item.degree}</h3>
             <p className={styles.institution}>{item.institution}</p>
             <div className={styles.details}>
