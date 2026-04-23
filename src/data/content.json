@@ -52,11 +52,11 @@
       "period": "July 2023 - Present",
       "current": true,
       "description": [
-        "Test Lead for the team, responsible for defining test strategy, coordinating testing efforts, and ensuring release quality.",
-        "Develop and maintain a containerised PostgreSQL database deployed using Helm and Kubernetes as part of a large-scale telecom management platform.",
-        "Build and maintain Jenkins pipelines to support CI/CD workflows across development and testing.",
-        "Work across a multi-language codebase including Python and Go, contributing fixes and automation where required.",
-        "Improved team efficiency by cleaning up and restructuring technical documentation and Confluence spaces."
+        "Serve as test lead for a team of 8 to 14 engineers, defining test strategy, coordinating test efforts, and helping ensure release quality for a microservice in a large-scale telecom platform.",
+        "Develop and maintain a containerised PostgreSQL database deployed using Helm and Kubernetes, aspart of a large-scale telecom management platform.",
+        "Build and maintain 6 Jenkins pipelines that support the team's CI/CD workflows across development and testing.",
+        "Lead the team's work on a product-wide benchmarking tool, building performance testing capabilities used in customer environments to assess whether hardware can support the wider product",
+        "Reorganised a Confluence space containing hundreds of pages and wrote operational guides for heartbeat activities, test processes, and onboarding, improving access to team documentation."
       ],
       "tags": ["Kubernetes", "PostgreSQL", "Python", "Go", "Helm", "Jenkins"],
       "logoURL": "https://assets.jamesmddoyle.com/ericsson-vZu3qlLA.png"
@@ -67,20 +67,22 @@
       "period": "Jan 2022 — Jul 2022",
       "current": false,
       "description": [
-        "Built reusable UI components to utilise across projects and minimise costs.",
+        "Responded to customer queries via email to address issues and resolve complaints.",
         "Maintained content for client websites via CMS or by editing raw HTML files.",
-        "Designed and implemented website interfaces for mobile, desktop, and tablets.",
-        "Responded to customer queries to address issues and resolve complaints."
+        "Designed and implemented website interfaces for mobile, desktop, and tablets."
       ],
       "tags": ["HTML", "CSS", "Javascript", "Wordpress"],
       "logoURL": "https://assets.jamesmddoyle.com/fusio-eV2UCMog.png"
     }
   ],
   "skills": {
-    "Frontend": ["React", "Svelte", "TypeScript", "HTML", "CSS"],
-    "Backend & Data": ["Node", "Express.js", "PostgreSQL"],
-    "DevOps & CI/CD": ["Docker", "Kubernetes", "Helm", "Jenkins"],
-    "Languages": ["TypeScript", "Python", "Go", "Rust", "Java"]
+    "subtitle": "Ordered by experience",
+    "categories": {
+      "Frontend": ["HTML", "CSS", "React", "TypeScript", "Svelte"],
+      "Backend & Data": ["Node", "PostgreSQL"],
+      "DevOps & CI/CD": ["Docker", "Kubernetes", "Helm", "Jenkins"],
+      "Languages": ["TypeScript", "Python", "Go", "Rust", "Java"]
+    }
   },
   "education": [
     {
