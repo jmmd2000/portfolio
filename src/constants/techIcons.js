@@ -19,8 +19,11 @@ import {
   SiJavascript,
   SiWordpress,
   SiSvelte,
+  SiHono 
 } from "react-icons/si";
 import { LiaJava } from "react-icons/lia";
+import { TbBrandCSharp } from "react-icons/tb";
+
 
 const TECH_ICONS = {
   webassembly: SiWebassembly,
@@ -45,6 +48,8 @@ const TECH_ICONS = {
   wordpress: SiWordpress,
   svelte: SiSvelte,
   "node.js": SiNodedotjs,
+  "hono.js": SiHono,
+  "c#": TbBrandCSharp
 };
 
 export default TECH_ICONS;

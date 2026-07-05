@@ -13,33 +13,41 @@
   },
   "projects": [
     {
-      "title": "Phantom",
-      "description": "A low-level API mocker and traffic inspector that includes a built in dashboard for real-time monitoring and route configuration.",
-      "imageURL": "https://assets.jamesmddoyle.com/phantom.png",
-      "projectURL": "https://github.com/jmmd2000/phantom",
-      "liveURL": "https://www.npmjs.com/package/@jamesmddoyle/phantom",
-      "tags": ["Typescript", "Svelte", "Node.js"]
-    },
-    {
       "title": "JamesReviewsMusic",
       "description": "Full-stack music blog using the Spotify API for album, track, and artist data.",
-      "imageURL": "https://assets.jamesmddoyle.com/jrm.png",
+      "imageURL": "https://assets.jamesmddoyle.com/jrm.webp",
       "projectURL": "https://github.com/jmmd2000/album-review-fullstack",
       "liveURL": "https://jamesreviewsmusic.com/",
       "tags": ["React", "Express.js", "Typescript", "TailwindCSS", "Spotify API"]
     },
     {
+      "title": "Phantom",
+      "description": "A low-level API mocker and traffic inspector that includes a built in dashboard for real-time monitoring and route configuration.",
+      "imageURL": "https://assets.jamesmddoyle.com/phantom.webp",
+      "projectURL": "https://github.com/jmmd2000/phantom",
+      "liveURL": "https://www.npmjs.com/package/@jamesmddoyle/phantom",
+      "tags": ["Typescript", "Svelte", "Node.js"]
+    },
+    {
       "title": "SandSim",
       "description": "Falling sand simulation with a number of different materials and interactions between them.",
-      "imageURL": "https://assets.jamesmddoyle.com/sandsim.png",
+      "imageURL": "https://assets.jamesmddoyle.com/sandsim.webp",
       "projectURL": "https://github.com/jmmd2000/sand-sim",
       "liveURL": "https://jamesmddoyle.com/sand-sim/",
       "tags": ["Rust", "Typescript", "React", "WebAssembly"]
     },
     {
+      "title": "Issues",
+      "description": "An issue tracker for my personal projects, with it's own MCP server.",
+      "imageURL": "https://assets.jamesmddoyle.com/issues.webp",
+      "projectURL": "https://github.com/jmmd2000/issues",
+      "liveURL": "https://issues.jamesmddoyle.com",
+      "tags": ["SvelteKit", "CSS", "Hono.js", "Typescript" ]
+    },
+    {
       "title": "Vintage Recreations",
       "description": "Pure HTML and CSS recreations of random documents, fliers and cards, a fun exercise.",
-      "imageURL": "https://assets.jamesmddoyle.com/recreations.png",
+      "imageURL": "https://assets.jamesmddoyle.com/recreations.webp",
       "projectURL": null,
       "liveURL": "https://codepen.io/jmmd2000",
       "tags": ["HTML", "CSS"]
@@ -81,7 +89,7 @@
       "Frontend": ["HTML", "CSS", "React", "TypeScript", "Svelte"],
       "Backend & Data": ["Node", "PostgreSQL"],
       "DevOps & CI/CD": ["Docker", "Kubernetes", "Helm", "Jenkins"],
-      "Languages": ["TypeScript", "Python", "Go", "Rust", "Java"]
+      "Languages": ["TypeScript", "Python", "Go", "Rust", "Java", "C#"]
     }
   },
   "education": [
