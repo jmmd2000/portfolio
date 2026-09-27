@@ -1,7 +1,7 @@
 {
   "name": "portfolio",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "packageManager": "pnpm@11.14.0",
   "engines": {
@@ -17,7 +17,8 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:unit": "vitest run"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -25,16 +26,20 @@
     "@sveltejs/kit": "2.70.3",
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@types/node": "22.20.4",
+    "@vitest/browser-playwright": "5.0.2",
     "eslint": "10.11.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-svelte": "3.23.0",
     "globals": "17.12.0",
+    "playwright": "1.63.0",
     "prettier": "3.9.9",
     "prettier-plugin-svelte": "4.1.1",
     "svelte": "5.57.1",
     "svelte-check": "4.7.6",
     "typescript": "6.0.3",
     "typescript-eslint": "8.70.1",
-    "vite": "8.3.1"
+    "vite": "8.3.1",
+    "vitest": "5.0.2",
+    "vitest-browser-svelte": "3.1.0"
   }
 }
