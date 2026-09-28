@@ -1,0 +1,131 @@
+@import "@fontsource-variable/bricolage-grotesque/wdth.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+:root {
+  color-scheme: light dark;
+
+  --colour-background: light-dark(oklch(0.972 0.008 85), oklch(0.195 0.012 60));
+  --colour-panel: light-dark(oklch(0.945 0.012 82), oklch(0.245 0.014 60));
+  --colour-foreground: light-dark(oklch(0.22 0.018 60), oklch(0.95 0.008 85));
+  --colour-text: light-dark(oklch(0.42 0.015 60), oklch(0.775 0.012 70));
+  --colour-text-muted: light-dark(oklch(0.575 0.012 62), oklch(0.6 0.012 65));
+  --colour-divider: light-dark(oklch(0.875 0.013 75), oklch(0.315 0.014 62));
+  --colour-orange: light-dark(oklch(0.685 0.185 48), oklch(0.725 0.175 50));
+  --colour-text-on-orange: light-dark(oklch(0.2 0.035 45), oklch(0.17 0.03 45));
+  --colour-teal: light-dark(oklch(0.495 0.085 195), oklch(0.7 0.09 195));
+  --colour-text-on-teal: light-dark(oklch(0.97 0.01 195), oklch(0.16 0.02 195));
+  --colour-text-on-teal-muted: light-dark(oklch(0.9 0.03 195), oklch(0.24 0.03 195));
+  --colour-text-on-foreground: var(--colour-background);
+  --colour-text-on-foreground-muted: light-dark(oklch(0.8 0.02 80), oklch(0.4 0.015 60));
+  --colour-link-on-foreground: light-dark(oklch(0.685 0.185 48), oklch(0.5 0.15 45));
+
+  --font-display: "Bricolage Grotesque Variable", system-ui, sans-serif;
+  --font-body: "Geist Variable", system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+
+  --font-size-1: 0.75rem;
+  --font-size-2: 0.875rem;
+  --font-size-3: 1rem;
+  --font-size-4: 1.125rem;
+  --font-size-5: 1.25rem;
+  --font-size-6: 1.5rem;
+  --font-size-heading: clamp(1.5rem, 3.5vw, 2rem);
+  --font-size-page-title: clamp(2rem, 5vw, 3rem);
+
+  --line-height-body: 1.6;
+  --line-height-heading: 0.95;
+
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+  --space-7: 4.5rem;
+  --space-8: 6rem;
+  --space-panel: clamp(1.25rem, 2vw, 1.75rem);
+
+  --page-width: 72rem;
+  --page-gutter: clamp(1.25rem, 4vw, 2.5rem);
+
+  --border-thin: 1px;
+  --border-thick: 2px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-quick: 0.3s;
+  --duration-entrance: 0.6s;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Base styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--colour-background);
+  color: var(--colour-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--colour-foreground);
+  font-family: var(--font-display);
+  line-height: var(--line-height-heading);
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: var(--font-size-heading);
+  font-weight: 800;
+  font-stretch: 90%;
+}
+
+h3 {
+  font-size: var(--font-size-4);
+  font-weight: 700;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--colour-teal);
+}
+
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: var(--border-thick) solid var(--colour-orange);
+  outline-offset: var(--border-thick);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
