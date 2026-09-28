@@ -21,7 +21,9 @@
     "test:unit": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:wipe": "tsx scripts/db-wipe.ts",
+    "db:reset": "tsx scripts/db-reset.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -41,6 +43,7 @@
     "prettier-plugin-svelte": "4.1.1",
     "svelte": "5.57.1",
     "svelte-check": "4.7.6",
+    "tsx": "4.23.15",
     "typescript": "6.0.3",
     "typescript-eslint": "8.70.1",
     "vite": "8.3.1",

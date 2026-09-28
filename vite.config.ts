@@ -11,9 +11,9 @@ export default defineConfig({
       },
       adapter: adapter(),
       typescript: {
-        // Type-check and lint the drizzle config along with the app
+        // Type-check and lint the db scripts and drizzle config along with the app
         config: tsconfig => {
-          tsconfig.include.push("../drizzle.config.ts");
+          tsconfig.include.push("../scripts/**/*.ts", "../drizzle.config.ts");
         },
       },
     }),
