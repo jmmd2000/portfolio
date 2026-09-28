@@ -10,6 +10,12 @@ export default defineConfig({
         runes: ({ filename }) => (filename.split(/[/\\]/).includes("node_modules") ? undefined : true),
       },
       adapter: adapter(),
+      typescript: {
+        // Type-check and lint the drizzle config along with the app
+        config: tsconfig => {
+          tsconfig.include.push("../drizzle.config.ts");
+        },
+      },
     }),
   ],
   test: {
@@ -35,7 +41,6 @@ export default defineConfig({
           environment: "node",
           include: ["src/**/*.{test,spec}.{js,ts}"],
           exclude: ["src/**/*.svelte.{test,spec}.{js,ts}"],
-          // Server tests will share one test database, so files run one at a time
           fileParallelism: false,
         },
       },
