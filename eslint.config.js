@@ -50,5 +50,12 @@ export default defineConfig(
     rules: {
       "no-console": "off",
     },
+  },
+  {
+    // Playwright fixtures take an empty {} first parameter when they depend on no other fixture
+    files: ["e2e/**/*.ts"],
+    rules: {
+      "no-empty-pattern": ["error", { allowObjectPatternsAsParameters: true }],
+    },
   }
 );
