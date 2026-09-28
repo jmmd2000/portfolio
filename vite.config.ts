@@ -13,7 +13,7 @@ export default defineConfig({
       typescript: {
         // Type-check and lint the db scripts and drizzle config along with the app
         config: tsconfig => {
-          tsconfig.include.push("../scripts/**/*.ts", "../drizzle.config.ts");
+          tsconfig.include.push("../scripts/**/*.ts", "../drizzle.config.ts", "../e2e/**/*.ts", "../playwright.config.ts");
         },
       },
     }),

@@ -29,3 +29,7 @@ vite.config.ts.timestamp-*
 
 docs/
 .term-layout.json
+
+# Playwright
+/test-results/
+/playwright-report/
