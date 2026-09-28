@@ -34,9 +34,9 @@
     font-size: var(--font-size-2);
     cursor: pointer;
     transition: color var(--duration-quick) var(--ease-out);
-  }
 
-  .theme-toggle:hover {
-    color: var(--colour-foreground);
+    &:hover {
+      color: var(--colour-foreground);
+    }
   }
 </style>
