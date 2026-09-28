@@ -1,6 +1,27 @@
-@import "@fontsource-variable/bricolage-grotesque/wdth.css";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/geist-mono";
+@font-face {
+  font-family: "Bricolage Grotesque Variable";
+  font-style: normal;
+  font-display: block;
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  src: url("@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wdth-normal.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-display: block;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/geist/files/geist-latin-wght-normal.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Geist Mono Variable";
+  font-style: normal;
+  font-display: block;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2") format("woff2-variations");
+}
 
 :root {
   color-scheme: light dark;

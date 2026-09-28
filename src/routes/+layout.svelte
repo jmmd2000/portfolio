@@ -1,5 +1,7 @@
 <script lang="ts">
   import "../app.css";
+  import bricolageLatin from "@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wdth-normal.woff2?url";
+  import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
   import { page } from "$app/state";
   import Footer from "$lib/components/navigation/Footer.svelte";
   import Nav from "$lib/components/navigation/Nav.svelte";
@@ -9,6 +11,8 @@
 
 <svelte:head>
   <link rel="icon" href="/favicon.svg" />
+  <link rel="preload" href={bricolageLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin="anonymous" />
   <title>James Doyle</title>
 </svelte:head>
 
@@ -34,7 +38,7 @@
   @keyframes enter {
     from {
       opacity: 0;
-      transform: translateY(0.5rem);
+      /* transform: translateY(0.5rem); */
     }
   }
 </style>
