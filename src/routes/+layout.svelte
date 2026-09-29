@@ -20,9 +20,12 @@
 
 <div class="page">
   <Nav currentPath={page.url.pathname} />
-  <main>
-    {@render children()}
-  </main>
+  <!-- kay <main> so the animation plays on each client nav -->
+  {#key page.url.pathname}
+    <main>
+      {@render children()}
+    </main>
+  {/key}
   <Footer location={data.profile.location} socials={data.socials} />
 </div>
 
