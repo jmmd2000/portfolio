@@ -1,7 +1,7 @@
 {
   "name": "portfolio",
   "private": true,
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "packageManager": "pnpm@11.14.0",
   "engines": {
@@ -18,12 +18,14 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
-    "test:unit": "vitest run",
+    "test:unit": "vitest run --project client --project server",
+    "test:integration": "NODE_ENV=test vitest run --project integration",
     "test:e2e": "NODE_ENV=test playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:wipe": "tsx scripts/db-wipe.ts",
+    "db:seed": "tsx scripts/db-seed.ts",
     "db:reset": "tsx scripts/db-reset.ts"
   },
   "devDependencies": {
