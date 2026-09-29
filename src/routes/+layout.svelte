@@ -38,7 +38,7 @@
   @keyframes enter {
     from {
       opacity: 0;
-      /* transform: translateY(0.5rem); */
+      transform: translateY(0.5rem);
     }
   }
 </style>

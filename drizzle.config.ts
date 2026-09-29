@@ -8,4 +8,5 @@ export default defineConfig({
   dbCredentials: { url: env.DATABASE_URL_MIGRATE },
   verbose: true,
   strict: true,
+  casing: "snake_case",
 });
