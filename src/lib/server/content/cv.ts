@@ -14,18 +14,18 @@ export interface CV {
   projects: Project[];
 }
 
-/**Returns everything needed for the CV except for the profile and socials */
+/** Returns everything needed for the CV except for the profile and socials */
 export async function getCV(): Promise<CV> {
-  const [jobs, skillCategories, qualifications, featuredProjects] = await Promise.all([
+  const [jobs, skillCategories, qualifications, cvProjects] = await Promise.all([
     db.select().from(experience).orderBy(asc(experience.sort)),
     db.select().from(skills).orderBy(asc(skills.sort)),
     db.select().from(education).orderBy(asc(education.sort)),
     db
       .select()
       .from(projects)
-      .where(and(eq(projects.published, true), eq(projects.featured, true)))
+      .where(and(eq(projects.published, true), eq(projects.showOnCV, true)))
       .orderBy(asc(projects.sort)),
   ]);
 
-  return { jobs, skillCategories, qualifications, projects: featuredProjects };
+  return { jobs, skillCategories, qualifications, projects: cvProjects };
 }

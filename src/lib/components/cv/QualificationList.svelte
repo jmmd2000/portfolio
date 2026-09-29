@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Qualification } from "$lib/server/content/cv";
+  import { joinDetails } from "./joinDetails";
 
   interface Props {
     qualifications: Qualification[];
@@ -12,7 +13,7 @@
   {#each qualifications as qualification (qualification.id)}
     <li>
       <p class="degree">{qualification.degree}</p>
-      <p class="institution">{qualification.institution}</p>
+      <p class="institution">{joinDetails([qualification.institution, qualification.location])}</p>
       <p class="details">{qualification.startYear} - {qualification.endYear} · {qualification.grade}</p>
     </li>
   {/each}
