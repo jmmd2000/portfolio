@@ -11,6 +11,7 @@
 
   const links = [
     { label: "Home", path: "/" },
+    { label: "Projects", path: "/projects" },
     { label: "CV", path: "/cv" },
   ] as const;
 </script>

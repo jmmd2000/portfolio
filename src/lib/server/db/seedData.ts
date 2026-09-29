@@ -92,7 +92,7 @@ export const seedData: SeedData = {
   projects: [
     {
       title: "JamesReviewsMusic",
-      description: "Full-stack music blog using the Spotify API for album, track, and artist data.",
+      description: "A personal music blog where I write reviews and track scores.",
       imageURL: "https://assets.jamesmddoyle.com/jrm.webp",
       sourceURL: "https://github.com/jmmd2000/album-review-fullstack",
       liveURL: "https://jamesreviewsmusic.com/",
@@ -112,7 +112,7 @@ export const seedData: SeedData = {
     },
     {
       title: "Phantom",
-      description: "A low-level API mocker and traffic inspector that includes a built in dashboard for real-time monitoring and route configuration.",
+      description: "A mock API server and traffic inspector built on raw TCP sockets.",
       imageURL: "https://assets.jamesmddoyle.com/phantom.webp",
       sourceURL: "https://github.com/jmmd2000/phantom",
       liveURL: "https://www.npmjs.com/package/@jamesmddoyle/phantom",
@@ -156,7 +156,7 @@ export const seedData: SeedData = {
     },
     {
       title: "Vintage Recreations",
-      description: "Pure HTML and CSS recreations of random documents, fliers and cards, a fun exercise.",
+      description: "Old tickets, forms and fliers rebuilt with nothing but HTML and CSS.",
       imageURL: "https://assets.jamesmddoyle.com/recreations.webp",
       sourceURL: null,
       liveURL: "https://codepen.io/jmmd2000",
