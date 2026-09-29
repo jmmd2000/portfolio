@@ -20,15 +20,17 @@
     <p class="line">{project.description}</p>
     <p class="links">
       {#if project.liveURL}
-        <a href={project.liveURL} rel="external">{project.liveLabel} <span aria-hidden="true">↗</span></a>
+        <a href={project.liveURL} rel="external">{project.liveLabel} <span class="arrow" aria-hidden="true">↗</span></a>
       {/if}
       {#if project.sourceURL}
-        <a href={project.sourceURL} rel="external">Source <span aria-hidden="true">↗</span></a>
+        <a href={project.sourceURL} rel="external">Source <span class="arrow" aria-hidden="true">↗</span></a>
       {/if}
     </p>
   </div>
   <div class="stage">
-    <img src={project.imageURL} alt="Screenshot of {project.title}" width="1600" height="1000" loading={index === 0 ? "eager" : "lazy"} />
+    <div class="shot">
+      <img src={project.imageURL} alt="Screenshot of {project.title}" width="1600" height="1000" loading={index === 0 ? "eager" : "lazy"} />
+    </div>
   </div>
 </article>
 
@@ -89,11 +91,21 @@
     }
   }
 
+  .arrow {
+    display: inline-block;
+    transition: transform var(--duration-quick) var(--ease-out);
+
+    a:hover & {
+      transform: translate(2px, -2px);
+    }
+  }
+
   .stage {
     display: grid;
     place-items: center;
     padding: clamp(var(--space-4), 4vw, var(--space-6));
     border-top: var(--border-thick) solid var(--colour-foreground);
+    background: var(--stage-colour);
 
     @media (min-width: 52rem) {
       border-top: none;
@@ -104,27 +116,60 @@
         border-left: none;
       }
     }
+  }
+
+  .shot {
+    position: relative;
+    width: 100%;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--block-colour);
+    }
 
     img {
+      position: relative;
       width: 100%;
       height: auto;
       outline: var(--border-thin) solid color-mix(in oklch, var(--colour-foreground) 18%, transparent);
+      transition: transform var(--duration-quick) var(--ease-out);
     }
   }
 
-  .stage-foreground .stage {
-    background: var(--colour-foreground);
+  .card {
+    --lift: translate(-0.5rem, -0.5rem) rotate(-1.5deg);
+
+    &.flipped {
+      --lift: translate(0.5rem, -0.5rem) rotate(1.5deg);
+    }
   }
 
-  .stage-orange .stage {
-    background: var(--colour-orange);
+  @media (hover: hover) {
+    .card:hover .shot img,
+    .card:focus-within .shot img {
+      transform: var(--lift);
+    }
   }
 
-  .stage-teal .stage {
-    background: var(--colour-teal);
+  .stage-foreground {
+    --stage-colour: var(--colour-foreground);
+    --block-colour: var(--colour-teal);
   }
 
-  .stage-panel .stage {
-    background: var(--colour-panel);
+  .stage-orange {
+    --stage-colour: var(--colour-orange);
+    --block-colour: var(--colour-foreground);
+  }
+
+  .stage-teal {
+    --stage-colour: var(--colour-teal);
+    --block-colour: var(--colour-foreground);
+  }
+
+  .stage-panel {
+    --stage-colour: var(--colour-panel);
+    --block-colour: var(--colour-orange);
   }
 </style>
