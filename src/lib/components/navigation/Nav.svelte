@@ -60,4 +60,10 @@
       color: var(--colour-foreground);
     }
   }
+
+  @media print {
+    nav {
+      display: none;
+    }
+  }
 </style>

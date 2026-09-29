@@ -51,4 +51,10 @@
       }
     }
   }
+
+  @media print {
+    footer {
+      display: none;
+    }
+  }
 </style>

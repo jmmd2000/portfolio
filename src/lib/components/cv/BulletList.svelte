@@ -34,6 +34,7 @@
         width: 6px;
         height: 6px;
         background: var(--colour-orange);
+        print-color-adjust: exact;
       }
     }
   }

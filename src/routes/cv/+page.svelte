@@ -39,10 +39,15 @@
 <style>
   section {
     margin-top: clamp(var(--space-7), 8vw, var(--space-8));
+
+    @media print {
+      margin-top: var(--space-5);
+    }
   }
 
   h2 {
     margin-bottom: var(--space-4);
+    break-after: avoid;
   }
 
   .jobs {
@@ -52,6 +57,7 @@
   .two-columns {
     display: grid;
     gap: var(--space-6);
+    break-inside: avoid;
 
     @media (min-width: 44rem) {
       grid-template-columns: 1fr 1fr;

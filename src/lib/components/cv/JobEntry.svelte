@@ -36,6 +36,7 @@
   .job {
     padding: var(--space-4) 0;
     border-bottom: var(--border-thin) solid var(--colour-divider);
+    break-inside: avoid;
   }
 
   .heading {
@@ -91,6 +92,10 @@
 
     &:hover {
       border-bottom-color: var(--colour-text);
+    }
+
+    @media print {
+      border-bottom: none;
     }
   }
 

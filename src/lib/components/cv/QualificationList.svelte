@@ -29,6 +29,7 @@
     li {
       padding: var(--space-2) 0;
       border-bottom: var(--border-thin) solid var(--colour-divider);
+      break-inside: avoid;
     }
   }
 

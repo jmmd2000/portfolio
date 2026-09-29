@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { linkText } from "$lib/components/contact/linkText";
   import type { Project } from "$lib/server/content/cv";
   import BulletList from "./BulletList.svelte";
 
@@ -21,10 +22,16 @@
         </p>
         <p class="links">
           {#if project.liveURL}
-            <a href={project.liveURL} rel="external">{project.liveLabel}</a>
+            <a href={project.liveURL} rel="external">
+              <span class="label">{project.liveLabel}</span>
+              <span class="address">{linkText(project.liveURL)}</span>
+            </a>
           {/if}
           {#if project.sourceURL}
-            <a href={project.sourceURL} rel="external">Source</a>
+            <a href={project.sourceURL} rel="external">
+              <span class="label">Source</span>
+              <span class="address">{linkText(project.sourceURL)}</span>
+            </a>
           {/if}
         </p>
       </div>
@@ -48,6 +55,7 @@
     li {
       padding: var(--space-4) 0;
       border-bottom: var(--border-thin) solid var(--colour-divider);
+      break-inside: avoid;
     }
   }
 
@@ -101,6 +109,32 @@
       &:hover {
         border-bottom-color: var(--colour-teal);
       }
+    }
+  }
+
+  .address {
+    display: none;
+  }
+
+  @media print {
+    .heading {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .links a {
+      color: var(--colour-text);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-1);
+      font-weight: 400;
+    }
+
+    .label {
+      display: none;
+    }
+
+    .address {
+      display: inline;
     }
   }
 </style>

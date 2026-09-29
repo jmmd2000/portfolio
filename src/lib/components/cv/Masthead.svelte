@@ -8,6 +8,8 @@
   }
 
   let { profile, socials }: Props = $props();
+
+  const siteURL = "https://jamesmddoyle.com";
 </script>
 
 <header class="masthead">
@@ -20,6 +22,7 @@
     {#each socials as social (social.id)}
       <li><a href={social.url} rel="external">{linkText(social.url)}</a></li>
     {/each}
+    <li class="site"><a href={siteURL} rel="external">{linkText(siteURL)}</a></li>
   </ul>
 </header>
 
@@ -63,6 +66,38 @@
       border-bottom: var(--border-thin) solid var(--colour-text-on-foreground-muted);
       color: var(--colour-text-on-foreground);
       text-decoration: none;
+    }
+  }
+
+  .site {
+    display: none;
+  }
+
+  @media print {
+    .masthead {
+      margin-top: 0;
+      padding: 0 0 var(--space-3);
+      border-bottom: var(--border-thick) solid var(--colour-foreground);
+      background: none;
+      color: var(--colour-foreground);
+
+      h1 {
+        color: var(--colour-foreground);
+      }
+    }
+
+    .role,
+    .contact {
+      color: var(--colour-text);
+    }
+
+    .contact a {
+      border-bottom: none;
+      color: var(--colour-foreground);
+    }
+
+    .site {
+      display: block;
     }
   }
 </style>
