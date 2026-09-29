@@ -40,7 +40,17 @@ export default defineConfig({
           name: "server",
           environment: "node",
           include: ["src/**/*.{test,spec}.{js,ts}"],
-          exclude: ["src/**/*.svelte.{test,spec}.{js,ts}"],
+          exclude: ["src/**/*.svelte.{test,spec}.{js,ts}", "src/**/*.integration.test.ts"],
+          fileParallelism: false,
+        },
+      },
+      {
+        extends: "./vite.config.ts",
+        test: {
+          name: "integration",
+          environment: "node",
+          include: ["src/**/*.integration.test.ts"],
+          globalSetup: ["src/lib/server/db/integrationSetup.ts"],
           fileParallelism: false,
         },
       },
