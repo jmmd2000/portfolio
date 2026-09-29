@@ -11,10 +11,11 @@
 </script>
 
 <svelte:head>
-  <link rel="icon" href="/favicon.svg" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="preload" href={bricolageLatin} as="font" type="font/woff2" crossorigin="anonymous" />
   <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin="anonymous" />
-  <title>James Doyle</title>
 </svelte:head>
 
 <div class="page">

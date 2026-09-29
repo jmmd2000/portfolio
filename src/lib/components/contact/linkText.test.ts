@@ -3,7 +3,7 @@ import { linkText } from "./linkText";
 
 describe("linkText", () => {
   it("shows the address for an email link", () => {
-    expect(linkText("mailto:jamesmddoyle@gmail.com")).toBe("jamesmddoyle@gmail.com");
+    expect(linkText("mailto:hi@jamesmddoyle.com")).toBe("hi@jamesmddoyle.com");
   });
 
   it("drops https, www and the trailing slash from a web link", () => {

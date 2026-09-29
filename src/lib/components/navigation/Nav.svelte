@@ -1,24 +1,18 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import ThemeToggle from "$lib/components/theme/ThemeToggle.svelte";
-  import { isCurrentPage } from "./navigation";
+  import { isCurrentPage, navigationLinks } from "./navigation";
 
   interface Props {
     currentPath: string;
   }
 
   let { currentPath }: Props = $props();
-
-  const links = [
-    { label: "Home", path: "/" },
-    { label: "Projects", path: "/projects" },
-    { label: "CV", path: "/cv" },
-  ] as const;
 </script>
 
 <nav>
   <a class="site-name" href={resolve("/")}>James Doyle</a>
-  {#each links as link (link.path)}
+  {#each navigationLinks as link (link.path)}
     <a class="nav-link" href={resolve(link.path)} aria-current={isCurrentPage(link.path, currentPath) ? "page" : undefined}>{link.label}</a>
   {/each}
   <ThemeToggle />

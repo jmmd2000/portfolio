@@ -1,10 +1,15 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
+  import PageHead from "$lib/components/head/PageHead.svelte";
+  import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
   import ProjectDisplayList from "$lib/components/projects/ProjectDisplayList.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
 </script>
+
+<PageHead description="James Doyle, a software engineer from Dublin." />
+<PersonStructuredData profile={data.profile} socials={data.socials} />
 
 <h1>James Doyle</h1>
 

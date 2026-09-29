@@ -1,7 +1,14 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
+  import PageHead from "$lib/components/head/PageHead.svelte";
 </script>
+
+{#if page.status === 404}
+  <PageHead title="Page not found" description="This page does not exist." noindex />
+{:else}
+  <PageHead title="Something went wrong" description="Something went wrong loading this page." noindex />
+{/if}
 
 <section class="error">
   {#if page.status === 404}

@@ -4,10 +4,15 @@
   import ProjectList from "$lib/components/cv/ProjectList.svelte";
   import QualificationList from "$lib/components/cv/QualificationList.svelte";
   import SkillList from "$lib/components/cv/SkillList.svelte";
+  import PageHead from "$lib/components/head/PageHead.svelte";
+  import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
 </script>
+
+<PageHead title="CV" description="The CV of James Doyle, a software engineer and Test Lead at Ericsson." />
+<PersonStructuredData profile={data.profile} socials={data.socials} />
 
 <Masthead profile={data.profile} socials={data.socials} />
 
