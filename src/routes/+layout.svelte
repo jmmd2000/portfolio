@@ -5,8 +5,9 @@
   import { page } from "$app/state";
   import Footer from "$lib/components/navigation/Footer.svelte";
   import Nav from "$lib/components/navigation/Nav.svelte";
+  import type { LayoutProps } from "./$types";
 
-  let { children } = $props();
+  let { data, children }: LayoutProps = $props();
 </script>
 
 <svelte:head>
@@ -21,7 +22,7 @@
   <main>
     {@render children()}
   </main>
-  <Footer />
+  <Footer location={data.profile.location} socials={data.socials} />
 </div>
 
 <style>
