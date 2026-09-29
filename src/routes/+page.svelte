@@ -2,6 +2,7 @@
   import { resolve } from "$app/paths";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
+  import HomeHeader from "$lib/components/home/HomeHeader.svelte";
   import ProjectDisplayList from "$lib/components/projects/ProjectDisplayList.svelte";
   import type { PageProps } from "./$types";
 
@@ -11,7 +12,9 @@
 <PageHead description="James Doyle, a software engineer from Dublin." />
 <PersonStructuredData profile={data.profile} socials={data.socials} />
 
-<h1>James Doyle</h1>
+<HomeHeader profile={data.profile} />
+
+<p class="intro">{data.profile.bio}</p>
 
 <section>
   <h2>Things I built</h2>
@@ -20,6 +23,12 @@
 </section>
 
 <style>
+  .intro {
+    max-width: 62ch;
+    margin-top: var(--space-6);
+    font-size: var(--font-size-4);
+  }
+
   section {
     margin-top: clamp(var(--space-7), 8vw, var(--space-8));
   }

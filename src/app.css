@@ -53,6 +53,7 @@
   --font-size-6: 1.5rem;
   --font-size-heading: clamp(1.5rem, 3.5vw, 2rem);
   --font-size-page-title: clamp(2rem, 5vw, 3rem);
+  --font-size-hero: clamp(2.8rem, 11.5vw, 7rem);
   --font-size-giant: clamp(4rem, 18vw, 11rem);
 
   --line-height-body: 1.6;
