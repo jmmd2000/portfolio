@@ -21,7 +21,7 @@ export const seedData: SeedData = {
   socials: [
     { name: "GitHub", url: "https://github.com/jmmd2000", sort: 1 },
     { name: "LinkedIn", url: "https://www.linkedin.com/in/jamesmddoyle/", sort: 2 },
-    { name: "Email", url: "mailto:jamesmddoyle@gmail.com", sort: 3 },
+    { name: "Email", url: "mailto:hi@jamesmddoyle.com", sort: 3 },
   ],
 
   experience: [
