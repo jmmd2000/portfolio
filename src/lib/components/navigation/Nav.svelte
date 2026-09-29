@@ -9,7 +9,10 @@
 
   let { currentPath }: Props = $props();
 
-  const links = [{ label: "Home", path: "/" }] as const;
+  const links = [
+    { label: "Home", path: "/" },
+    { label: "CV", path: "/cv" },
+  ] as const;
 </script>
 
 <nav>
@@ -55,6 +58,12 @@
     &[aria-current="page"] {
       border-bottom-color: var(--colour-orange);
       color: var(--colour-foreground);
+    }
+  }
+
+  @media print {
+    nav {
+      display: none;
     }
   }
 </style>
