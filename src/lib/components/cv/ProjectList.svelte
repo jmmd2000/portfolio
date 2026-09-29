@@ -1,6 +1,6 @@
 <script lang="ts">
   import { linkText } from "$lib/components/contact/linkText";
-  import type { Project } from "$lib/server/content/cv";
+  import type { Project } from "$lib/server/content/projects";
   import BulletList from "./BulletList.svelte";
 
   interface Props {

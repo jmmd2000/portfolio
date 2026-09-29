@@ -51,6 +51,7 @@ export default defineConfig({
           environment: "node",
           include: ["src/**/*.integration.test.ts"],
           globalSetup: ["src/lib/server/db/integrationSetup.ts"],
+          setupFiles: ["src/lib/server/db/useTestDatabase.ts"],
           fileParallelism: false,
         },
       },
