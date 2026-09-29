@@ -1,10 +1,13 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
+  import PageHead from "$lib/components/head/PageHead.svelte";
   import ProjectDisplayList from "$lib/components/projects/ProjectDisplayList.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
 </script>
+
+<PageHead description="James Doyle, a software engineer from Dublin." />
 
 <h1>James Doyle</h1>
 

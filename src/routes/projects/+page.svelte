@@ -1,9 +1,12 @@
 <script lang="ts">
+  import PageHead from "$lib/components/head/PageHead.svelte";
   import ProjectDisplayList from "$lib/components/projects/ProjectDisplayList.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
 </script>
+
+<PageHead title="Projects" description="Things James Doyle has built, from a music review site to a falling sand simulation." />
 
 <section>
   <h1>Projects</h1>

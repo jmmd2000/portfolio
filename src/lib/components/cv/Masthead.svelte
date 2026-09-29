@@ -1,6 +1,7 @@
 <script lang="ts">
   import { linkText } from "$lib/components/contact/linkText";
   import type { Profile, Social } from "$lib/server/content/profile";
+  import { siteURL } from "$lib/site";
 
   interface Props {
     profile: Profile;
@@ -8,8 +9,6 @@
   }
 
   let { profile, socials }: Props = $props();
-
-  const siteURL = "https://jamesmddoyle.com";
 </script>
 
 <header class="masthead">

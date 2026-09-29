@@ -14,7 +14,6 @@
   <link rel="icon" href="/favicon.svg" />
   <link rel="preload" href={bricolageLatin} as="font" type="font/woff2" crossorigin="anonymous" />
   <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin="anonymous" />
-  <title>James Doyle</title>
 </svelte:head>
 
 <div class="page">
