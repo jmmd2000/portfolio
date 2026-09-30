@@ -11,6 +11,8 @@ export default defineConfig({
   globalSetup: "./e2e/globalSetup.ts",
   use: {
     baseURL: `http://localhost:${port}`,
+    // Production reads the client IP from this header (see ADDRESS_HEADER below), so every test sends one
+    extraHTTPHeaders: { "x-forwarded-for": "127.0.0.1" },
   },
   webServer: {
     command: "pnpm build && node build",
@@ -20,6 +22,10 @@ export default defineConfig({
       NODE_ENV: "production",
       DATABASE_URL: e2eEnvironment.DATABASE_URL_TEST_E2E,
       DATABASE_URL_MIGRATE: e2eEnvironment.DATABASE_URL_TEST_E2E,
+      // adapter-node assumes https without ORIGIN, which would fail SvelteKit's check on form posts
+      ORIGIN: `http://localhost:${port}`,
+      BETTER_AUTH_URL: `http://localhost:${port}`,
+      ADDRESS_HEADER: "x-forwarded-for",
     },
   },
 });

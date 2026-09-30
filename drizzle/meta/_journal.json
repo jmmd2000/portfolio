@@ -15,6 +15,13 @@
       "when": 1790690152718,
       "tag": "0001_adorable_zeigeist",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790723879804,
+      "tag": "0002_nasty_mentor",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,8 @@ import { z } from "zod";
 const environmentSchema = z.object({
   DATABASE_URL: z.url(),
   DATABASE_URL_MIGRATE: z.url(),
+  BETTER_AUTH_SECRET: z.string().min(32),
+  BETTER_AUTH_URL: z.url(),
 });
 
 const parsedEnvironment = environmentSchema.safeParse(process.env);
