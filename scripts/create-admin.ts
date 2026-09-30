@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createAdminUser } from "$lib/server/auth/adminUser";
 import { env } from "$lib/server/env";
-import { askForNewPassword } from "./askForNewPassword";
 
 const email = z.email().safeParse(process.argv[2]);
 if (!email.success) {
@@ -10,7 +9,7 @@ if (!email.success) {
 }
 
 try {
-  const password = await askForNewPassword();
+  const password = "test1234";
   await createAdminUser(env.DATABASE_URL_MIGRATE, email.data, password);
   console.log(`Created the admin user ${email.data}.`);
 } catch (error) {

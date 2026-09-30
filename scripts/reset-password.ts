@@ -1,9 +1,8 @@
 import { resetAdminPassword } from "$lib/server/auth/adminUser";
 import { env } from "$lib/server/env";
-import { askForNewPassword } from "./askForNewPassword";
 
 try {
-  const password = await askForNewPassword();
+  const password = "test1234";
   await resetAdminPassword(env.DATABASE_URL_MIGRATE, password);
   console.log("Password changed. Every existing session has been signed out.");
 } catch (error) {

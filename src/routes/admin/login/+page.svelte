@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Button from "$lib/components/form/Button.svelte";
+  import Field from "$lib/components/form/Field.svelte";
+  import FormMessage from "$lib/components/form/FormMessage.svelte";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import type { PageProps } from "./$types";
 
@@ -11,20 +14,16 @@
   <h1>Log in</h1>
 
   <form method="POST">
-    <label>
-      Email
-      <input type="email" name="email" autocomplete="username" value={form?.email ?? ""} required />
-    </label>
-    <label>
-      Password
-      <input type="password" name="password" autocomplete="current-password" required />
-    </label>
+    <Field label="Email" type="email" name="email" autocomplete="username" value={form?.email ?? ""} required />
+    <Field label="Password" type="password" name="password" autocomplete="current-password" required />
 
     {#if form?.message}
-      <p class="message" role="alert">{form.message}</p>
+      <FormMessage state="error">{form.message}</FormMessage>
     {/if}
 
-    <button type="submit">Log in</button>
+    <div class="actions">
+      <Button type="submit" variant="primary">Log in</Button>
+    </div>
   </form>
 </section>
 
@@ -43,42 +42,10 @@
   form {
     display: grid;
     gap: var(--space-4);
-    max-width: 24rem;
+    max-width: 26rem;
   }
 
-  label {
-    display: grid;
-    gap: var(--space-1);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-2);
-    font-weight: 600;
-  }
-
-  input {
-    padding: var(--space-2);
-    border: var(--border-thick) solid var(--colour-foreground);
-    border-radius: 0;
-    background: var(--colour-background);
-    color: var(--colour-foreground);
-    font: inherit;
-    font-size: var(--font-size-3);
-    font-weight: 400;
-  }
-
-  .message {
-    color: var(--colour-foreground);
-    font-weight: 600;
-  }
-
-  button {
-    justify-self: start;
-    padding: var(--space-1) var(--space-3);
-    border: var(--border-thick) solid var(--colour-foreground);
-    border-radius: 0;
-    background: var(--colour-foreground);
-    color: var(--colour-background);
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
+  .actions {
+    margin-top: var(--space-1);
   }
 </style>
