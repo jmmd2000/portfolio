@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import type { PageProps } from "./$types";
 
@@ -10,6 +11,7 @@
 <section>
   <h1>Admin</h1>
   <p>Signed in as {data.email}.</p>
+  <a href={resolve("/admin/password")}>Change password</a>
 
   <form method="POST" action="/admin/logout">
     <button type="submit">Log out</button>

@@ -1,11 +1,8 @@
 import password from "@inquirer/password";
-import { z } from "zod";
-
-// The same minimum better-auth's own sign-up uses
-const passwordSchema = z.string().min(8, "Use at least 8 characters.");
+import { newPasswordSchema } from "$lib/server/auth/passwordRules";
 
 function validatePassword(value: string): true | string {
-  const result = passwordSchema.safeParse(value);
+  const result = newPasswordSchema.safeParse(value);
   return result.success || (result.error.issues[0]?.message ?? "That password won't work.");
 }
 
