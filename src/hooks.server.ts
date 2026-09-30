@@ -1,4 +1,6 @@
 import type { Handle } from "@sveltejs/kit";
+import type { User } from "better-auth";
+import { getSessionCookie } from "better-auth/cookies";
 import { auth } from "$lib/server/auth";
 
 const loginPath = "/admin/login";
@@ -11,13 +13,18 @@ function redirectTo(location: string): Response {
   return new Response(null, { status: 303, headers: { location } });
 }
 
+/** Only look up the signed in admin when the cookie is present */
+async function findAdmin(request: Request): Promise<User | null> {
+  if (!getSessionCookie(request)) return null;
+
+  const session = await auth.api.getSession({ headers: request.headers });
+  return session?.user ?? null;
+}
+
 /** Every admin page and admin API needs a signed-in session. Public pages don't */
 export const handle: Handle = async ({ event, resolve }) => {
-  event.locals.user = null;
+  event.locals.user = await findAdmin(event.request);
   if (!isAdminPath(event.url.pathname)) return resolve(event);
-
-  const session = await auth.api.getSession({ headers: event.request.headers });
-  event.locals.user = session?.user ?? null;
 
   if (event.url.pathname === loginPath) {
     return event.locals.user ? redirectTo("/admin") : resolve(event);

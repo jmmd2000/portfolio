@@ -3,6 +3,7 @@ import { APIError } from "better-auth/api";
 import { z } from "zod";
 import { auth } from "$lib/server/auth";
 import { newPasswordSchema } from "$lib/server/auth/passwordRules";
+import { requireAdmin } from "$lib/server/auth/requireAdmin";
 import type { Actions } from "./$types";
 
 const changePasswordSchema = z
@@ -14,7 +15,9 @@ const changePasswordSchema = z
   .refine(values => values.newPassword === values.confirmation, { message: "The new passwords don't match." });
 
 export const actions: Actions = {
-  default: async ({ request }) => {
+  default: async ({ request, locals }) => {
+    requireAdmin(locals);
+
     const change = changePasswordSchema.safeParse(Object.fromEntries(await request.formData()));
     if (!change.success) {
       return fail(400, { message: change.error.issues[0]?.message ?? "Check the form and try again." });
