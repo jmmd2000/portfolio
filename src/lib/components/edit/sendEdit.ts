@@ -11,7 +11,7 @@ export const editFailureMessages: Record<Exclude<EditResult, "saved">, string> =
  * Sends an edit to an admin endpoint.
  * Never throws, a network failure comes back as "failed".
  */
-export async function sendEdit(url: string, method: "PATCH" | "POST" | "DELETE", body?: unknown): Promise<EditResult> {
+export async function sendEdit(url: string, method: "PATCH" | "POST" | "PUT" | "DELETE", body?: unknown): Promise<EditResult> {
   try {
     const response = await fetch(url, {
       method,

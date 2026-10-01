@@ -1,21 +1,35 @@
 <script lang="ts">
+  import { editProfile } from "$lib/components/profile/editProfile";
   import type { Social } from "$lib/server/content/profile";
 
   interface Props {
     location: string;
     socials: Social[];
+    signedIn: boolean;
   }
 
-  let { location, socials }: Props = $props();
+  let { location, socials, signedIn }: Props = $props();
 </script>
 
-<footer>
-  <span>{location}</span>
+{#snippet links()}
   <ul class="socials">
     {#each socials as social (social.id)}
       <li><a href={social.url} rel="external">{social.name}</a></li>
     {/each}
   </ul>
+{/snippet}
+
+<footer>
+  <span {@attach signedIn && editProfile("location")}>{location}</span>
+  {#if signedIn}
+    {#await import("$lib/components/socials/SocialsEditor.svelte")}
+      {@render links()}
+    {:then { default: SocialsEditor }}
+      <SocialsEditor {socials} />
+    {/await}
+  {:else}
+    {@render links()}
+  {/if}
 </footer>
 
 <style>

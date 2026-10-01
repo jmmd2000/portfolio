@@ -1,10 +1,6 @@
 // Rules for the profile text. The browser and the server both check edits with them.
 import { z } from "zod";
-
-/** Text that must have something in it once the spaces around it are trimmed */
-function requiredText(label: string, maxLength: number) {
-  return z.string().trim().min(1, `Add a ${label}.`).max(maxLength, `Keep the ${label} to ${maxLength} characters or fewer.`);
-}
+import { requiredText } from "./requiredText";
 
 export const profileSchema = z.object({
   name: requiredText("name", 80),

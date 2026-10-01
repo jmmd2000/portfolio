@@ -26,7 +26,7 @@
       {@render children()}
     </main>
   {/key}
-  <Footer location={data.profile.location} socials={data.socials} />
+  <Footer location={data.profile.location} socials={data.socials} signedIn={data.signedIn} />
 </div>
 
 {#if data.signedIn}
