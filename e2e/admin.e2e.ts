@@ -1,13 +1,9 @@
 import type { Page } from "@playwright/test";
-import { createAdminUser } from "$lib/server/auth/adminUser";
-import { e2eEnvironment } from "./environment";
+import { adminEmail as email, adminPassword as password, createAdmin, logIn } from "./adminSession";
 import { expect, test } from "./fixtures";
 
-const email = "admin@example.com";
-const password = "correct-horse-battery-staple";
-
 test.beforeEach(async () => {
-  await createAdminUser(e2eEnvironment.DATABASE_URL_TEST_E2E, email, password);
+  await createAdmin();
 });
 
 test("a signed-out visitor can't reach the admin", async ({ page, request }) => {
@@ -51,13 +47,6 @@ test("after 5 failed logins, even the right password is refused", async ({ page 
   await expect(page.getByRole("alert")).toHaveText("Too many attempts. Try again in 15 minutes.");
   await expect(page).toHaveURL("/admin/login");
 });
-
-async function logIn(page: Page, withPassword: string): Promise<void> {
-  await page.goto("/admin/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(withPassword);
-  await page.getByRole("button", { name: "Log in" }).click();
-}
 
 async function changePassword(page: Page, currentPassword: string, newPassword: string): Promise<void> {
   await page.goto("/admin/password");

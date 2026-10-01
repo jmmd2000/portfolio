@@ -1,23 +1,25 @@
 <script lang="ts">
   import { linkText } from "$lib/components/contact/linkText";
+  import { editProfile } from "$lib/components/profile/editProfile";
   import type { Profile, Social } from "$lib/server/content/profile";
   import { siteURL } from "$lib/site";
 
   interface Props {
     profile: Profile;
     socials: Social[];
+    signedIn: boolean;
   }
 
-  let { profile, socials }: Props = $props();
+  let { profile, socials, signedIn }: Props = $props();
 </script>
 
 <header class="masthead">
   <div>
-    <h1>{profile.name}</h1>
-    <p class="role">{profile.role}</p>
+    <h1 {@attach signedIn && editProfile("name")}>{profile.name}</h1>
+    <p class="role" {@attach signedIn && editProfile("role")}>{profile.role}</p>
   </div>
   <ul class="contact">
-    <li>{profile.location}</li>
+    <li {@attach signedIn && editProfile("location")}>{profile.location}</li>
     {#each socials as social (social.id)}
       <li><a href={social.url} rel="external">{linkText(social.url)}</a></li>
     {/each}

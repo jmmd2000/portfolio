@@ -20,7 +20,7 @@
     <Field label="New password again" type="password" name="confirmation" autocomplete="new-password" required />
 
     {#if form?.message}
-      <FormMessage state={form.changed ? "success" : "error"}>{form.message}</FormMessage>
+      <FormMessage status={form.changed ? "success" : "error"}>{form.message}</FormMessage>
     {/if}
 
     <div class="actions">

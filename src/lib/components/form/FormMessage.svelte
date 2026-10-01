@@ -2,14 +2,14 @@
   import type { Snippet } from "svelte";
 
   interface Props {
-    state: "success" | "error";
+    status: "success" | "error";
     children: Snippet;
   }
 
-  let { state, children }: Props = $props();
+  let { status, children }: Props = $props();
 </script>
 
-<p class={state} role={state === "success" ? "status" : "alert"}>{@render children()}</p>
+<p class={status} role={status === "success" ? "status" : "alert"}>{@render children()}</p>
 
 <style>
   p {

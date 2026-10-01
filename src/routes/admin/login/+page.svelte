@@ -18,7 +18,7 @@
     <Field label="Password" type="password" name="password" autocomplete="current-password" required />
 
     {#if form?.message}
-      <FormMessage state="error">{form.message}</FormMessage>
+      <FormMessage status="error">{form.message}</FormMessage>
     {/if}
 
     <div class="actions">

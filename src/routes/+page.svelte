@@ -3,6 +3,7 @@
   import PageHead from "$lib/components/head/PageHead.svelte";
   import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
   import HomeHeader from "$lib/components/home/HomeHeader.svelte";
+  import { editProfile } from "$lib/components/profile/editProfile";
   import ProjectDisplayList from "$lib/components/projects/ProjectDisplayList.svelte";
   import type { PageProps } from "./$types";
 
@@ -12,9 +13,9 @@
 <PageHead description="James Doyle, a software engineer from Dublin." />
 <PersonStructuredData profile={data.profile} socials={data.socials} />
 
-<HomeHeader profile={data.profile} />
+<HomeHeader profile={data.profile} signedIn={data.signedIn} />
 
-<p class="intro">{data.profile.bio}</p>
+<p class="intro" {@attach data.signedIn && editProfile("bio")}>{data.profile.bio}</p>
 
 <section>
   <h2>Things I built</h2>
