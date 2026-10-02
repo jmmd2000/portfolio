@@ -3,7 +3,7 @@ import type { User } from "better-auth";
 import { describe, expect, it } from "vitest";
 import { requireAdmin } from "./requireAdmin";
 
-const admin: User = { id: "1", name: "Admin", email: "admin@example.com", emailVerified: true, image: null, createdAt: new Date(), updatedAt: new Date() };
+const admin: User = { id: "1", name: "Admin", email: "james@test.com", emailVerified: true, image: null, createdAt: new Date(), updatedAt: new Date() };
 
 describe("requireAdmin", () => {
   it("stops a signed-out request with a 401", () => {

@@ -2,8 +2,8 @@ import type { Page } from "@playwright/test";
 import { createAdminUser } from "$lib/server/auth/adminUser";
 import { e2eEnvironment } from "./environment";
 
-export const adminEmail = "admin@example.com";
-export const adminPassword = "correct-horse-battery-staple";
+export const adminEmail = "james@test.com";
+export const adminPassword = "test1234";
 
 /** Adds the admin user. The database is wiped before every test, so each test that logs in calls this first */
 export async function createAdmin(): Promise<void> {
