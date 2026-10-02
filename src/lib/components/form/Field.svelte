@@ -1,12 +1,16 @@
 <script lang="ts">
-  import type { FormEventHandler, HTMLInputAttributes } from "svelte/elements";
+  import type { HTMLInputAttributes, HTMLTextareaAttributes } from "svelte/elements";
 
-  interface Props extends HTMLInputAttributes {
-    label: string;
-    error?: string;
-  }
+  // The same attributes go on the input or the textarea, so they have to suit both
+  type Props = HTMLInputAttributes &
+    HTMLTextareaAttributes & {
+      label: string;
+      error?: string;
+      /** Several lines of text, for longer content */
+      multiline?: boolean;
+    };
 
-  let { label, error, oninput, ...inputAttributes }: Props = $props();
+  let { label, error, multiline = false, value, ...inputAttributes }: Props = $props();
 
   const id = $props.id();
   const errorID = `${id}-error`;
@@ -14,19 +18,23 @@
   let field = $state<HTMLDivElement>();
   let bounce: Animation | undefined;
 
-  /** Passes the event on to the parent's own handler, then bounces the field 1px. Keystrokes during a bounce are skipped, so fast typing keeps a steady rhythm instead of vibrating */
-  const handleInput: FormEventHandler<HTMLInputElement> = event => {
-    oninput?.(event);
+  /** Bounces the field 1px as you type. Keystrokes during a bounce are skipped, so fast typing keeps a steady rhythm instead of vibrating */
+  function handleInput(): void {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (bounce?.playState === "running") return;
 
     bounce = field?.animate([{ transform: "translateY(0)" }, { transform: "translateY(1px)" }, { transform: "translateY(0)" }], { duration: 200, easing: "ease-out" });
-  };
+  }
 </script>
 
 <div class="field" class:invalid={error} bind:this={field}>
   <label for={id}>{label}</label>
-  <input {id} aria-invalid={error ? true : undefined} aria-describedby={error ? errorID : undefined} oninput={handleInput} {...inputAttributes} />
+  {#if multiline}
+    <!-- Value set directly, not in the spread, so the server renders it as the textarea's text -->
+    <textarea {id} rows="6" {value} aria-invalid={error ? true : undefined} aria-describedby={error ? errorID : undefined} oninput={handleInput} {...inputAttributes}></textarea>
+  {:else}
+    <input {id} {value} aria-invalid={error ? true : undefined} aria-describedby={error ? errorID : undefined} oninput={handleInput} {...inputAttributes} />
+  {/if}
   {#if error}
     <p class="error" id={errorID}>{error}</p>
   {/if}
@@ -54,7 +62,8 @@
       color var(--duration-quick) var(--ease-out);
   }
 
-  input {
+  input,
+  textarea {
     width: 100%;
     padding: var(--space-2) var(--space-3);
     border: var(--border-thick) solid var(--colour-foreground);
@@ -76,7 +85,11 @@
     color: var(--colour-text-on-orange);
   }
 
-  .invalid input {
+  textarea {
+    resize: vertical;
+  }
+
+  .invalid :is(input, textarea) {
     border-style: dashed;
   }
 
