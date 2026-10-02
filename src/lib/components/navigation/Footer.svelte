@@ -1,7 +1,5 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
-  import Button from "$lib/components/form/Button.svelte";
-  import { editProfile } from "$lib/components/profile/editProfile";
   import type { Social } from "$lib/server/content/profile";
 
   interface Props {
@@ -11,41 +9,22 @@
   }
 
   let { location, socials, signedIn }: Props = $props();
-
-  let editingLinks = $state(false);
 </script>
 
-{#snippet links()}
+<footer>
+  <span>{location}</span>
   <ul class="socials">
     {#each socials as social (social.id)}
       <li><a href={social.url} rel="external">{social.name}</a></li>
     {/each}
   </ul>
-{/snippet}
-
-<footer>
-  <span {@attach signedIn && editProfile("location")}>{location}</span>
-  {#if signedIn && editingLinks}
-    {#await import("$lib/components/socials/SocialsEditor.svelte")}
-      {@render links()}
-    {:then { default: SocialsEditor }}
-      <SocialsEditor {socials} />
-    {/await}
-  {:else}
-    {@render links()}
-  {/if}
-  {#if signedIn}
-    <div class="edit-toggle" class:open={editingLinks}>
-      <Button compact onclick={() => (editingLinks = !editingLinks)}>{editingLinks ? "Done" : "Edit links"}</Button>
-    </div>
-  {:else}
+  {#if !signedIn}
     <a class="log-in" href={resolve("/admin/login")}>Log in</a>
   {/if}
 </footer>
 
 <style>
   footer {
-    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -87,26 +66,6 @@
 
     &:hover {
       color: var(--colour-foreground);
-    }
-  }
-
-  .edit-toggle {
-    position: absolute;
-    right: 0;
-    bottom: var(--space-2);
-  }
-
-  /* On a mouse it waits for hover or focus. On a touch screen it always shows */
-  @media (hover: hover) {
-    .edit-toggle {
-      opacity: 0;
-      transition: opacity var(--duration-quick) var(--ease-out);
-    }
-
-    .open,
-    footer:hover .edit-toggle,
-    footer:focus-within .edit-toggle {
-      opacity: 1;
     }
   }
 

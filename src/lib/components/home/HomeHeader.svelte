@@ -1,19 +1,17 @@
 <script lang="ts">
-  import { editProfile } from "$lib/components/profile/editProfile";
   import type { Profile } from "$lib/server/content/profile";
 
   interface Props {
     profile: Profile;
-    signedIn: boolean;
   }
 
-  let { profile, signedIn }: Props = $props();
+  let { profile }: Props = $props();
 </script>
 
 <header class="slab">
-  <h1 {@attach signedIn && editProfile("name")}>{profile.name}</h1>
-  <p class="role" {@attach signedIn && editProfile("role")}>{profile.role}</p>
-  <p class="meta"><span {@attach signedIn && editProfile("location")}>{profile.location}</span></p>
+  <h1>{profile.name}</h1>
+  <p class="role">{profile.role}</p>
+  <p class="meta">{profile.location}</p>
 </header>
 
 <style>

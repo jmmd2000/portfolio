@@ -29,12 +29,6 @@
   <Footer location={data.profile.location} socials={data.socials} signedIn={data.signedIn} />
 </div>
 
-{#if data.signedIn}
-  {#await import("$lib/components/edit/EditStatus.svelte") then { default: EditStatus }}
-    <EditStatus />
-  {/await}
-{/if}
-
 <style>
   .page {
     max-width: var(--page-width);

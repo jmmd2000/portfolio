@@ -14,7 +14,7 @@
 <PageHead title="CV" description="The CV of James Doyle, a software engineer and Test Lead at Ericsson." />
 <PersonStructuredData profile={data.profile} socials={data.socials} />
 
-<Masthead profile={data.profile} socials={data.socials} signedIn={data.signedIn} />
+<Masthead profile={data.profile} socials={data.socials} />
 
 <section>
   <h2>Experience</h2>
