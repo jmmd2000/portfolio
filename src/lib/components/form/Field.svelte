@@ -4,9 +4,10 @@
   interface Props extends HTMLInputAttributes {
     label: string;
     error?: string;
+    compact?: boolean;
   }
 
-  let { label, error, oninput, ...inputAttributes }: Props = $props();
+  let { label, error, compact = false, oninput, ...inputAttributes }: Props = $props();
 
   const id = $props.id();
   const errorID = `${id}-error`;
@@ -24,7 +25,7 @@
   };
 </script>
 
-<div class="field" class:invalid={error} bind:this={field}>
+<div class="field" class:invalid={error} class:compact bind:this={field}>
   <label for={id}>{label}</label>
   <input {id} aria-invalid={error ? true : undefined} aria-describedby={error ? errorID : undefined} oninput={handleInput} {...inputAttributes} />
   {#if error}
@@ -80,6 +81,17 @@
     border-style: dashed;
   }
 
+  .compact {
+    label {
+      padding: 0.2rem var(--space-1) 0.1rem;
+      font-size: var(--font-size-1);
+    }
+
+    input {
+      padding: 0.25rem var(--space-1);
+      font-size: var(--font-size-2);
+    }
+  }
   .error {
     display: flex;
     align-items: center;

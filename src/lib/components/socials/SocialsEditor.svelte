@@ -6,6 +6,8 @@
   import { showEditStatus } from "$lib/components/edit/editStatus.svelte";
   import { makeEditable, type CheckResult } from "$lib/components/edit/makeEditable";
   import { editFailureMessages, sendEdit, type EditResult } from "$lib/components/edit/sendEdit";
+  import Button from "$lib/components/form/Button.svelte";
+  import Field from "$lib/components/form/Field.svelte";
   import { socialSchema, type SocialField } from "$lib/schemas/socials";
   import type { Social } from "$lib/server/content/profile";
 
@@ -17,8 +19,6 @@
 
   let confirmingDeleteID: number | null = $state(null);
   let adding = $state(false);
-  let newName = $state("");
-  let newURL = $state("");
   let addErrors: Partial<Record<SocialField, string[]>> = $state({});
   let addButton = $state<HTMLButtonElement>();
 
@@ -87,15 +87,14 @@
 
   function stopAdding(): void {
     adding = false;
-    newName = "";
-    newURL = "";
     addErrors = {};
   }
 
-  async function addLink(event: SubmitEvent): Promise<void> {
+  async function addLink(event: SubmitEvent & { currentTarget: HTMLFormElement }): Promise<void> {
     event.preventDefault();
 
-    const result = socialSchema.safeParse({ name: newName, url: newURL });
+    const formData = new FormData(event.currentTarget);
+    const result = socialSchema.safeParse({ name: formData.get("name"), url: formData.get("url") });
     if (!result.success) {
       addErrors = z.flattenError(result.error).fieldErrors;
       return;
@@ -121,35 +120,34 @@
     <li class="social">
       {#if confirmingDeleteID === social.id}
         <span class="question">Delete {social.name}?</span>
-        <button type="button" class="control" onclick={() => void deleteLink(social)}>Delete</button>
-        <button type="button" class="control" onclick={() => (confirmingDeleteID = null)} {@attach focusOnShow}>Keep</button>
+        <Button compact onclick={() => void deleteLink(social)}>Delete</Button>
+        <Button compact onclick={() => (confirmingDeleteID = null)} {@attach focusOnShow}>Keep</Button>
       {:else}
         <span class="link">
           <a href={social.url} rel="external" data-social-id={social.id} {@attach editName}>{social.name}</a>
           <span class="address" data-social-id={social.id} {@attach editURL}>{social.url}</span>
         </span>
         <span class="controls">
-          <button type="button" class="control" aria-label="Move {social.name} left" disabled={index === 0} onclick={event => void move(social, -1, event.currentTarget)}>←</button>
-          <button type="button" class="control" aria-label="Move {social.name} right" disabled={index === socials.length - 1} onclick={event => void move(social, 1, event.currentTarget)}>→</button>
-          <button type="button" class="control" aria-label="Delete {social.name}" onclick={() => (confirmingDeleteID = social.id)}>×</button>
+          <Button compact aria-label="Move {social.name} left" disabled={index === 0} onclick={event => void move(social, -1, event.currentTarget)}>←</Button>
+          <Button compact aria-label="Move {social.name} right" disabled={index === socials.length - 1} onclick={event => void move(social, 1, event.currentTarget)}>→</Button>
+          <Button compact aria-label="Delete {social.name}" onclick={() => (confirmingDeleteID = social.id)}>×</Button>
         </span>
       {/if}
     </li>
   {/each}
 
-  <li class="add">
+  <li class="add" class:open={adding}>
     {#if adding}
       <form onsubmit={event => void addLink(event)}>
-        <input type="text" aria-label="New link name" placeholder="Name" bind:value={newName} aria-invalid={addErrors.name ? true : undefined} {@attach focusOnShow} />
-        <input type="text" aria-label="New link address" placeholder="https:// or mailto:" bind:value={newURL} aria-invalid={addErrors.url ? true : undefined} />
-        <button type="submit" class="control">Add</button>
-        <button type="button" class="control" onclick={stopAdding}>Cancel</button>
-        {#if addErrors.name || addErrors.url}
-          <p class="error" role="alert">{addErrors.name?.[0] ?? addErrors.url?.[0]}</p>
-        {/if}
+        <Field compact label="New link name" name="name" error={addErrors.name?.[0]} {@attach focusOnShow} />
+        <Field compact label="New link address" name="url" placeholder="https:// or mailto:" error={addErrors.url?.[0]} />
+        <div class="form-actions">
+          <Button compact type="submit" variant="primary">Add</Button>
+          <Button compact onclick={stopAdding}>Cancel</Button>
+        </div>
       </form>
     {:else}
-      <button type="button" class="control" bind:this={addButton} onclick={() => (adding = true)}>+ Add link</button>
+      <Button compact bind:element={addButton} onclick={() => (adding = true)}>+ Add link</Button>
     {/if}
   </li>
 </ul>
@@ -176,6 +174,7 @@
 
   .link {
     display: grid;
+    gap: var(--space-1);
     min-width: 0;
   }
 
@@ -211,79 +210,26 @@
     }
   }
 
-  .control {
-    min-width: 1.5rem;
-    height: 1.5rem;
-    padding: 0 var(--space-1);
-    border: var(--border-thick) solid var(--colour-foreground);
-    border-radius: 0;
-    background: var(--colour-background);
-    color: var(--colour-foreground);
-    font: inherit;
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    line-height: 1;
-    cursor: pointer;
-    transition:
-      background var(--duration-quick) var(--ease-out),
-      color var(--duration-quick) var(--ease-out);
-
-    &:hover:not(:disabled) {
-      background: var(--colour-foreground);
-      color: var(--colour-background);
-    }
-
-    &:disabled {
-      border-style: dashed;
-      opacity: 0.4;
-      cursor: default;
-    }
-  }
-
   .question {
     color: var(--colour-foreground);
     font-weight: 600;
   }
 
-  form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-1);
-  }
-
-  input {
-    width: 9rem;
-    height: 1.5rem;
-    padding: 0 var(--space-1);
-    border: var(--border-thick) solid var(--colour-foreground);
-    border-radius: 0;
-    background: var(--colour-background);
-    color: var(--colour-foreground);
-    font: inherit;
-    font-size: var(--font-size-1);
-    caret-color: var(--colour-orange);
-
-    &[aria-invalid="true"] {
-      border-style: dashed;
-    }
-  }
-
-  .error {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
+  /* The open form takes its own row, with the buttons under the fields */
+  .open {
     flex-basis: 100%;
-    color: var(--colour-foreground);
-    font-size: var(--font-size-1);
-    font-weight: 600;
+  }
 
-    &::before {
-      content: "";
-      flex: none;
-      width: 0.5rem;
-      height: 0.5rem;
-      background: var(--colour-orange);
-    }
+  form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 16rem));
+    align-items: start;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .form-actions {
+    display: flex;
+    grid-column: 1 / -1;
+    gap: 0.25rem;
   }
 </style>

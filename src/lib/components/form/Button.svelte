@@ -4,13 +4,15 @@
 
   interface Props extends HTMLButtonAttributes {
     variant?: "primary" | "secondary";
+    compact?: boolean;
+    element?: HTMLButtonElement;
     children: Snippet;
   }
 
-  let { variant = "secondary", type = "button", children, ...buttonAttributes }: Props = $props();
+  let { variant = "secondary", compact = false, type = "button", element = $bindable(), children, ...buttonAttributes }: Props = $props();
 </script>
 
-<button class={variant} {type} {...buttonAttributes}>
+<button class={variant} class:compact {type} bind:this={element} {...buttonAttributes}>
   {@render children()}
 </button>
 
@@ -54,5 +56,12 @@
   .secondary {
     background: var(--colour-background);
     color: var(--colour-foreground);
+  }
+
+  .compact {
+    min-width: 1.5rem;
+    padding: 0.25rem var(--space-1);
+    font-size: var(--font-size-1);
+    line-height: 1;
   }
 </style>
