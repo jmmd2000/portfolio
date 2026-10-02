@@ -1,6 +1,6 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
-  import type { Social } from "$lib/server/content/profile";
+  import type { Social } from "$lib/server/content/socials";
 
   interface Props {
     location: string;

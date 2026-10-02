@@ -1,4 +1,5 @@
-import { getProfile, getSocials } from "$lib/server/content/profile";
+import { getProfile } from "$lib/server/content/profile";
+import { getSocials } from "$lib/server/content/socials";
 import type { LayoutServerLoad } from "./$types";
 
 export const load: LayoutServerLoad = async ({ locals }) => {
