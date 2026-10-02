@@ -19,7 +19,7 @@
 </svelte:head>
 
 <div class="page">
-  <Nav currentPath={page.url.pathname} />
+  <Nav currentPath={page.url.pathname} signedIn={data.signedIn} />
   <!-- kay <main> so the animation plays on each client nav -->
   {#key page.url.pathname}
     <main>

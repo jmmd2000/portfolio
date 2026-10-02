@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import Button from "$lib/components/form/Button.svelte";
   import { editProfile } from "$lib/components/profile/editProfile";
   import type { Social } from "$lib/server/content/profile";
@@ -37,6 +38,8 @@
     <div class="edit-toggle" class:open={editingLinks}>
       <Button compact onclick={() => (editingLinks = !editingLinks)}>{editingLinks ? "Done" : "Edit links"}</Button>
     </div>
+  {:else}
+    <a class="log-in" href={resolve("/admin/login")}>Log in</a>
   {/if}
 </footer>
 
@@ -72,6 +75,18 @@
       &:hover {
         border-bottom-color: var(--colour-teal);
       }
+    }
+  }
+
+  .log-in {
+    flex-basis: 100%;
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-1);
+    text-align: right;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--colour-foreground);
     }
   }
 

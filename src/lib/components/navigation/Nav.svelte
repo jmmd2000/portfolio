@@ -5,9 +5,10 @@
 
   interface Props {
     currentPath: string;
+    signedIn: boolean;
   }
 
-  let { currentPath }: Props = $props();
+  let { currentPath, signedIn }: Props = $props();
 </script>
 
 <nav>
@@ -15,6 +16,9 @@
   {#each navigationLinks as link (link.path)}
     <a class="nav-link" href={resolve(link.path)} aria-current={isCurrentPage(link.path, currentPath) ? "page" : undefined}>{link.label}</a>
   {/each}
+  {#if signedIn}
+    <a class="nav-link" href={resolve("/admin")} aria-current={isCurrentPage("/admin", currentPath) ? "page" : undefined}>Admin</a>
+  {/if}
   <ThemeToggle />
 </nav>
 
