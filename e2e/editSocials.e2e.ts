@@ -9,7 +9,7 @@ async function footerLinkNames(page: Page): Promise<string[]> {
 test("a signed-out visitor can't change the links, and the server refuses them", async ({ page, request }) => {
   await page.goto("/");
   await expect(page.locator("footer").getByRole("link", { name: "GitHub" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "+ Add link" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Edit links" })).toHaveCount(0);
 
   const response = await request.post("/api/admin/socials", { data: { name: "Bluesky", url: "https://bsky.app/profile/jamesmddoyle" } });
   expect(response.status()).toBe(401);
@@ -20,6 +20,7 @@ test("the admin adds, renames and moves a link, and it all survives a reload", a
   await logIn(page);
   await page.goto("/");
   const footer = page.locator("footer");
+  await footer.getByRole("button", { name: "Edit links" }).click();
 
   await footer.getByRole("button", { name: "+ Add link" }).click();
   await footer.getByLabel("New link name").fill("Bluesky");
@@ -43,6 +44,7 @@ test("deleting a link asks first", async ({ page }) => {
   await logIn(page);
   await page.goto("/");
   const footer = page.locator("footer");
+  await footer.getByRole("button", { name: "Edit links" }).click();
 
   await footer.getByRole("button", { name: "Delete Email" }).click();
   await footer.getByRole("button", { name: "Keep" }).click();
