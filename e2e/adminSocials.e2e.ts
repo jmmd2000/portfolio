@@ -44,7 +44,7 @@ test("deleting a link takes a second click", async ({ page }) => {
 
   const email = page.getByRole("group", { name: "Email" });
   await expect(email.getByRole("button", { name: "Delete Email" })).toBeHidden();
-  await email.getByText("Delete", { exact: true }).click();
+  await email.getByRole("button", { name: "Delete", exact: true }).click();
   await email.getByRole("button", { name: "Delete Email" }).click();
   await expect(page.getByText("Link deleted.")).toBeVisible();
 

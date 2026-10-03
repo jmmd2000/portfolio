@@ -3,7 +3,7 @@
   import type { HTMLButtonAttributes } from "svelte/elements";
 
   interface Props extends HTMLButtonAttributes {
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "destructive";
     children: Snippet;
   }
 
@@ -54,5 +54,10 @@
   .secondary {
     background: var(--colour-background);
     color: var(--colour-foreground);
+  }
+
+  .destructive {
+    background: var(--colour-red);
+    color: var(--colour-text-on-red);
   }
 </style>

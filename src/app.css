@@ -37,6 +37,8 @@
   --colour-teal: light-dark(oklch(0.495 0.085 195), oklch(0.7 0.09 195));
   --colour-text-on-teal: light-dark(oklch(0.97 0.01 195), oklch(0.16 0.02 195));
   --colour-text-on-teal-muted: light-dark(oklch(0.9 0.03 195), oklch(0.24 0.03 195));
+  --colour-red: light-dark(oklch(0.55 0.19 27), oklch(0.68 0.17 27));
+  --colour-text-on-red: light-dark(oklch(0.98 0.01 27), oklch(0.17 0.03 27));
   --colour-text-on-foreground: var(--colour-background);
   --colour-text-on-foreground-muted: light-dark(oklch(0.8 0.02 80), oklch(0.4 0.015 60));
   --colour-link-on-foreground: light-dark(oklch(0.685 0.185 48), oklch(0.5 0.15 45));

@@ -37,10 +37,15 @@
               <Button type="submit" variant="primary">Save</Button>
               <Button type="submit" formaction="?/move" name="direction" value="up" disabled={index === 0}>Move up</Button>
               <Button type="submit" formaction="?/move" name="direction" value="down" disabled={index === data.socials.length - 1}>Move down</Button>
-              <details>
-                <summary>Delete</summary>
-                <Button type="submit" formaction="?/delete">Delete {social.name}</Button>
-              </details>
+              <Button commandfor="delete-{social.id}" command="show-modal" variant="destructive">Delete</Button>
+              <dialog id="delete-{social.id}" aria-labelledby="delete-{social.id}-title">
+                <h2 id="delete-{social.id}-title">Delete {social.name}?</h2>
+                <p>This can't be undone.</p>
+                <div class="dialog-actions">
+                  <Button commandfor="delete-{social.id}" command="close" autofocus>Keep</Button>
+                  <Button type="submit" formaction="?/delete" variant="destructive">Delete {social.name}</Button>
+                </div>
+              </dialog>
             </div>
           </fieldset>
         </form>
@@ -122,26 +127,32 @@
     gap: var(--space-2);
   }
 
-  details {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
+  dialog {
+    width: min(26rem, calc(100% - 2 * var(--page-gutter)));
+    padding: var(--space-5);
+    border: var(--border-thick) solid var(--colour-foreground);
+    background: var(--colour-background);
+    color: var(--colour-foreground);
 
-  summary {
-    padding: var(--space-2);
-    color: var(--colour-text-muted);
-    font-weight: 600;
-    text-decoration: underline;
-    cursor: pointer;
-    list-style: none;
+    &::backdrop {
+      background: oklch(0.2 0.02 60 / 45%);
+      backdrop-filter: blur(3px);
+    }
 
-    &::-webkit-details-marker {
-      display: none;
+    h2 {
+      font-size: var(--font-size-heading);
+    }
+
+    p {
+      margin-block: var(--space-2) var(--space-4);
+      color: var(--colour-text);
     }
   }
 
-  details[open] summary {
-    color: var(--colour-foreground);
+  .dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2);
   }
 </style>
