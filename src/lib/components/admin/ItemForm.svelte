@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { enhance } from "$app/forms";
+  import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
 
   interface Props {
@@ -10,11 +11,13 @@
     id?: number;
     /** Clears the fields after a successful submit, for a form that adds a new item */
     resetOnSuccess?: boolean;
+    /** Shown next to the buttons after this form saves */
+    message?: string;
     children: Snippet;
     actions: Snippet;
   }
 
-  let { action, legend, id, resetOnSuccess = false, children, actions }: Props = $props();
+  let { action, legend, id, resetOnSuccess = false, message, children, actions }: Props = $props();
 </script>
 
 <form method="POST" {action} use:enhance={resetOnSuccess ? undefined : keepValues}>
@@ -28,6 +31,9 @@
     </div>
     <div class="actions">
       {@render actions()}
+      {#if message}
+        <FormMessage status="success">{message}</FormMessage>
+      {/if}
     </div>
   </fieldset>
 </form>

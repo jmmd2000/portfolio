@@ -27,7 +27,7 @@ export const actions: Actions = {
     }
 
     await createSocial(result.data);
-    return { message: `${result.data.name} added.` };
+    return { id: "new", message: `${result.data.name} added.` };
   },
 
   update: async ({ request, locals }) => {
@@ -42,7 +42,7 @@ export const actions: Actions = {
 
     const updated = await updateSocial(id, result.data);
     if (!updated) error(404, "No social link with that id");
-    return { message: `${updated.name} saved.` };
+    return { id, message: `${updated.name} saved.` };
   },
 
   move: async ({ request, locals }) => {
@@ -60,6 +60,5 @@ export const actions: Actions = {
 
     const deleted = await deleteSocial(socialID(formText(await request.formData())));
     if (!deleted) error(404, "No social link with that id");
-    return { message: "Link deleted." };
   },
 };
