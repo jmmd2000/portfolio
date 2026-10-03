@@ -19,14 +19,14 @@
 </svelte:head>
 
 <div class="page">
-  <Nav currentPath={page.url.pathname} />
+  <Nav currentPath={page.url.pathname} signedIn={data.signedIn} />
   <!-- kay <main> so the animation plays on each client nav -->
   {#key page.url.pathname}
     <main>
       {@render children()}
     </main>
   {/key}
-  <Footer location={data.profile.location} socials={data.socials} />
+  <Footer location={data.profile.location} socials={data.socials} signedIn={data.signedIn} />
 </div>
 
 <style>

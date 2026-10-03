@@ -1,12 +1,14 @@
 <script lang="ts">
-  import type { Social } from "$lib/server/content/profile";
+  import { resolve } from "$app/paths";
+  import type { Social } from "$lib/server/content/socials";
 
   interface Props {
     location: string;
     socials: Social[];
+    signedIn: boolean;
   }
 
-  let { location, socials }: Props = $props();
+  let { location, socials, signedIn }: Props = $props();
 </script>
 
 <footer>
@@ -16,6 +18,9 @@
       <li><a href={social.url} rel="external">{social.name}</a></li>
     {/each}
   </ul>
+  {#if !signedIn}
+    <a class="log-in" href={resolve("/admin/login")}>Log in</a>
+  {/if}
 </footer>
 
 <style>
@@ -49,6 +54,18 @@
       &:hover {
         border-bottom-color: var(--colour-teal);
       }
+    }
+  }
+
+  .log-in {
+    flex-basis: 100%;
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-1);
+    text-align: right;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--colour-foreground);
     }
   }
 

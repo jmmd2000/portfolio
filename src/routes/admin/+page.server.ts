@@ -1,8 +1,7 @@
-import { redirect } from "@sveltejs/kit";
+import { requireAdmin } from "$lib/server/auth/requireAdmin";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = ({ locals }) => {
-  if (!locals.user) redirect(303, "/admin/login");
-
-  return { email: locals.user.email };
+  const admin = requireAdmin(locals);
+  return { email: admin.email };
 };

@@ -5,7 +5,7 @@ declare global {
   namespace App {
     // interface Error {}
     interface Locals {
-      /** The signed-in admin. Only looked up for admin routes, so it's always null elsewhere. */
+      /** The signed-in admin, or null. Looked up on every page, but only when a session cookie is present. */
       user: User | null;
     }
     // interface PageData {}

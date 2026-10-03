@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Profile, Social } from "$lib/server/content/profile";
+import type { Profile } from "$lib/server/content/profile";
+import type { Social } from "$lib/server/content/socials";
 import { buildPersonStructuredData, toScriptJSON } from "./structuredData";
 
 const profile: Profile = { id: 1, name: "James Doyle", role: "Software Engineer", bio: "Bio.", location: "Dublin, Ireland" };

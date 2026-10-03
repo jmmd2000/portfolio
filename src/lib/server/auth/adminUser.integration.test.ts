@@ -32,14 +32,14 @@ afterAll(async () => {
 
 describe("createAdminUser", () => {
   it("creates an admin that can sign in", async () => {
-    await createAdminUser(databaseURL, "Admin@Example.com", "first-password-123");
+    await createAdminUser(databaseURL, "James@Test.com", "test1234");
 
-    expect(await signsIn("admin@example.com", "first-password-123")).toBe(true);
-    expect(await signsIn("admin@example.com", "wrong-password-123")).toBe(false);
+    expect(await signsIn("james@test.com", "test1234")).toBe(true);
+    expect(await signsIn("james@test.com", "wrong-password-123")).toBe(false);
   });
 
   it("refuses to create a second admin", async () => {
-    await createAdminUser(databaseURL, "admin@example.com", "first-password-123");
+    await createAdminUser(databaseURL, "james@test.com", "test1234");
 
     await expect(createAdminUser(databaseURL, "someone@example.com", "other-password-123")).rejects.toThrow("already exists");
   });
@@ -47,14 +47,14 @@ describe("createAdminUser", () => {
 
 describe("resetAdminPassword", () => {
   it("replaces the password and signs the admin out everywhere", async () => {
-    await createAdminUser(databaseURL, "admin@example.com", "first-password-123");
-    await signsIn("admin@example.com", "first-password-123");
+    await createAdminUser(databaseURL, "james@test.com", "test1234");
+    await signsIn("james@test.com", "test1234");
 
     await resetAdminPassword(databaseURL, "second-password-123");
 
     expect(await database.$count(sessions)).toBe(0);
-    expect(await signsIn("admin@example.com", "first-password-123")).toBe(false);
-    expect(await signsIn("admin@example.com", "second-password-123")).toBe(true);
+    expect(await signsIn("james@test.com", "test1234")).toBe(false);
+    expect(await signsIn("james@test.com", "second-password-123")).toBe(true);
   });
 
   it("explains what to do when there is no admin yet", async () => {

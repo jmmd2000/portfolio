@@ -1,6 +1,7 @@
 <script lang="ts">
   import { linkText } from "$lib/components/contact/linkText";
-  import type { Profile, Social } from "$lib/server/content/profile";
+  import type { Profile } from "$lib/server/content/profile";
+  import type { Social } from "$lib/server/content/socials";
   import { siteURL } from "$lib/site";
 
   interface Props {

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type { Profile, Social } from "$lib/server/content/profile";
+  import type { Profile } from "$lib/server/content/profile";
+  import type { Social } from "$lib/server/content/socials";
   import { buildPersonStructuredData, jsonLDScriptTag } from "./structuredData";
 
   interface Props {
