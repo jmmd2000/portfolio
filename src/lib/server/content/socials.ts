@@ -1,7 +1,7 @@
 import { asc, desc, eq } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { socials } from "$lib/server/db/schema";
-import type { SocialChanges, SocialInput } from "$lib/schemas/socials";
+import type { SocialInput } from "$lib/schemas/socials";
 
 export type Social = typeof socials.$inferSelect;
 
@@ -22,9 +22,9 @@ export async function createSocial(input: SocialInput): Promise<Social> {
   return created;
 }
 
-/** Saves the changed fields of one social link, returns null when no link has that id */
-export async function updateSocial(id: number, changes: SocialChanges): Promise<Social | null> {
-  const [updated] = await db.update(socials).set(changes).where(eq(socials.id, id)).returning();
+/** Saves one social link, returns null when no link has that id */
+export async function updateSocial(id: number, input: SocialInput): Promise<Social | null> {
+  const [updated] = await db.update(socials).set(input).where(eq(socials.id, id)).returning();
   return updated ?? null;
 }
 
@@ -34,23 +34,16 @@ export async function deleteSocial(id: number): Promise<boolean> {
   return deleted.length > 0;
 }
 
-/**
- * Puts the social links in a given order
- * Returns false and changes nothing unless the list has every link exactly once
- */
-export async function reorderSocials(order: number[]): Promise<boolean> {
-  return db.transaction(async transaction => {
-    const existing = await transaction.select({ id: socials.id }).from(socials);
-    const existingIDs = new Set(existing.map(social => social.id));
-    const hasEveryLinkOnce = order.length === existingIDs.size && new Set(order).size === order.length && order.every(id => existingIDs.has(id));
-    if (!hasEveryLinkOnce) return false;
+/** Swaps a social link with the one above or below it. Does nothing when it's already at that end */
+export async function moveSocial(id: number, direction: "up" | "down"): Promise<void> {
+  await db.transaction(async transaction => {
+    const ordered = await transaction.select().from(socials).orderBy(asc(socials.sort));
+    const index = ordered.findIndex(social => social.id === id);
+    const social = ordered[index];
+    const neighbour = ordered[direction === "up" ? index - 1 : index + 1];
+    if (!social || !neighbour) return;
 
-    for (const [index, id] of order.entries()) {
-      await transaction
-        .update(socials)
-        .set({ sort: index + 1 })
-        .where(eq(socials.id, id));
-    }
-    return true;
+    await transaction.update(socials).set({ sort: neighbour.sort }).where(eq(socials.id, social.id));
+    await transaction.update(socials).set({ sort: social.sort }).where(eq(socials.id, neighbour.id));
   });
 }

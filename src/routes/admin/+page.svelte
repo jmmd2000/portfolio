@@ -13,6 +13,7 @@
   <h1>Admin</h1>
   <p>Signed in as {data.email}.</p>
   <a href={resolve("/admin/profile")}>Profile</a>
+  <a href={resolve("/admin/socials")}>Socials</a>
   <a href={resolve("/admin/password")}>Change password</a>
 
   <form method="POST" action="/admin/logout">

@@ -23,7 +23,7 @@
     <Field label="Name" name="name" value={values.name} error={form?.errors?.name?.[0]} />
     <Field label="Role" name="role" value={values.role} error={form?.errors?.role?.[0]} />
     <Field label="Location" name="location" value={values.location} error={form?.errors?.location?.[0]} />
-    <Field label="Bio" name="bio" value={values.bio} error={form?.errors?.bio?.[0]} />
+    <Field label="Bio" name="bio" multiline value={values.bio} error={form?.errors?.bio?.[0]} />
 
     {#if form?.saved}
       <FormMessage status="success">Profile saved.</FormMessage>

@@ -1,4 +1,4 @@
-// Rules for the social links. The browser and the server both check edits with them.
+// Rules for the social links. The socials form's actions check every save with them.
 import { z } from "zod";
 import { requiredText } from "./requiredText";
 
@@ -14,15 +14,7 @@ function isSafeLink(url: string): boolean {
 
 export const socialSchema = z.object({
   name: requiredText("name", 40),
-  url: z.string().trim().refine(isSafeLink, "Use a full https:// address, or mailto: and an email address"),
+  url: z.string().trim().refine(isSafeLink, "Use a full https:// address, or mailto: and an email address."),
 });
 
-/** One or more fields to change. Each edit sends only the field that changed */
-export const socialChangesSchema = socialSchema.partial().refine(changes => Object.keys(changes).length > 0, "Send at least one field to change");
-
-/** Every link's id, in the new order */
-export const socialOrderSchema = z.object({ order: z.array(z.number().int().positive()).min(1) });
-
 export type SocialInput = z.infer<typeof socialSchema>;
-export type SocialChanges = z.infer<typeof socialChangesSchema>;
-export type SocialField = keyof SocialInput;
