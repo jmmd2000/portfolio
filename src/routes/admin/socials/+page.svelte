@@ -17,7 +17,7 @@
       <!-- Only the form that was submitted shows its result: the saved message, or what was typed and what's wrong -->
       {@const result = form?.id === social.id ? form : undefined}
       <li>
-        <ItemForm action="?/update" legend={social.name} id={social.id} message={result?.message}>
+        <ItemForm action="?/update" legend={social.name} id={social.id} message={result?.message} row>
           <Field label="Name" name="name" value={result?.values?.name ?? social.name} error={result?.errors?.name?.[0]} />
           <Field label="Address" name="url" value={result?.values?.url ?? social.url} error={result?.errors?.url?.[0]} />
 
@@ -46,7 +46,7 @@
 <style>
   .socials {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--space-4);
     width: 100%;
     margin: 0;
     padding: 0;
