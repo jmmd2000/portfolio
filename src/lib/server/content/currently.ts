@@ -6,9 +6,16 @@ import { moveRow, nextSort } from "./sortOrder";
 
 export type CurrentlyRow = typeof currently.$inferSelect;
 
+const homeRowCount = 4;
+
 /** Every row, shown or hidden, in sort order. For the admin */
 export async function getCurrentlyRows(): Promise<CurrentlyRow[]> {
   return db.select().from(currently).orderBy(asc(currently.sort));
+}
+
+/** The first four shown rows, in sort order, for the home page */
+export async function getShownCurrentlyRows(): Promise<CurrentlyRow[]> {
+  return db.select().from(currently).where(eq(currently.shown, true)).orderBy(asc(currently.sort)).limit(homeRowCount);
 }
 
 /** Adds a row after the others and returns it */

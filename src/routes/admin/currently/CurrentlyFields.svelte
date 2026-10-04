@@ -19,10 +19,17 @@
 </div>
 <div class="wide">
   <Checkbox label="Shown on the home page" name="shown" checked={values.shown === "on"} />
+  <p class="hint">The home page shows the first four</p>
 </div>
 
 <style>
   .wide {
     grid-column: 1 / -1;
+  }
+
+  .hint {
+    margin-top: var(--space-1);
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-2);
   }
 </style>

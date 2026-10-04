@@ -1,4 +1,4 @@
-import type { education, experience, profile, projects, skills, socials } from "./schema";
+import type { currently, education, experience, profile, projects, skills, socials } from "./schema";
 
 interface SeedData {
   profile: typeof profile.$inferInsert;
@@ -7,6 +7,7 @@ interface SeedData {
   skills: (typeof skills.$inferInsert)[];
   education: (typeof education.$inferInsert)[];
   projects: (typeof projects.$inferInsert)[];
+  currently: (typeof currently.$inferInsert)[];
 }
 
 /** The site's starting content. It seeds production once at launch, and dev and test on every reset. */
@@ -161,6 +162,41 @@ export const seedData: SeedData = {
       featured: false,
       published: true,
       sort: 5,
+    },
+  ],
+
+  currently: [
+    {
+      label: "Listening",
+      title: "Bon Iver, Bon Iver",
+      subtitle: "Bon Iver",
+      url: "https://open.spotify.com/album/1JlvIsP2f6ckoa62aN7kLn",
+      imageURL: "https://i.scdn.co/image/ab67616d00001e02567b0a6defc057bcbfaedadb",
+      sort: 1,
+    },
+    {
+      label: "Playing",
+      title: "Fallout 4",
+      subtitle: "Bethesda Game Studios",
+      url: "https://store.steampowered.com/app/377160/Fallout_4/",
+      imageURL: "https://cdn.cloudflare.steamstatic.com/steam/apps/377160/library_600x900.jpg",
+      sort: 2,
+    },
+    {
+      label: "Watching",
+      title: "Breaking Bad",
+      subtitle: "Vince Gilligan",
+      url: "https://www.tvmaze.com/shows/169/breaking-bad",
+      imageURL: "https://static.tvmaze.com/uploads/images/medium_portrait/501/1253519.jpg",
+      sort: 3,
+    },
+    {
+      label: "Reading",
+      title: "To Kill a Mockingbird",
+      subtitle: "Harper Lee",
+      url: "https://openlibrary.org/isbn/9780061120084",
+      imageURL: "https://covers.openlibrary.org/b/isbn/9780061120084-L.jpg",
+      sort: 4,
     },
   ],
 };

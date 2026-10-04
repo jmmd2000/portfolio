@@ -2,6 +2,8 @@ import type { Page } from "@playwright/test";
 import { createAdmin, logIn } from "./adminSession";
 import { expect, test } from "./fixtures";
 
+const seededLegends = ["Listening: Bon Iver, Bon Iver", "Playing: Fallout 4", "Watching: Breaking Bad", "Reading: To Kill a Mockingbird"];
+
 async function addRow(page: Page, label: string, title: string): Promise<void> {
   const add = page.getByRole("group", { name: "Add a row" });
   await add.getByLabel("Label").fill(label);
@@ -17,7 +19,7 @@ test("a signed-out visitor can't add a row", async ({ page, request, baseURL }) 
   await createAdmin();
   await logIn(page);
   await page.goto("/admin/currently");
-  await expect(page.locator(".rows legend")).toHaveCount(0);
+  await expect(page.locator(".rows legend")).toHaveText(seededLegends);
 });
 
 test("the admin adds, hides and moves rows, and they stay that way after a reload", async ({ page }) => {
@@ -35,10 +37,10 @@ test("the admin adds, hides and moves rows, and they stay that way after a reloa
   await expect(piranesi.getByText("Piranesi saved.")).toBeVisible();
 
   await piranesi.getByRole("button", { name: "Move up" }).click();
-  await expect(page.locator(".rows legend")).toHaveText(["Reading: Piranesi", "Listening: Blue Rev"]);
+  await expect(page.locator(".rows legend")).toHaveText([...seededLegends, "Reading: Piranesi", "Listening: Blue Rev"]);
 
   await page.reload();
-  await expect(page.locator(".rows legend")).toHaveText(["Reading: Piranesi", "Listening: Blue Rev"]);
+  await expect(page.locator(".rows legend")).toHaveText([...seededLegends, "Reading: Piranesi", "Listening: Blue Rev"]);
   await expect(page.getByRole("group", { name: "Reading: Piranesi" }).getByLabel("Shown on the home page")).not.toBeChecked();
   await expect(page.getByRole("group", { name: "Listening: Blue Rev" }).getByLabel("Shown on the home page")).toBeChecked();
 });
