@@ -61,3 +61,52 @@ test("a failed save shows its error on that job's form only", async ({ page }) =
   await expect(page.getByText("End date can't be before start date")).toHaveCount(1);
   await expect(ericsson.getByLabel("Finished")).toHaveValue("2020-01");
 });
+
+test("the admin renames and moves a skill category, and the CV follows", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/cv");
+
+  const languages = page.getByRole("group", { name: "Languages" });
+  await languages.getByLabel("Category").fill("Programming languages");
+  await languages.getByRole("button", { name: "Save" }).click();
+  const renamed = page.getByRole("group", { name: "Programming languages" });
+  await expect(renamed.getByText("Programming languages saved.")).toBeVisible();
+
+  await renamed.getByRole("button", { name: "Move up" }).click();
+  await expect(page.locator("#skills legend")).toHaveText(["Frontend", "Backend & Data", "Programming languages", "DevOps & CI/CD", "Add a skill category"]);
+
+  await page.goto("/cv");
+  await expect(page.locator(".skills dt")).toHaveText(["Frontend", "Backend & Data", "Programming languages", "DevOps & CI/CD"]);
+});
+
+test("the admin adds a qualification, and the CV shows it", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/cv");
+
+  const add = page.getByRole("group", { name: "Add a qualification" });
+  await add.getByLabel("Qualification").fill("AWS Cloud Practitioner");
+  await add.getByLabel("Institution").fill("Amazon Web Services");
+  await add.getByLabel("Grade").fill("Pass");
+  await add.getByLabel("Started").fill("2024");
+  await add.getByLabel("Finished").fill("2024");
+  await add.getByRole("button", { name: "Add" }).click();
+  await expect(add.getByText("AWS Cloud Practitioner added.")).toBeVisible();
+
+  await page.goto("/cv");
+  await expect(page.locator(".qualifications .degree")).toHaveText(["AWS Cloud Practitioner", "BSc Computer Science & Software Engineering", "QQI Level 5 Computer Systems and Networks"]);
+});
+
+test("a saved message only shows on its own list, when another list has an item with the same id", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/cv");
+
+  // The seed gives the first job, skill category and qualification the same id
+  const frontend = page.getByRole("group", { name: "Frontend" });
+  await frontend.getByRole("button", { name: "Save" }).click();
+
+  await expect(frontend.getByText("Frontend saved.")).toBeVisible();
+  await expect(page.getByText("Frontend saved.")).toHaveCount(1);
+});
