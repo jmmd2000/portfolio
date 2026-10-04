@@ -23,12 +23,12 @@ test("the admin adds, renames and moves a link, and the footer follows", async (
   await add.getByLabel("Name").fill("Bluesky");
   await add.getByLabel("Address").fill("https://bsky.app/profile/jamesmddoyle");
   await add.getByRole("button", { name: "Add" }).click();
-  await expect(page.getByText("Bluesky added.")).toBeVisible();
+  await expect(add.getByText("Bluesky added.")).toBeVisible();
 
   const bluesky = page.getByRole("group", { name: "Bluesky" });
   await bluesky.getByLabel("Name").fill("Bsky");
   await bluesky.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Bsky saved.")).toBeVisible();
+  await expect(page.getByRole("group", { name: "Bsky" }).getByText("Bsky saved.")).toBeVisible();
 
   await page.getByRole("group", { name: "Bsky" }).getByRole("button", { name: "Move up" }).click();
   await expect(page.locator("legend")).toHaveText(["GitHub", "LinkedIn", "Bsky", "Email", "Add a link"]);
@@ -46,7 +46,7 @@ test("deleting a link takes a second click", async ({ page }) => {
   await expect(email.getByRole("button", { name: "Delete Email" })).toBeHidden();
   await email.getByRole("button", { name: "Delete", exact: true }).click();
   await email.getByRole("button", { name: "Delete Email" }).click();
-  await expect(page.getByText("Link deleted.")).toBeVisible();
+  await expect(email).toBeHidden();
 
   await page.goto("/");
   expect(await footerLinkNames(page)).toEqual(["GitHub", "LinkedIn"]);

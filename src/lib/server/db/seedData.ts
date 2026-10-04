@@ -41,7 +41,6 @@ export const seedData: SeedData = {
         "Wrote operational guides for heartbeat activities, test processes and onboarding, and reorganised the team’s Confluence space containing hundreds of pages, leading to a 10% increase in team efficiency.",
       ],
       tags: ["Kubernetes", "PostgreSQL", "Python", "Go", "Helm", "Jenkins"],
-      sort: 1,
     },
     {
       title: "Front-End Developer Intern",
@@ -57,7 +56,6 @@ export const seedData: SeedData = {
         "Designed and implemented responsive website interfaces for mobile, desktop, and tablet layouts, improving usability and visual consistency across multiple device sizes.",
       ],
       tags: ["HTML", "CSS", "JavaScript", "WordPress"],
-      sort: 2,
     },
   ],
 
@@ -76,7 +74,6 @@ export const seedData: SeedData = {
       grade: "2.1 (3.3 GPA)",
       startYear: 2019,
       endYear: 2023,
-      sort: 1,
     },
     {
       degree: "QQI Level 5 Computer Systems and Networks",
@@ -85,7 +82,6 @@ export const seedData: SeedData = {
       grade: "Full honours, distinctions in every module",
       startYear: 2018,
       endYear: 2019,
-      sort: 2,
     },
   ],
 

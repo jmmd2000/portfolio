@@ -1,11 +1,11 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { resolve } from "$app/paths";
+  import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import Field from "$lib/components/form/Field.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
-  import PageHead from "$lib/components/head/PageHead.svelte";
   import type { PageProps } from "./$types";
 
   let { data, form }: PageProps = $props();
@@ -14,11 +14,7 @@
   const values = $derived(form?.values ?? data.profile);
 </script>
 
-<PageHead title="Profile" description="Edit the profile." noindex />
-
-<section>
-  <h1>Profile</h1>
-
+<AdminPage title="Profile" description="Edit the profile.">
   <form method="POST" use:enhance={keepValues}>
     <Field label="Name" name="name" value={values.name} error={form?.errors?.name?.[0]} />
     <Field label="Role" name="role" value={values.role} error={form?.errors?.role?.[0]} />
@@ -35,22 +31,9 @@
   </form>
 
   <a href={resolve("/admin")}>Back to the admin</a>
-</section>
+</AdminPage>
 
 <style>
-  section {
-    display: grid;
-    gap: var(--space-5);
-    justify-items: start;
-    padding-top: var(--space-5);
-  }
-
-  h1 {
-    font-size: var(--font-size-page-title);
-    font-weight: 800;
-    font-stretch: 90%;
-  }
-
   form {
     display: grid;
     gap: var(--space-4);

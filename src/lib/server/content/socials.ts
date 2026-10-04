@@ -1,7 +1,8 @@
-import { asc, desc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { socials } from "$lib/server/db/schema";
 import type { SocialInput } from "$lib/schemas/socials";
+import { moveRow, nextSort } from "./sortOrder";
 
 export type Social = typeof socials.$inferSelect;
 
@@ -12,10 +13,9 @@ export async function getSocials(): Promise<Social[]> {
 
 /** Adds a social link after the others and returns it */
 export async function createSocial(input: SocialInput): Promise<Social> {
-  const [lastSocial] = await db.select({ sort: socials.sort }).from(socials).orderBy(desc(socials.sort)).limit(1);
   const [created] = await db
     .insert(socials)
-    .values({ ...input, sort: (lastSocial?.sort ?? 0) + 1 })
+    .values({ ...input, sort: await nextSort(socials) })
     .returning();
   if (!created) throw new Error("The social wasn't created");
 
@@ -36,14 +36,5 @@ export async function deleteSocial(id: number): Promise<boolean> {
 
 /** Swaps a social link with the one above or below it. Does nothing when it's already at that end */
 export async function moveSocial(id: number, direction: "up" | "down"): Promise<void> {
-  await db.transaction(async transaction => {
-    const ordered = await transaction.select().from(socials).orderBy(asc(socials.sort));
-    const index = ordered.findIndex(social => social.id === id);
-    const social = ordered[index];
-    const neighbour = ordered[direction === "up" ? index - 1 : index + 1];
-    if (!social || !neighbour) return;
-
-    await transaction.update(socials).set({ sort: neighbour.sort }).where(eq(socials.id, social.id));
-    await transaction.update(socials).set({ sort: social.sort }).where(eq(socials.id, neighbour.id));
-  });
+  await moveRow(socials, id, direction);
 }

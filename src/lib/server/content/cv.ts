@@ -1,4 +1,4 @@
-import { asc } from "drizzle-orm";
+import { asc, desc } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { education, experience, skills } from "$lib/server/db/schema";
 import { getCVProjects, type Project } from "./projects";
@@ -14,12 +14,16 @@ export interface CV {
   projects: Project[];
 }
 
-/** Returns everything needed for the CV except for the profile and socials */
+/**
+ * Returns everything needed for the CV except for the profile and socials. Jobs and qualifications are newest
+ * first: current jobs, then by when they ended, then by when they started.
+ */
 export async function getCV(): Promise<CV> {
   const [jobs, skillCategories, qualifications, cvProjects] = await Promise.all([
-    db.select().from(experience).orderBy(asc(experience.sort)),
+    // Postgres puts nulls first when sorting descending, and a null end date means a current job
+    db.select().from(experience).orderBy(desc(experience.endDate), desc(experience.startDate)),
     db.select().from(skills).orderBy(asc(skills.sort)),
-    db.select().from(education).orderBy(asc(education.sort)),
+    db.select().from(education).orderBy(desc(education.endYear), desc(education.startYear)),
     getCVProjects(),
   ]);
 

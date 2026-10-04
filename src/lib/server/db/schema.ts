@@ -31,7 +31,6 @@ export const experience = pgTable("experience", {
   endDate: date(),
   bullets: text().array().notNull().default([]),
   tags: text().array().notNull().default([]),
-  sort: integer().notNull(),
 });
 
 export const skills = pgTable("skills", {
@@ -49,7 +48,6 @@ export const education = pgTable("education", {
   grade: text().notNull(),
   startYear: integer().notNull(),
   endYear: integer().notNull(),
-  sort: integer().notNull(),
 });
 
 export const projects = pgTable(
