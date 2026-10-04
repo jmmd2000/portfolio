@@ -2,6 +2,7 @@
   import { resolve } from "$app/paths";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
+  import CurrentlyCards from "$lib/components/home/CurrentlyCards.svelte";
   import HomeHeader from "$lib/components/home/HomeHeader.svelte";
   import ProjectDisplayList from "$lib/components/projects/ProjectDisplayList.svelte";
   import type { PageProps } from "./$types";
@@ -16,8 +17,15 @@
 
 <p class="intro">{data.profile.bio}</p>
 
+{#if data.currentlyRows.length > 0}
+  <section aria-labelledby="currently-heading">
+    <h2 id="currently-heading">Currently</h2>
+    <CurrentlyCards rows={data.currentlyRows} />
+  </section>
+{/if}
+
 <section>
-  <h2>Things I built</h2>
+  <h2>Projects</h2>
   <ProjectDisplayList projects={data.featuredProjects} headingLevel="h3" />
   <a class="all-projects" href={resolve("/projects")}>All {data.publishedCount} {data.publishedCount === 1 ? "project" : "projects"}</a>
 </section>

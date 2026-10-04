@@ -78,6 +78,7 @@ export const currently = pgTable("currently", {
   subtitle: text(),
   url: text(),
   imageURL: text(),
+  shown: boolean().notNull().default(true),
   sort: integer().notNull(),
 });
 

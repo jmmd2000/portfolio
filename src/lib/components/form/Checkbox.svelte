@@ -9,7 +9,7 @@
 </script>
 
 <label>
-  <input type="checkbox" {checked} {...inputAttributes} />
+  <input type="checkbox" {checked} defaultChecked={checked} {...inputAttributes} />
   {label}
 </label>
 

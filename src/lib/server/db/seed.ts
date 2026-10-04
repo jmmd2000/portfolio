@@ -2,7 +2,7 @@ import { getTableName } from "drizzle-orm";
 import { drizzle, type PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
 import type { PgDatabase, PgTable } from "drizzle-orm/pg-core";
 import postgres from "postgres";
-import { education, experience, profile, projects, skills, socials } from "./schema";
+import { currently, education, experience, profile, projects, skills, socials } from "./schema";
 import { seedData } from "./seedData";
 
 type Database = PgDatabase<PostgresJsQueryResultHKT>;
@@ -32,6 +32,7 @@ export async function seedDatabase(databaseURL: string): Promise<SeedResult> {
       await seedTable(transaction, skills, seedData.skills),
       await seedTable(transaction, education, seedData.education),
       await seedTable(transaction, projects, seedData.projects),
+      await seedTable(transaction, currently, seedData.currently),
     ]);
 
     return {

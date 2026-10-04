@@ -29,6 +29,13 @@
       "when": 1791065198517,
       "tag": "0003_flaky_supreme_intelligence",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791144600896,
+      "tag": "0004_vengeful_namora",
+      "breakpoints": true
     }
   ]
 }

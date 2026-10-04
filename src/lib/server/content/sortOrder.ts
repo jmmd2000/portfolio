@@ -1,9 +1,9 @@
 import { asc, desc, eq } from "drizzle-orm";
 import { db } from "$lib/server/db";
-import { projects, skills, socials } from "$lib/server/db/schema";
+import { currently, projects, skills, socials } from "$lib/server/db/schema";
 
 /** The content tables that are put in order by hand */
-type SortedTable = typeof socials | typeof skills | typeof projects;
+type SortedTable = typeof socials | typeof skills | typeof projects | typeof currently;
 
 /** The sort number for a row added after all the others */
 export async function nextSort(table: SortedTable): Promise<number> {

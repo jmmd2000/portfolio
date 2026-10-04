@@ -1,14 +1,10 @@
 // Rules for a project
 import { z } from "zod";
+import { checkbox } from "./checkbox";
 import { httpsURL, optionalHTTPSURL } from "./httpsURL";
 import { lineList } from "./lineList";
 import { optionalText } from "./optionalText";
 import { requiredText } from "./requiredText";
-
-const checkbox = z
-  .literal("on")
-  .optional()
-  .transform(value => value === "on");
 
 const optionalYear = z
   .string()
