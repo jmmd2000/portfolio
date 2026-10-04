@@ -1,7 +1,7 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import { z } from "zod";
 import { requireAdmin } from "$lib/server/auth/requireAdmin";
-import { deleteProject, getProject, updateProject } from "$lib/server/content/projects";
+import { deleteProject, getProject, getPublishedProjects, updateProject } from "$lib/server/content/projects";
 import { formText } from "$lib/server/formText";
 import { projectSchema } from "$lib/schemas/project";
 import type { Actions, PageServerLoad } from "./$types";
@@ -20,7 +20,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   const project = await getProject(projectID(params.id));
   if (!project) error(404, "No project with that id");
-  return { project };
+
+  // The band's colour and side depend on its place on the projects page, so the preview uses the same place
+  const published = await getPublishedProjects();
+  const position = published.filter(other => other.sort < project.sort).length;
+  return { project, position };
 };
 
 export const actions: Actions = {

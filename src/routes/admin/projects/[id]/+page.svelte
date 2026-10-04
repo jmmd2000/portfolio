@@ -8,12 +8,13 @@
   import Field from "$lib/components/form/Field.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
+  import ProjectDisplay, { type ProjectBand } from "$lib/components/projects/ProjectDisplay.svelte";
   import type { PageProps } from "./$types";
 
   let { data, form }: PageProps = $props();
 
   // After a failed save, the form shows what was typed. Otherwise it shows what's saved
-  const values = $derived(
+  const values: Record<string, string> = $derived(
     form?.values ?? {
       title: data.project.title,
       description: data.project.description,
@@ -29,10 +30,35 @@
       published: data.project.published ? "on" : "",
     }
   );
+
+  // What's been typed since the page loaded. Until then, the preview shows the form's starting values
+  let typedBand = $state<ProjectBand>();
+  const band = $derived(typedBand ?? bandFrom(values));
+
+  /** The band's fields from the form's text, trimmed, with empty optional fields as null like a save stores them */
+  function bandFrom(fields: Record<string, string | undefined>): ProjectBand {
+    const text = (name: string) => (fields[name] ?? "").trim();
+    return {
+      title: text("title"),
+      description: text("description"),
+      imageURL: text("imageURL"),
+      liveURL: text("liveURL") || null,
+      liveLabel: text("liveLabel") || null,
+      sourceURL: text("sourceURL") || null,
+    };
+  }
+
+  function updatePreview(event: Event & { currentTarget: HTMLFormElement }): void {
+    const fields: Record<string, string> = {};
+    for (const [name, value] of new FormData(event.currentTarget)) {
+      if (typeof value === "string") fields[name] = value;
+    }
+    typedBand = bandFrom(fields);
+  }
 </script>
 
 <AdminPage title={data.project.title} description="Edit a project.">
-  <form method="POST" action="?/save" use:enhance={keepValues}>
+  <form method="POST" action="?/save" use:enhance={keepValues} oninput={updatePreview}>
     <fieldset>
       <legend>On the site</legend>
       <div class="fields">
@@ -46,6 +72,11 @@
         <Field label="Source link" name="sourceURL" hint="Optional" value={values.sourceURL} error={form?.errors?.sourceURL?.[0]} />
       </div>
     </fieldset>
+
+    <div class="preview">
+      <h2>Preview</h2>
+      <ProjectDisplay project={band} index={data.position} headingLevel="h3" />
+    </div>
 
     <fieldset>
       <legend>On the CV</legend>
@@ -84,6 +115,10 @@
     display: grid;
     gap: var(--space-5);
     width: 100%;
+  }
+
+  fieldset,
+  .actions {
     max-width: 48rem;
   }
 
@@ -118,6 +153,20 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2) var(--space-5);
+  }
+
+  .preview {
+    display: grid;
+    gap: var(--space-2);
+
+    h2 {
+      color: var(--colour-text-muted);
+      font-family: var(--font-body);
+      font-size: var(--font-size-2);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
   }
 
   .actions {

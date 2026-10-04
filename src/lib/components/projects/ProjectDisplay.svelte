@@ -1,8 +1,13 @@
-<script lang="ts">
+<script module lang="ts">
   import type { Project } from "$lib/server/content/projects";
 
+  /** Only the fields the band shows, so the admin preview can pass what's typed before it's saved */
+  export type ProjectBand = Pick<Project, "title" | "description" | "imageURL" | "liveURL" | "liveLabel" | "sourceURL">;
+</script>
+
+<script lang="ts">
   interface Props {
-    project: Project;
+    project: ProjectBand;
     index: number;
     headingLevel: "h2" | "h3";
   }

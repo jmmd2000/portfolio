@@ -82,3 +82,22 @@ test("deleting a project returns to the list without it", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Projects");
   await expect(page.locator(".projects .name")).toHaveText(["JamesReviewsMusic", "Phantom", "SandSim", "Vintage Recreations"]);
 });
+
+test("the preview follows what's typed, before it's saved", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/projects");
+  await page.getByRole("link", { name: "Phantom" }).click();
+
+  const preview = page.locator(".preview");
+  await expect(preview.getByRole("heading", { level: 3 })).toHaveText("Phantom");
+
+  await page.getByLabel("Name").fill("Phantom 2");
+  await page.getByLabel("Live link text").fill("Try it");
+  await expect(preview.getByRole("heading", { level: 3 })).toHaveText("Phantom 2");
+  await expect(preview.getByRole("link", { name: "Try it" })).toBeVisible();
+
+  await page.goto("/projects");
+  await expect(page.locator(".bands h2")).toContainText(["Phantom"]);
+  await expect(page.locator(".bands h2").filter({ hasText: "Phantom 2" })).toHaveCount(0);
+});
