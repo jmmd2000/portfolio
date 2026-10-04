@@ -1,0 +1,63 @@
+import type { Page } from "@playwright/test";
+import { createAdmin, logIn } from "./adminSession";
+import { expect, test } from "./fixtures";
+
+async function cvJobTitles(page: Page): Promise<string[]> {
+  await page.goto("/cv");
+  return page.locator(".job .title").allTextContents();
+}
+
+test("a signed-out visitor can't add a job", async ({ page, request, baseURL }) => {
+  // The origin header gets the request past SvelteKit's cross-site check, so it reaches the sign-in check
+  await request.post("/admin/cv?/addJob", {
+    headers: { origin: baseURL ?? "" },
+    form: { title: "Spam", company: "Spam", companyURL: "", location: "", logoURL: "https://example.com/logo.png", startDate: "2025-01", endDate: "", bullets: "", tags: "" },
+  });
+
+  expect(await cvJobTitles(page)).toEqual(["Software Engineer", "Front-End Developer Intern"]);
+});
+
+test("the admin edits a job's bullets, and the CV shows one per line", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.getByRole("main").getByRole("link", { name: "CV" }).click();
+
+  const fusio = page.getByRole("group", { name: "Front-End Developer Intern at Fusio" });
+  await fusio.getByLabel("Bullets").fill("Kept the client sites up to date\n\n  Built responsive layouts  ");
+  await fusio.getByRole("button", { name: "Save" }).click();
+  await expect(fusio.getByText("Fusio saved.")).toBeVisible();
+
+  await page.goto("/cv");
+  const job = page.locator(".job").filter({ hasText: "Fusio" });
+  await expect(job.getByRole("listitem")).toHaveText(["Kept the client sites up to date", "Built responsive layouts"]);
+});
+
+test("the admin adds a current job, and the CV lists it first", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/cv");
+
+  const add = page.getByRole("group", { name: "Add a job" });
+  await add.getByLabel("Title").fill("Test Lead");
+  await add.getByLabel("Company", { exact: true }).fill("Acme");
+  await add.getByLabel("Logo URL").fill("https://assets.jamesmddoyle.com/acme.png");
+  await add.getByLabel("Started").fill("2025-01");
+  await add.getByRole("button", { name: "Add" }).click();
+  await expect(add.getByText("Test Lead at Acme added.")).toBeVisible();
+
+  expect(await cvJobTitles(page)).toEqual(["Test Lead", "Software Engineer", "Front-End Developer Intern"]);
+});
+
+test("a failed save shows its error on that job's form only", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/cv");
+
+  const ericsson = page.getByRole("group", { name: "Software Engineer at Ericsson" });
+  await ericsson.getByLabel("Finished").fill("2020-01");
+  await ericsson.getByRole("button", { name: "Save" }).click();
+
+  await expect(ericsson.getByText("End date can't be before start date")).toBeVisible();
+  await expect(page.getByText("End date can't be before start date")).toHaveCount(1);
+  await expect(ericsson.getByLabel("Finished")).toHaveValue("2020-01");
+});

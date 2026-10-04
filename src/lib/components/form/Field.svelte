@@ -6,14 +6,18 @@
     HTMLTextareaAttributes & {
       label: string;
       error?: string;
+      /** A short note under the field, like "Optional". An error replaces it */
+      hint?: string;
       /** Several lines of text, for longer content */
       multiline?: boolean;
     };
 
-  let { label, error, multiline = false, value, ...inputAttributes }: Props = $props();
+  let { label, error, hint, multiline = false, value, ...inputAttributes }: Props = $props();
 
   const id = $props.id();
   const errorID = `${id}-error`;
+  const hintID = `${id}-hint`;
+  const describedBy = $derived(error ? errorID : hint ? hintID : undefined);
 
   let field = $state<HTMLDivElement>();
   let bounce: Animation | undefined;
@@ -31,12 +35,14 @@
   <label for={id}>{label}</label>
   {#if multiline}
     <!-- Value set directly, not in the spread, so the server renders it as the textarea's text -->
-    <textarea {id} rows="6" {value} aria-invalid={error ? true : undefined} aria-describedby={error ? errorID : undefined} oninput={handleInput} {...inputAttributes}></textarea>
+    <textarea {id} rows="6" {value} aria-invalid={error ? true : undefined} aria-describedby={describedBy} oninput={handleInput} {...inputAttributes}></textarea>
   {:else}
-    <input {id} {value} aria-invalid={error ? true : undefined} aria-describedby={error ? errorID : undefined} oninput={handleInput} {...inputAttributes} />
+    <input {id} {value} aria-invalid={error ? true : undefined} aria-describedby={describedBy} oninput={handleInput} {...inputAttributes} />
   {/if}
   {#if error}
     <p class="error" id={errorID}>{error}</p>
+  {:else if hint}
+    <p class="hint" id={hintID}>{hint}</p>
   {/if}
 </div>
 
@@ -91,6 +97,12 @@
 
   .invalid :is(input, textarea) {
     border-style: dashed;
+  }
+
+  .hint {
+    margin-top: var(--space-1);
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-2);
   }
 
   .error {
