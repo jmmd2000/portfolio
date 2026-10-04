@@ -15,6 +15,7 @@
   <a href={resolve("/admin/profile")}>Profile</a>
   <a href={resolve("/admin/socials")}>Socials</a>
   <a href={resolve("/admin/cv")}>CV</a>
+  <a href={resolve("/admin/projects")}>Projects</a>
   <a href={resolve("/admin/password")}>Change password</a>
 
   <form method="POST" action="/admin/logout">
