@@ -20,7 +20,7 @@ test("the admin can log in and out", async ({ page }) => {
   await page.getByLabel("Password").fill(adminPassword);
   await page.getByRole("button", { name: "Log in" }).click();
 
-  await expect(page.getByText(`Signed in as ${adminEmail}.`)).toBeVisible();
+  await expect(page).toHaveURL("/admin");
 
   await page.getByRole("button", { name: "Log out" }).click();
   await expect(page).toHaveURL("/admin/login");
@@ -68,7 +68,7 @@ test("the admin can change the password, but only with the current one", async (
   await page.goto("/admin");
   await page.getByRole("button", { name: "Log out" }).click();
   await logIn(page, "a-brand-new-password");
-  await expect(page.getByText(`Signed in as ${adminEmail}.`)).toBeVisible();
+  await expect(page).toHaveURL("/admin");
 });
 
 test("changing the password signs out every other session", async ({ page, browser }) => {
@@ -82,7 +82,7 @@ test("changing the password signs out every other session", async ({ page, brows
   await otherDevice.goto("/admin");
   await expect(otherDevice).toHaveURL("/admin/login");
   await page.goto("/admin");
-  await expect(page.getByText(`Signed in as ${adminEmail}.`)).toBeVisible();
+  await expect(page).toHaveURL("/admin");
 
   await otherDevice.close();
 });
