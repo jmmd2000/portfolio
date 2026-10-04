@@ -1,0 +1,1 @@
+ALTER TABLE "currently" ADD COLUMN "shown" boolean DEFAULT true NOT NULL;
