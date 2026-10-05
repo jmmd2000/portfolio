@@ -4,13 +4,14 @@
 
   interface Props extends HTMLButtonAttributes {
     variant?: "primary" | "secondary" | "destructive";
+    icon?: boolean;
     children: Snippet;
   }
 
-  let { variant = "secondary", type = "button", children, ...buttonAttributes }: Props = $props();
+  let { variant = "secondary", icon = false, type = "button", children, ...buttonAttributes }: Props = $props();
 </script>
 
-<button class={variant} {type} {...buttonAttributes}>
+<button class={variant} class:icon {type} {...buttonAttributes}>
   {@render children()}
 </button>
 
@@ -43,6 +44,17 @@
       border-style: dashed;
       color: var(--colour-text-muted);
       cursor: not-allowed;
+    }
+  }
+
+  .icon {
+    display: inline-grid;
+    place-items: center;
+    padding: var(--space-2);
+
+    :global(svg) {
+      width: 1lh;
+      height: 1lh;
     }
   }
 

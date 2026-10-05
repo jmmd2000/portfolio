@@ -11,16 +11,19 @@
     id?: number;
     /** Clears the fields after a successful submit, for a form that adds a new item */
     resetOnSuccess?: boolean;
-    /** Shown next to the buttons after this form saves */
+    /** Shown under the buttons after this form saves */
     message?: string;
+    row?: boolean;
+    /** Keeps the legend for screen readers only, for a form whose name already shows above it */
+    hideLegend?: boolean;
     children: Snippet;
     actions: Snippet;
   }
 
-  let { action, legend, id, resetOnSuccess = false, message, children, actions }: Props = $props();
+  let { action, legend, id, resetOnSuccess = false, message, row = false, hideLegend = false, children, actions }: Props = $props();
 </script>
 
-<form method="POST" {action} use:enhance={resetOnSuccess ? undefined : keepValues}>
+<form method="POST" {action} class:row class:hidden-legend={hideLegend} use:enhance={resetOnSuccess ? undefined : keepValues}>
   <fieldset>
     <legend>{legend}</legend>
     {#if id !== undefined}
@@ -31,10 +34,12 @@
     </div>
     <div class="actions">
       {@render actions()}
-      {#if message}
-        <FormMessage status="success">{message}</FormMessage>
-      {/if}
     </div>
+    {#if message}
+      <div class="message">
+        <FormMessage status="success">{message}</FormMessage>
+      </div>
+    {/if}
   </fieldset>
 </form>
 
@@ -72,5 +77,44 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2);
+  }
+
+  .message {
+    justify-self: start;
+  }
+
+  .hidden-legend legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .row {
+    @media (min-width: 48rem) {
+      max-width: none;
+
+      fieldset {
+        grid-template-columns: 1fr auto;
+        align-items: start;
+      }
+
+      /* The height of a field's label, so the buttons line up with the inputs even when a field shows an error */
+      .actions {
+        margin-top: 1.9rem;
+      }
+
+      .message {
+        grid-column: 1 / -1;
+      }
+
+      .fields {
+        grid-template-columns: none;
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
+      }
+    }
   }
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Trash from "@lucide/svelte/icons/trash";
   import Button from "$lib/components/form/Button.svelte";
 
   interface Props {
@@ -11,7 +12,7 @@
   const dialogID = $props.id();
 </script>
 
-<Button commandfor={dialogID} command="show-modal" variant="destructive">Delete</Button>
+<Button commandfor={dialogID} command="show-modal" variant="destructive" icon aria-label="Delete"><Trash /></Button>
 <dialog id={dialogID} aria-labelledby="{dialogID}-title">
   <h2 id="{dialogID}-title">Delete {name}?</h2>
   <p>This can't be undone.</p>
