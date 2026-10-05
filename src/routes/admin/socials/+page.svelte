@@ -17,7 +17,7 @@
       <!-- Only the form that was submitted shows its result: the saved message, or what was typed and what's wrong -->
       {@const result = form?.id === social.id ? form : undefined}
       <li>
-        <ItemForm action="?/update" legend={social.name} id={social.id} message={result?.message} row>
+        <ItemForm action="?/update" legend={social.name} id={social.id} message={result?.message} row hideLegend>
           <Field label="Name" name="name" value={result?.values?.name ?? social.name} error={result?.errors?.name?.[0]} />
           <Field label="Address" name="url" value={result?.values?.url ?? social.url} error={result?.errors?.url?.[0]} />
 

@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import { openFold } from "./adminFold";
 import { createAdmin, logIn } from "./adminSession";
 import { expect, test } from "./fixtures";
 
@@ -22,6 +23,7 @@ test("the admin edits a job's bullets, and the CV shows one per line", async ({ 
   await logIn(page);
   await page.getByRole("main").getByRole("link", { name: "CV" }).click();
 
+  await openFold(page, "Front-End Developer Intern at Fusio");
   const fusio = page.getByRole("group", { name: "Front-End Developer Intern at Fusio" });
   await fusio.getByLabel("Bullets").fill("Kept the client sites up to date\n\n  Built responsive layouts  ");
   await fusio.getByRole("button", { name: "Save" }).click();
@@ -37,6 +39,7 @@ test("the admin adds a current job, and the CV lists it first", async ({ page })
   await logIn(page);
   await page.goto("/admin/cv");
 
+  await openFold(page, "Add a job");
   const add = page.getByRole("group", { name: "Add a job" });
   await add.getByLabel("Title").fill("Test Lead");
   await add.getByLabel("Company", { exact: true }).fill("Acme");
@@ -53,6 +56,7 @@ test("a failed save shows its error on that job's form only", async ({ page }) =
   await logIn(page);
   await page.goto("/admin/cv");
 
+  await openFold(page, "Software Engineer at Ericsson");
   const ericsson = page.getByRole("group", { name: "Software Engineer at Ericsson" });
   await ericsson.getByLabel("Finished").fill("2020-01");
   await ericsson.getByRole("button", { name: "Save" }).click();
@@ -67,13 +71,14 @@ test("the admin renames and moves a skill category, and the CV follows", async (
   await logIn(page);
   await page.goto("/admin/cv");
 
+  await openFold(page, "Languages");
   const languages = page.getByRole("group", { name: "Languages" });
   await languages.getByLabel("Category").fill("Programming languages");
   await languages.getByRole("button", { name: "Save" }).click();
   const renamed = page.getByRole("group", { name: "Programming languages" });
   await expect(renamed.getByText("Programming languages saved.")).toBeVisible();
 
-  await renamed.getByRole("button", { name: "Move up" }).click();
+  await page.getByRole("listitem").filter({ has: renamed }).getByRole("button", { name: "Move up" }).click();
   await expect(page.locator("#skills legend")).toHaveText(["Frontend", "Backend & Data", "Programming languages", "DevOps & CI/CD", "Add a skill category"]);
 
   await page.goto("/cv");
@@ -85,6 +90,7 @@ test("the admin adds a qualification, and the CV shows it", async ({ page }) => 
   await logIn(page);
   await page.goto("/admin/cv");
 
+  await openFold(page, "Add a qualification");
   const add = page.getByRole("group", { name: "Add a qualification" });
   await add.getByLabel("Qualification").fill("AWS Cloud Practitioner");
   await add.getByLabel("Institution").fill("Amazon Web Services");
@@ -104,9 +110,25 @@ test("a saved message only shows on its own list, when another list has an item 
   await page.goto("/admin/cv");
 
   // The seed gives the first job, skill category and qualification the same id
+  await openFold(page, "Frontend");
   const frontend = page.getByRole("group", { name: "Frontend" });
   await frontend.getByRole("button", { name: "Save" }).click();
 
   await expect(frontend.getByText("Frontend saved.")).toBeVisible();
   await expect(page.getByText("Frontend saved.")).toHaveCount(1);
+});
+
+test("without JavaScript, a failed save opens its job again so the error shows", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  // Block the app's JavaScript, so the form submits as plain HTML
+  await page.route("**/_app/**/*.js", route => route.abort());
+  await page.goto("/admin/cv");
+
+  await openFold(page, "Software Engineer at Ericsson");
+  const ericsson = page.getByRole("group", { name: "Software Engineer at Ericsson" });
+  await ericsson.getByLabel("Finished").fill("2020-01");
+  await ericsson.getByRole("button", { name: "Save" }).click();
+
+  await expect(ericsson.getByText("End date can't be before start date")).toBeVisible();
 });

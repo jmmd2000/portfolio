@@ -1,9 +1,9 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
-  import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
+  import Fold from "$lib/components/admin/Fold.svelte";
+  import ItemButtons from "$lib/components/admin/ItemButtons.svelte";
   import ItemForm from "$lib/components/admin/ItemForm.svelte";
-  import MoveButtons from "$lib/components/admin/MoveButtons.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import type { CurrentlyRow } from "$lib/server/content/currently";
   import type { PageProps } from "./$types";
@@ -31,36 +31,42 @@
     {#each data.rows as row, index (row.id)}
       {@const result = form?.id === row.id ? form : undefined}
       <li>
-        <ItemForm action="?/update" legend="{row.label}: {row.title}" id={row.id} message={result?.message}>
-          <CurrentlyFields values={result?.values ?? rowValues(row)} errors={result?.errors} />
+        <Fold name="{row.label}: {row.title}" open={result !== undefined}>
+          <ItemForm action="?/update" legend="{row.label}: {row.title}" id={row.id} message={result?.message} hideLegend>
+            <CurrentlyFields values={result?.values ?? rowValues(row)} errors={result?.errors} />
 
-          {#snippet actions()}
-            <Button type="submit" variant="primary">Save</Button>
-            <MoveButtons formaction="?/move" first={index === 0} last={index === data.rows.length - 1} />
-            <ConfirmDelete name={row.title} formaction="?/delete" />
+            {#snippet actions()}
+              <Button type="submit" variant="primary">Save</Button>
+            {/snippet}
+          </ItemForm>
+
+          {#snippet buttons()}
+            <ItemButtons id={row.id} name={row.title} deleteAction="?/delete" moveAction="?/move" first={index === 0} last={index === data.rows.length - 1} />
           {/snippet}
-        </ItemForm>
+        </Fold>
       </li>
     {/each}
   </ol>
 
-  <ItemForm action="?/add" legend="Add a row" resetOnSuccess message={addResult?.message}>
-    <!-- A new row is shown unless its box is unticked -->
-    <CurrentlyFields values={addResult?.values ?? { shown: "on" }} errors={addResult?.errors} />
+  <Fold name="Add a row" open={addResult !== undefined}>
+    <ItemForm action="?/add" legend="Add a row" resetOnSuccess message={addResult?.message} hideLegend>
+      <!-- A new row is shown unless its box is unticked -->
+      <CurrentlyFields values={addResult?.values ?? { shown: "on" }} errors={addResult?.errors} />
 
-    {#snippet actions()}
-      <Button type="submit" variant="primary">Add</Button>
-    {/snippet}
-  </ItemForm>
+      {#snippet actions()}
+        <Button type="submit" variant="primary">Add</Button>
+      {/snippet}
+    </ItemForm>
+  </Fold>
 
   <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>
   .rows {
-    display: grid;
-    gap: var(--space-6);
     width: 100%;
+    max-width: 48rem;
+    border-top: var(--border-thick) solid var(--colour-foreground);
     margin: 0;
     padding: 0;
     list-style: none;

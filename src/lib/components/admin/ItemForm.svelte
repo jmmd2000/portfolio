@@ -14,14 +14,16 @@
     /** Shown under the buttons after this form saves */
     message?: string;
     row?: boolean;
+    /** Keeps the legend for screen readers only, for a form whose name already shows above it */
+    hideLegend?: boolean;
     children: Snippet;
     actions: Snippet;
   }
 
-  let { action, legend, id, resetOnSuccess = false, message, row = false, children, actions }: Props = $props();
+  let { action, legend, id, resetOnSuccess = false, message, row = false, hideLegend = false, children, actions }: Props = $props();
 </script>
 
-<form method="POST" {action} class:row use:enhance={resetOnSuccess ? undefined : keepValues}>
+<form method="POST" {action} class:row class:hidden-legend={hideLegend} use:enhance={resetOnSuccess ? undefined : keepValues}>
   <fieldset>
     <legend>{legend}</legend>
     {#if id !== undefined}
@@ -81,16 +83,16 @@
     justify-self: start;
   }
 
-  .row {
-    legend {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
+  .hidden-legend legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 
+  .row {
     @media (min-width: 48rem) {
       max-width: none;
 

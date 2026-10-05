@@ -1,9 +1,9 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
-  import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
+  import Fold from "$lib/components/admin/Fold.svelte";
+  import ItemButtons from "$lib/components/admin/ItemButtons.svelte";
   import ItemForm from "$lib/components/admin/ItemForm.svelte";
-  import MoveButtons from "$lib/components/admin/MoveButtons.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import type { Job, Qualification, SkillCategory } from "$lib/server/content/cv";
   import type { PageProps } from "./$types";
@@ -69,25 +69,32 @@
       {#each data.jobs as job (job.id)}
         {@const result = jobResult?.id === job.id ? jobResult : undefined}
         <li>
-          <ItemForm action="?/updateJob" legend="{job.title} at {job.company}" id={job.id} message={result?.message}>
-            <JobFields values={result?.values ?? jobValues(job)} errors={result?.errors} />
+          <Fold name="{job.title} at {job.company}" open={result !== undefined}>
+            <ItemForm action="?/updateJob" legend="{job.title} at {job.company}" id={job.id} message={result?.message} hideLegend>
+              <JobFields values={result?.values ?? jobValues(job)} errors={result?.errors} />
 
-            {#snippet actions()}
-              <Button type="submit" variant="primary">Save</Button>
-              <ConfirmDelete name="{job.title} at {job.company}" formaction="?/deleteJob" />
+              {#snippet actions()}
+                <Button type="submit" variant="primary">Save</Button>
+              {/snippet}
+            </ItemForm>
+
+            {#snippet buttons()}
+              <ItemButtons id={job.id} name="{job.title} at {job.company}" deleteAction="?/deleteJob" />
             {/snippet}
-          </ItemForm>
+          </Fold>
         </li>
       {/each}
     </ol>
 
-    <ItemForm action="?/addJob" legend="Add a job" resetOnSuccess message={addJobResult?.message}>
-      <JobFields values={addJobResult?.values ?? {}} errors={addJobResult?.errors} />
+    <Fold name="Add a job" open={addJobResult !== undefined}>
+      <ItemForm action="?/addJob" legend="Add a job" resetOnSuccess message={addJobResult?.message} hideLegend>
+        <JobFields values={addJobResult?.values ?? {}} errors={addJobResult?.errors} />
 
-      {#snippet actions()}
-        <Button type="submit" variant="primary">Add</Button>
-      {/snippet}
-    </ItemForm>
+        {#snippet actions()}
+          <Button type="submit" variant="primary">Add</Button>
+        {/snippet}
+      </ItemForm>
+    </Fold>
   </section>
 
   <section id="skills">
@@ -98,26 +105,39 @@
       {#each data.skillCategories as category, index (category.id)}
         {@const result = skillResult?.id === category.id ? skillResult : undefined}
         <li>
-          <ItemForm action="?/updateSkillCategory" legend={category.category} id={category.id} message={result?.message}>
-            <SkillCategoryFields values={result?.values ?? skillValues(category)} errors={result?.errors} />
+          <Fold name={category.category} open={result !== undefined}>
+            <ItemForm action="?/updateSkillCategory" legend={category.category} id={category.id} message={result?.message} hideLegend>
+              <SkillCategoryFields values={result?.values ?? skillValues(category)} errors={result?.errors} />
 
-            {#snippet actions()}
-              <Button type="submit" variant="primary">Save</Button>
-              <MoveButtons formaction="?/moveSkillCategory" first={index === 0} last={index === data.skillCategories.length - 1} />
-              <ConfirmDelete name={category.category} formaction="?/deleteSkillCategory" />
+              {#snippet actions()}
+                <Button type="submit" variant="primary">Save</Button>
+              {/snippet}
+            </ItemForm>
+
+            {#snippet buttons()}
+              <ItemButtons
+                id={category.id}
+                name={category.category}
+                deleteAction="?/deleteSkillCategory"
+                moveAction="?/moveSkillCategory"
+                first={index === 0}
+                last={index === data.skillCategories.length - 1}
+              />
             {/snippet}
-          </ItemForm>
+          </Fold>
         </li>
       {/each}
     </ol>
 
-    <ItemForm action="?/addSkillCategory" legend="Add a skill category" resetOnSuccess message={addSkillResult?.message}>
-      <SkillCategoryFields values={addSkillResult?.values ?? {}} errors={addSkillResult?.errors} />
+    <Fold name="Add a skill category" open={addSkillResult !== undefined}>
+      <ItemForm action="?/addSkillCategory" legend="Add a skill category" resetOnSuccess message={addSkillResult?.message} hideLegend>
+        <SkillCategoryFields values={addSkillResult?.values ?? {}} errors={addSkillResult?.errors} />
 
-      {#snippet actions()}
-        <Button type="submit" variant="primary">Add</Button>
-      {/snippet}
-    </ItemForm>
+        {#snippet actions()}
+          <Button type="submit" variant="primary">Add</Button>
+        {/snippet}
+      </ItemForm>
+    </Fold>
   </section>
 
   <section id="education">
@@ -128,25 +148,32 @@
       {#each data.qualifications as qualification (qualification.id)}
         {@const result = qualificationResult?.id === qualification.id ? qualificationResult : undefined}
         <li>
-          <ItemForm action="?/updateQualification" legend={qualification.degree} id={qualification.id} message={result?.message}>
-            <QualificationFields values={result?.values ?? qualificationValues(qualification)} errors={result?.errors} />
+          <Fold name={qualification.degree} open={result !== undefined}>
+            <ItemForm action="?/updateQualification" legend={qualification.degree} id={qualification.id} message={result?.message} hideLegend>
+              <QualificationFields values={result?.values ?? qualificationValues(qualification)} errors={result?.errors} />
 
-            {#snippet actions()}
-              <Button type="submit" variant="primary">Save</Button>
-              <ConfirmDelete name={qualification.degree} formaction="?/deleteQualification" />
+              {#snippet actions()}
+                <Button type="submit" variant="primary">Save</Button>
+              {/snippet}
+            </ItemForm>
+
+            {#snippet buttons()}
+              <ItemButtons id={qualification.id} name={qualification.degree} deleteAction="?/deleteQualification" />
             {/snippet}
-          </ItemForm>
+          </Fold>
         </li>
       {/each}
     </ol>
 
-    <ItemForm action="?/addQualification" legend="Add a qualification" resetOnSuccess message={addQualificationResult?.message}>
-      <QualificationFields values={addQualificationResult?.values ?? {}} errors={addQualificationResult?.errors} />
+    <Fold name="Add a qualification" open={addQualificationResult !== undefined}>
+      <ItemForm action="?/addQualification" legend="Add a qualification" resetOnSuccess message={addQualificationResult?.message} hideLegend>
+        <QualificationFields values={addQualificationResult?.values ?? {}} errors={addQualificationResult?.errors} />
 
-      {#snippet actions()}
-        <Button type="submit" variant="primary">Add</Button>
-      {/snippet}
-    </ItemForm>
+        {#snippet actions()}
+          <Button type="submit" variant="primary">Add</Button>
+        {/snippet}
+      </ItemForm>
+    </Fold>
   </section>
 
   <a href={resolve("/admin")}>Back to the admin</a>
@@ -177,8 +204,6 @@
   }
 
   .items {
-    display: grid;
-    gap: var(--space-6);
     margin: 0;
     padding: 0;
     list-style: none;

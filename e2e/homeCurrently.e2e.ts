@@ -1,8 +1,10 @@
 import type { Page } from "@playwright/test";
+import { openFold } from "./adminFold";
 import { createAdmin, logIn } from "./adminSession";
 import { expect, test } from "./fixtures";
 
 async function hideRow(page: Page, legend: string): Promise<void> {
+  await openFold(page, legend);
   const row = page.getByRole("group", { name: legend });
   await row.getByLabel("Shown on the home page").uncheck();
   await row.getByRole("button", { name: "Save" }).click();
