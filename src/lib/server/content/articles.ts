@@ -1,8 +1,11 @@
-import { and, desc, eq, isNotNull } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, isNull, ne, or } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { articles, projects } from "$lib/server/db/schema";
+import type { ArticleInput, NewArticleInput } from "$lib/schemas/article";
 
 const homeArticleCount = 3;
+
+export type Article = typeof articles.$inferSelect;
 
 export interface ArticleProject {
   id: number;
@@ -107,4 +110,63 @@ export async function getPublishedArticleSlugs(): Promise<string[]> {
 
 export async function countPublishedArticles(): Promise<number> {
   return db.$count(articles, eq(articles.published, true));
+}
+
+/** Every article, drafts included, newest first. For the admin */
+export async function getAllArticles(): Promise<Article[]> {
+  return db.select().from(articles).orderBy(desc(articles.createdAt));
+}
+
+export async function getArticle(id: number): Promise<Article | null> {
+  const [article] = await db.select().from(articles).where(eq(articles.id, id));
+  return article ?? null;
+}
+
+/** Whether another article already uses this slug. Pass the article being edited, so its own slug doesn't count */
+export async function isSlugTaken(slug: string, editedArticleID: number | null = null): Promise<boolean> {
+  const sameSlug = eq(articles.slug, slug);
+  const count = await db.$count(articles, editedArticleID === null ? sameSlug : and(sameSlug, ne(articles.id, editedArticleID)));
+  return count > 0;
+}
+
+/** Adds a draft article with an empty body and returns it */
+export async function createArticle(input: NewArticleInput): Promise<Article> {
+  const [created] = await db
+    .insert(articles)
+    .values({ ...input, body: "" })
+    .returning();
+  if (!created) throw new Error("The article wasn't created");
+
+  return created;
+}
+
+/**
+ * Saves an article.
+ */
+export async function updateArticle(id: number, input: ArticleInput): Promise<Article | null> {
+  const existing = await getArticle(id);
+  if (!existing) return null;
+
+  const publishedAt = input.published && existing.publishedAt === null ? new Date() : existing.publishedAt;
+  const [updated] = await db
+    .update(articles)
+    .set({ ...input, publishedAt })
+    .where(eq(articles.id, id))
+    .returning();
+  return updated ?? null;
+}
+
+/** The projects an article can belong to: those without an article, plus the edited article's own project */
+export async function getProjectChoices(editedArticleID: number): Promise<ArticleProject[]> {
+  return db
+    .select({ id: projects.id, title: projects.title })
+    .from(projects)
+    .leftJoin(articles, eq(articles.projectID, projects.id))
+    .where(or(isNull(articles.id), eq(articles.id, editedArticleID)))
+    .orderBy(asc(projects.sort));
+}
+
+export async function deleteArticle(id: number): Promise<boolean> {
+  const deleted = await db.delete(articles).where(eq(articles.id, id)).returning({ id: articles.id });
+  return deleted.length > 0;
 }
