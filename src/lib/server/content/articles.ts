@@ -1,4 +1,4 @@
-import { and, desc, eq, isNotNull, ne } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, isNull, ne, or } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { articles, projects } from "$lib/server/db/schema";
 import type { ArticleInput, NewArticleInput } from "$lib/schemas/article";
@@ -140,7 +140,28 @@ export async function createArticle(input: NewArticleInput): Promise<Article> {
   return created;
 }
 
+/**
+ * Saves an article.
+ */
 export async function updateArticle(id: number, input: ArticleInput): Promise<Article | null> {
-  const [updated] = await db.update(articles).set(input).where(eq(articles.id, id)).returning();
+  const existing = await getArticle(id);
+  if (!existing) return null;
+
+  const publishedAt = input.published && existing.publishedAt === null ? new Date() : existing.publishedAt;
+  const [updated] = await db
+    .update(articles)
+    .set({ ...input, publishedAt })
+    .where(eq(articles.id, id))
+    .returning();
   return updated ?? null;
+}
+
+/** The projects an article can belong to: those without an article, plus the edited article's own project */
+export async function getProjectChoices(editedArticleID: number): Promise<ArticleProject[]> {
+  return db
+    .select({ id: projects.id, title: projects.title })
+    .from(projects)
+    .leftJoin(articles, eq(articles.projectID, projects.id))
+    .where(or(isNull(articles.id), eq(articles.id, editedArticleID)))
+    .orderBy(asc(projects.sort));
 }

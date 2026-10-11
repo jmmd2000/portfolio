@@ -49,3 +49,19 @@ test("a slug another article uses is reported on the field", async ({ page }) =>
   await expect(add.getByText("Another article already uses this slug.")).toBeVisible();
   await expect(add.getByLabel("Title")).toHaveValue("Another");
 });
+
+test("publishing an article puts it on the site as a write-up for its project", async ({ page }) => {
+  await insertArticle({ slug: "how-the-sand-falls", published: false, publishedAt: null });
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/articles");
+  await page.getByRole("link", { name: "How the sand falls" }).click();
+
+  await page.getByLabel("Write-up for").selectOption({ label: "SandSim" });
+  await page.getByLabel("Published").check();
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByText("How the sand falls saved.")).toBeVisible();
+
+  await page.goto("/articles/how-the-sand-falls");
+  await expect(page.getByText("Write-up for SandSim")).toBeVisible();
+});

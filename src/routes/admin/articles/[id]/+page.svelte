@@ -3,9 +3,11 @@
   import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import Button from "$lib/components/form/Button.svelte";
+  import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
+  import SelectField from "$lib/components/form/SelectField.svelte";
   import type { PageProps } from "./$types";
 
   let { data, form }: PageProps = $props();
@@ -17,8 +19,12 @@
       slug: data.article.slug,
       summary: data.article.summary,
       body: data.article.body,
+      projectID: data.article.projectID === null ? "" : String(data.article.projectID),
+      published: data.article.published ? "on" : "",
     }
   );
+
+  const projectOptions = $derived([{ value: "", label: "None" }, ...data.projectChoices.map(project => ({ value: String(project.id), label: project.title }))]);
 </script>
 
 <AdminPage title={data.article.title} description="Edit an article.">
@@ -32,7 +38,10 @@
       <div class="wide">
         <Field label="Body" name="body" multiline rows={24} hint="Markdown" value={values.body} error={form?.errors?.body?.[0]} />
       </div>
+      <SelectField label="Write-up for" name="projectID" options={projectOptions} value={values.projectID} hint="Optional" error={form?.errors?.projectID?.[0]} />
     </div>
+
+    <Checkbox label="Published" name="published" checked={values.published === "on"} />
 
     <div class="actions">
       <Button type="submit" variant="primary">Save</Button>

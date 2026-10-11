@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { newArticleSchema } from "./article";
+import { articleSchema, newArticleSchema } from "./article";
 
 const typedArticle = { title: "How the sand falls", slug: "how-the-sand-falls", summary: "One rule per material." };
 
@@ -20,5 +20,23 @@ describe("newArticleSchema", () => {
 
   it("asks for a slug when it's empty", () => {
     expect(slugError("   ")).toBe("Add a slug.");
+  });
+});
+
+describe("articleSchema", () => {
+  const typedEdit = { ...typedArticle, body: "Some text." };
+
+  it("reads no project as null and a chosen project as its id", () => {
+    expect(articleSchema.parse({ ...typedEdit, projectID: "" }).projectID).toBeNull();
+    expect(articleSchema.parse({ ...typedEdit, projectID: "7" }).projectID).toBe(7);
+  });
+
+  it("refuses a project that isn't an id", () => {
+    expect(articleSchema.safeParse({ ...typedEdit, projectID: "seven" }).success).toBe(false);
+  });
+
+  it("reads a ticked Published box as true, and a missing one as false", () => {
+    expect(articleSchema.parse({ ...typedEdit, projectID: "", published: "on" }).published).toBe(true);
+    expect(articleSchema.parse({ ...typedEdit, projectID: "" }).published).toBe(false);
   });
 });

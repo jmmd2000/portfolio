@@ -1,7 +1,7 @@
 import { error, fail } from "@sveltejs/kit";
 import { z } from "zod";
 import { requireAdmin } from "$lib/server/auth/requireAdmin";
-import { getArticle, isSlugTaken, updateArticle } from "$lib/server/content/articles";
+import { getArticle, getProjectChoices, isSlugTaken, updateArticle } from "$lib/server/content/articles";
 import { formText } from "$lib/server/formText";
 import { articleSchema, slugTakenMessage, type ArticleInput } from "$lib/schemas/article";
 import type { Actions, PageServerLoad } from "./$types";
@@ -18,10 +18,11 @@ function articleID(param: string): number {
 export const load: PageServerLoad = async ({ locals, params }) => {
   requireAdmin(locals);
 
-  const article = await getArticle(articleID(params.id));
+  const id = articleID(params.id);
+  const [article, projectChoices] = await Promise.all([getArticle(id), getProjectChoices(id)]);
   if (!article) error(404, "No article with that id");
 
-  return { article };
+  return { article, projectChoices };
 };
 
 export const actions: Actions = {
@@ -36,6 +37,11 @@ export const actions: Actions = {
     }
     if (await isSlugTaken(result.data.slug, id)) {
       const errors: Partial<Record<keyof ArticleInput, string[]>> = { slug: [slugTakenMessage] };
+      return fail(400, { values, errors });
+    }
+    const { projectID } = result.data;
+    if (projectID !== null && !(await getProjectChoices(id)).some(project => project.id === projectID)) {
+      const errors: Partial<Record<keyof ArticleInput, string[]>> = { projectID: ["That project already has an article."] };
       return fail(400, { values, errors });
     }
 
