@@ -2,6 +2,8 @@ import { and, desc, eq } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { articles, projects } from "$lib/server/db/schema";
 
+const homeArticleCount = 3;
+
 export interface ArticleProject {
   id: number;
   title: string;
@@ -35,9 +37,14 @@ function toPublishedArticle(row: PublishedArticleRow): PublishedArticle {
   return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt, project };
 }
 
-/** Published articles, newest first. With a slug, only the article with that slug */
-async function findPublishedArticles(slug: string | null): Promise<PublishedArticle[]> {
-  const rows = await db
+interface ArticleFilter {
+  slug?: string;
+  limit?: number;
+}
+
+/** Published articles, newest first. A slug picks one article, and a limit keeps only the newest few */
+async function findPublishedArticles({ slug, limit }: ArticleFilter = {}): Promise<PublishedArticle[]> {
+  const query = db
     .select({
       slug: articles.slug,
       title: articles.title,
@@ -49,19 +56,26 @@ async function findPublishedArticles(slug: string | null): Promise<PublishedArti
     })
     .from(articles)
     .leftJoin(projects, and(eq(articles.projectID, projects.id), eq(projects.published, true)))
-    .where(and(eq(articles.published, true), slug === null ? undefined : eq(articles.slug, slug)))
-    .orderBy(desc(articles.publishedAt));
+    .where(and(eq(articles.published, true), slug === undefined ? undefined : eq(articles.slug, slug)))
+    .orderBy(desc(articles.publishedAt))
+    .$dynamic();
+  const rows = limit === undefined ? await query : await query.limit(limit);
 
   return rows.map(toPublishedArticle);
 }
 
 export async function getPublishedArticles(): Promise<PublishedArticle[]> {
-  return findPublishedArticles(null);
+  return findPublishedArticles();
+}
+
+/** The three newest published articles, for the home page */
+export async function getHomeArticles(): Promise<PublishedArticle[]> {
+  return findPublishedArticles({ limit: homeArticleCount });
 }
 
 /** The published article with this slug, or null for a draft or a slug that doesn't exist */
 export async function getPublishedArticle(slug: string): Promise<PublishedArticle | null> {
-  const [article] = await findPublishedArticles(slug);
+  const [article] = await findPublishedArticles({ slug });
   return article ?? null;
 }
 
