@@ -1,5 +1,6 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
+  import ArrowRight from "@lucide/svelte/icons/arrow-right";
   import type { Project } from "$lib/server/content/projects";
 
   interface Props {
@@ -20,7 +21,7 @@
       <img src={project.imageURL} alt="" width="1600" height="1000" loading="lazy" onerror={() => (imageFailed = true)} />
     {/if}
   </span>
-  <svelte:element this={headingLevel} class="name">{project.title} <span class="arrow" aria-hidden="true">→</span></svelte:element>
+  <svelte:element this={headingLevel} class="name">{project.title} <span class="arrow" aria-hidden="true"><ArrowRight size="1em" strokeWidth={2} /></span></svelte:element>
   <p class="description">{project.description}</p>
 </a>
 
@@ -52,11 +53,8 @@
       height: 100%;
       object-fit: cover;
       object-position: top left;
+      filter: var(--filter-picture);
     }
-  }
-
-  :global([data-theme="dark"]) .shot img {
-    filter: brightness(0.82);
   }
 
   .fallback {
@@ -75,6 +73,7 @@
 
   .arrow {
     display: inline-block;
+    vertical-align: -0.125em;
     color: var(--colour-text-muted);
     transition:
       transform 250ms var(--ease-out),

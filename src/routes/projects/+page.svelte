@@ -1,6 +1,7 @@
 <script lang="ts">
   import PageHead from "$lib/components/head/PageHead.svelte";
-  import ProjectDisplayList from "$lib/components/projects/ProjectDisplayList.svelte";
+  import PageHeader from "$lib/components/layout/PageHeader.svelte";
+  import ProjectDetail from "$lib/components/projects/ProjectDetail.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
@@ -8,20 +9,26 @@
 
 <PageHead title="Projects" description="Things James Doyle has built, from a music review site to a falling sand simulation." />
 
-<section>
-  <h1>Projects</h1>
-  <ProjectDisplayList projects={data.projects} headingLevel="h2" />
-</section>
+<PageHeader title="Projects" intro="Things I've built in my own time." />
+
+<ul class="project-list">
+  {#each data.projects as project, index (project.id)}
+    <li><ProjectDetail {project} headingLevel="h2" imageLoading={index === 0 ? "eager" : "lazy"} /></li>
+  {/each}
+</ul>
 
 <style>
-  section {
-    padding-top: var(--space-5);
+  .project-list {
+    display: grid;
+    gap: var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  h1 {
-    margin-bottom: var(--space-5);
-    font-size: var(--font-size-page-title);
-    font-weight: 800;
-    font-stretch: 90%;
+  @media (max-width: 52rem) {
+    .project-list {
+      gap: var(--space-7);
+    }
   }
 </style>

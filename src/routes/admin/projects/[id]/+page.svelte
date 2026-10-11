@@ -8,7 +8,7 @@
   import Field from "$lib/components/form/Field.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
-  import ProjectDisplay, { type ProjectBand } from "$lib/components/projects/ProjectDisplay.svelte";
+  import ProjectDetail, { type ProjectDetailFields } from "$lib/components/projects/ProjectDetail.svelte";
   import type { PageProps } from "./$types";
 
   let { data, form }: PageProps = $props();
@@ -32,19 +32,24 @@
   );
 
   // What's been typed since the page loaded. Until then, the preview shows the form's starting values
-  let typedBand = $state<ProjectBand>();
-  const band = $derived(typedBand ?? bandFrom(values));
+  let typedPreview = $state<ProjectDetailFields>();
+  const preview = $derived(typedPreview ?? previewFrom(values));
 
-  /** The band's fields from the form's text, trimmed, with empty optional fields as null like a save stores them */
-  function bandFrom(fields: Record<string, string | undefined>): ProjectBand {
+  /** The preview's fields from the form's text, trimmed, with empty optional fields as null and the stack split by line, like a save stores them */
+  function previewFrom(fields: Record<string, string | undefined>): ProjectDetailFields {
     const text = (name: string) => (fields[name] ?? "").trim();
     return {
+      id: data.project.id,
       title: text("title"),
       description: text("description"),
       imageURL: text("imageURL"),
       liveURL: text("liveURL") || null,
       liveLabel: text("liveLabel") || null,
       sourceURL: text("sourceURL") || null,
+      stack: text("stack")
+        .split("\n")
+        .map(line => line.trim())
+        .filter(line => line !== ""),
     };
   }
 
@@ -53,7 +58,7 @@
     for (const [name, value] of new FormData(event.currentTarget)) {
       if (typeof value === "string") fields[name] = value;
     }
-    typedBand = bandFrom(fields);
+    typedPreview = previewFrom(fields);
   }
 </script>
 
@@ -70,19 +75,19 @@
         <Field label="Live link" name="liveURL" hint="Optional" value={values.liveURL} error={form?.errors?.liveURL?.[0]} />
         <Field label="Live link text" name="liveLabel" hint="Needed when there's a live link" value={values.liveLabel} error={form?.errors?.liveLabel?.[0]} />
         <Field label="Source link" name="sourceURL" hint="Optional" value={values.sourceURL} error={form?.errors?.sourceURL?.[0]} />
+        <Field label="Stack" name="stack" multiline hint="One per line" value={values.stack} error={form?.errors?.stack?.[0]} />
       </div>
     </fieldset>
 
     <div class="preview">
       <h2>Preview</h2>
-      <ProjectDisplay project={band} index={data.position} headingLevel="h3" />
+      <ProjectDetail project={preview} headingLevel="h3" imageLoading="eager" />
     </div>
 
     <fieldset>
       <legend>On the CV</legend>
       <div class="fields">
         <Field label="Year" name="year" hint="Optional" inputmode="numeric" value={values.year} error={form?.errors?.year?.[0]} />
-        <Field label="Stack" name="stack" multiline hint="One per line" value={values.stack} error={form?.errors?.stack?.[0]} />
         <div class="wide">
           <Field label="Highlights" name="highlights" multiline hint="One per line" value={values.highlights} error={form?.errors?.highlights?.[0]} />
         </div>

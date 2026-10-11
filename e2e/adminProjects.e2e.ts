@@ -6,7 +6,7 @@ const seededNames = ["JamesReviewsMusic", "Phantom", "SandSim", "Issues", "Vinta
 
 async function publicProjectNames(page: Page): Promise<string[]> {
   await page.goto("/projects");
-  return page.locator(".bands h2").allTextContents();
+  return page.locator(".project-list h2").allTextContents();
 }
 
 test("a signed-out visitor can't add a project", async ({ page, request, baseURL }) => {
@@ -94,10 +94,12 @@ test("the preview follows what's typed, before it's saved", async ({ page }) => 
 
   await page.getByLabel("Name").fill("Phantom 2");
   await page.getByLabel("Live link text").fill("Try it");
+  await page.getByLabel("Stack").fill("Svelte\n\n  Rust  \nGo");
   await expect(preview.getByRole("heading", { level: 3 })).toHaveText("Phantom 2");
   await expect(preview.getByRole("link", { name: "Try it" })).toBeVisible();
+  await expect(preview.getByText("Built with Svelte, Rust and Go")).toBeVisible();
 
   await page.goto("/projects");
-  await expect(page.locator(".bands h2")).toContainText(["Phantom"]);
-  await expect(page.locator(".bands h2").filter({ hasText: "Phantom 2" })).toHaveCount(0);
+  await expect(page.locator(".project-list h2")).toContainText(["Phantom"]);
+  await expect(page.locator(".project-list h2").filter({ hasText: "Phantom 2" })).toHaveCount(0);
 });

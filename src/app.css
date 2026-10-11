@@ -28,6 +28,7 @@
   --colour-text-on-red: light-dark(oklch(0.98 0.01 27), oklch(0.17 0.03 27));
 
   --shadow-picture: 0 18px 30px -22px var(--colour-shadow), 0 0 0 1px var(--colour-edge);
+  --filter-picture: none;
   --shadow-picture-lifted: 0 24px 36px -22px var(--colour-shadow), 0 0 0 1px var(--colour-edge);
 
   --font-body: "Mona Sans Variable", system-ui, sans-serif;
@@ -101,7 +102,14 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --line-height-body: 1.65;
+  --filter-picture: brightness(0.82);
+}
+
+/* light-dark() only takes colours, so the screenshot dimming needs the system setting checked here too */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --filter-picture: brightness(0.82);
+  }
 }
 
 /* Base styles */
@@ -196,6 +204,12 @@ a {
   :root,
   :root[data-theme] {
     color-scheme: light;
+  }
+
+  /* As specific as the dark rules above, so print always shows screenshots undimmed */
+  :root:not([data-theme="light"]),
+  :root[data-theme] {
+    --filter-picture: none;
   }
 
   html {
