@@ -14,13 +14,13 @@ test("the admin edits the profile, and the home page shows it", async ({ page })
   await logIn(page);
   await page.getByRole("link", { name: "Profile" }).click();
 
-  await page.getByLabel("Role").fill("Test Lead");
+  await page.getByLabel("Intro").fill("Test lead in Dublin.");
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("Profile saved.")).toBeVisible();
   await expect(page.getByLabel("Name")).toHaveValue("James Doyle");
 
   await page.goto("/");
-  await expect(page.locator("header .role")).toHaveText("Test Lead");
+  await expect(page.locator("header .intro")).toHaveText("Test lead in Dublin.");
 });
 
 test("without JavaScript, a failed save keeps what was typed and says what's wrong", async ({ page }) => {

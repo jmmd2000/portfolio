@@ -148,7 +148,7 @@ export const seedData: SeedData = {
       liveURL: "https://issues.jamesmddoyle.com",
       liveLabel: "Live site",
       stack: ["Svelte", "CSS", "Hono.js", "TypeScript"],
-      featured: false,
+      featured: true,
       published: true,
       sort: 4,
     },

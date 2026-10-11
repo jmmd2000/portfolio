@@ -49,9 +49,9 @@ describe("unpublished projects", () => {
 });
 
 describe("the home page", () => {
-  it("shows at most three featured projects, in sort order", async () => {
+  it("shows at most four featured projects, in sort order", async () => {
     await db.insert(projects).values({
-      title: "Fourth featured",
+      title: "Fifth featured",
       description: "Sorted last, so it's the one left off.",
       imageURL: "https://assets.jamesmddoyle.com/fourth.webp",
       featured: true,
@@ -61,6 +61,6 @@ describe("the home page", () => {
 
     const titles = titlesOf(await getFeaturedProjects());
 
-    expect(titles).toEqual(["JamesReviewsMusic", "Phantom", "SandSim"]);
+    expect(titles).toEqual(["JamesReviewsMusic", "Phantom", "SandSim", "Issues"]);
   });
 });

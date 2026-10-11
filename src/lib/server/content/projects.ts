@@ -6,14 +6,14 @@ import { moveRow, nextSort } from "./sortOrder";
 
 export type Project = typeof projects.$inferSelect;
 
-const homeProjectCount = 3;
+const homeProjectCount = 4;
 
 /** Every published project, in sort order. */
 export async function getPublishedProjects(): Promise<Project[]> {
   return db.select().from(projects).where(eq(projects.published, true)).orderBy(asc(projects.sort));
 }
 
-/** The first three published, featured projects in sort order, for the home page. */
+/** The first four published, featured projects in sort order, for the home page. */
 export async function getFeaturedProjects(): Promise<Project[]> {
   return db
     .select()
