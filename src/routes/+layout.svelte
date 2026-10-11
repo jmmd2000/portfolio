@@ -16,32 +16,50 @@
   <link rel="preload" href={monaSansLatin} as="font" type="font/woff2" crossorigin="anonymous" />
 </svelte:head>
 
-<div class="page">
-  <Nav currentPath={page.url.pathname} signedIn={data.signedIn} />
-  <!-- kay <main> so the animation plays on each client nav -->
-  {#key page.url.pathname}
-    <main>
-      {@render children()}
-    </main>
-  {/key}
-  <Footer location={data.profile.location} socials={data.socials} signedIn={data.signedIn} />
+<div class="site">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="inner">
+    <Nav currentPath={page.url.pathname} signedIn={data.signedIn} />
+  </div>
+  <main id="main" class="inner">
+    {@render children()}
+  </main>
+  <Footer socials={data.socials} signedIn={data.signedIn} />
 </div>
 
 <style>
-  .page {
+  .site {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  .inner {
+    width: 100%;
     max-width: var(--page-width);
-    margin: 0 auto;
-    padding: 0 var(--page-gutter);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
   }
 
   main {
-    animation: enter var(--duration-entrance) var(--ease-out) both;
+    flex: 1;
   }
 
-  @keyframes enter {
-    from {
-      opacity: 0;
-      transform: translateY(0.5rem);
+  .skip-link {
+    position: absolute;
+    inset-inline-start: var(--space-4);
+    inset-block-start: var(--space-4);
+    z-index: 20;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-medium);
+    background: var(--colour-foreground);
+    color: var(--colour-background);
+    font-weight: 500;
+    text-decoration: none;
+    transform: translateY(-200%);
+
+    &:focus-visible {
+      transform: none;
     }
   }
 </style>

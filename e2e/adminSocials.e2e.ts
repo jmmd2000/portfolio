@@ -11,7 +11,7 @@ test("a signed-out visitor can't add a link", async ({ page, request, baseURL })
   await request.post("/admin/socials?/add", { headers: { origin: baseURL ?? "" }, form: { name: "Spam", url: "https://example.com" } });
 
   await page.goto("/");
-  expect(await footerLinkNames(page)).toEqual(["GitHub", "LinkedIn", "Email"]);
+  expect(await footerLinkNames(page)).toEqual(["GitHub", "LinkedIn"]);
 });
 
 test("the admin adds, renames and moves a link, and the footer follows", async ({ page }) => {
@@ -34,7 +34,7 @@ test("the admin adds, renames and moves a link, and the footer follows", async (
   await expect(page.locator("legend")).toHaveText(["GitHub", "LinkedIn", "Bsky", "Email", "Add a link"]);
 
   await page.goto("/");
-  expect(await footerLinkNames(page)).toEqual(["GitHub", "LinkedIn", "Bsky", "Email"]);
+  expect(await footerLinkNames(page)).toEqual(["GitHub", "LinkedIn", "Bsky"]);
 });
 
 test("deleting a link takes a second click", async ({ page }) => {
@@ -49,5 +49,6 @@ test("deleting a link takes a second click", async ({ page }) => {
   await expect(email).toBeHidden();
 
   await page.goto("/");
+  await expect(page.locator("footer").getByText("Say hello")).toBeHidden();
   expect(await footerLinkNames(page)).toEqual(["GitHub", "LinkedIn"]);
 });

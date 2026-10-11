@@ -1,71 +1,153 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
+  import CopyButton from "$lib/components/contact/CopyButton.svelte";
+  import { linkText } from "$lib/components/contact/linkText";
   import type { Social } from "$lib/server/content/socials";
 
   interface Props {
-    location: string;
     socials: Social[];
     signedIn: boolean;
   }
 
-  let { location, socials, signedIn }: Props = $props();
+  let { socials, signedIn }: Props = $props();
+
+  let emailSocial = $derived(socials.find(social => social.url.startsWith("mailto:")));
+  let otherSocials = $derived(socials.filter(social => social !== emailSocial));
+  let emailLink = $state<HTMLAnchorElement>();
 </script>
 
 <footer>
-  <span>{location}</span>
-  <ul class="socials">
-    {#each socials as social (social.id)}
-      <li><a href={social.url} rel="external">{social.name}</a></li>
-    {/each}
-  </ul>
-  {#if !signedIn}
-    <a class="log-in" href={resolve("/admin/login")}>Log in</a>
-  {/if}
+  <div class="inner">
+    {#if emailSocial}
+      <p class="hello">Say hello</p>
+      <div class="email-row">
+        <a class="email" href={emailSocial.url} rel="external" bind:this={emailLink}>{linkText(emailSocial.url)}</a>
+        <CopyButton text={linkText(emailSocial.url)} selectTarget={emailLink} />
+      </div>
+    {/if}
+    <div class="footer-row">
+      <ul class="socials">
+        {#each otherSocials as social (social.id)}
+          <li><a href={social.url} rel="external">{social.name}</a></li>
+        {/each}
+      </ul>
+      {#if !signedIn}
+        <a class="log-in" href={resolve("/admin/login")}>Log in</a>
+      {/if}
+    </div>
+  </div>
 </footer>
 
 <style>
   footer {
+    margin-top: var(--space-8);
+    padding-block: var(--space-7) var(--space-6);
+    background: var(--colour-deep);
+    color: var(--colour-text-on-deep-muted);
+
+    :global(:focus-visible) {
+      outline-color: var(--colour-text-on-deep);
+    }
+  }
+
+  .inner {
+    width: 100%;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+  }
+
+  .hello {
+    margin-bottom: var(--space-3);
+    color: var(--colour-text-on-deep);
+    font-size: var(--font-size-heading);
+    font-weight: 620;
+    font-stretch: var(--font-stretch-heading);
+  }
+
+  .email-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .email {
+    color: var(--colour-text-on-deep);
+    font-size: clamp(1.75rem, 5vw, 3.5rem);
+    font-weight: 600;
+    font-stretch: var(--font-stretch-heading);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 8px;
+    transition: text-decoration-color 200ms var(--ease-out);
+  }
+
+  .footer-row {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: var(--space-3);
-    margin-top: var(--space-8);
-    padding: var(--space-3) 0 var(--space-6);
-    border-top: var(--border-thick) solid var(--colour-foreground);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-2);
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    margin-top: var(--space-7);
+    font-size: var(--font-size-label);
   }
 
   .socials {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-2) var(--space-5);
     margin: 0;
     padding: 0;
     list-style: none;
 
     a {
-      border-bottom: var(--border-thick) solid transparent;
-      color: var(--colour-teal);
-      font-weight: 600;
+      color: var(--colour-text-on-deep);
+      font-weight: 500;
       text-decoration: none;
-      transition: border-color var(--duration-quick) var(--ease-out);
-
-      &:hover {
-        border-bottom-color: var(--colour-teal);
-      }
+      transition: opacity var(--duration-quick) var(--ease-out);
     }
   }
 
   .log-in {
-    flex-basis: 100%;
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-1);
-    text-align: right;
+    color: var(--colour-text-on-deep-muted);
+    font-size: 0.875rem;
     text-decoration: none;
+  }
 
-    &:hover {
-      color: var(--colour-foreground);
+  @media (hover: hover) {
+    .email:hover {
+      text-decoration-color: var(--colour-text-on-deep-muted);
+    }
+
+    .socials a:hover {
+      opacity: 0.75;
+    }
+
+    .log-in:hover {
+      color: var(--colour-text-on-deep);
+    }
+  }
+
+  @media (hover: none) {
+    .socials a,
+    .log-in {
+      display: inline-block;
+      padding-block: var(--space-3);
+    }
+  }
+
+  @media (max-width: 52rem) {
+    footer {
+      margin-top: var(--space-7);
+      padding-block: var(--space-6) var(--space-5);
+    }
+
+    .footer-row {
+      margin-top: var(--space-6);
     }
   }
 
