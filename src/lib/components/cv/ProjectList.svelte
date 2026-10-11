@@ -3,6 +3,7 @@
   import ExternalArrow from "$lib/components/links/ExternalArrow.svelte";
   import type { Project } from "$lib/server/content/projects";
   import BulletList from "./BulletList.svelte";
+  import DotList from "./DotList.svelte";
 
   interface Props {
     projects: Project[];
@@ -46,7 +47,7 @@
         <p class="description">{project.description}</p>
       {/if}
       {#if project.stack.length > 0}
-        <p class="tags">{project.stack.join(" · ")}</p>
+        <p class="tags"><DotList items={project.stack} /></p>
       {/if}
     </li>
   {/each}

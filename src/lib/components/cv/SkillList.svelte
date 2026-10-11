@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SkillCategory } from "$lib/server/content/cv";
+  import DotList from "./DotList.svelte";
 
   interface Props {
     skillCategories: SkillCategory[];
@@ -12,7 +13,7 @@
   {#each skillCategories as category (category.id)}
     <div>
       <dt>{category.category}</dt>
-      <dd>{category.items.join(" · ")}</dd>
+      <dd><DotList items={category.items} /></dd>
     </div>
   {/each}
 </dl>

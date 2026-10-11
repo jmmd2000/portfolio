@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Job } from "$lib/server/content/cv";
   import BulletList from "./BulletList.svelte";
+  import DotList from "./DotList.svelte";
   import { formatDateRange } from "./dateRange";
 
   interface Props {
@@ -32,7 +33,7 @@
   </div>
   <BulletList items={job.bullets} />
   {#if job.tags.length > 0}
-    <p class="tags">{job.tags.join(" · ")}</p>
+    <p class="tags"><DotList items={job.tags} /></p>
   {/if}
 </article>
 
