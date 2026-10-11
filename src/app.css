@@ -33,7 +33,9 @@
   --shadow-picture-lifted: 0 24px 36px -22px var(--colour-shadow), 0 0 0 1px var(--colour-edge);
 
   --font-body: "Mona Sans Variable", system-ui, sans-serif;
+  --font-code: "Monaspace Neon", ui-monospace, monospace;
 
+  --font-size-code: 0.875rem;
   --font-size-label: 0.9375rem;
   --font-size-body: 1.0625rem;
   --font-size-summary: 1.125rem;

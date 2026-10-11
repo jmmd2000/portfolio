@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@fontsource/monaspace-neon':
+        specifier: 5.3.0
+        version: 5.3.0
       better-auth:
         specifier: 1.7.6
         version: 1.7.6(@sveltejs/kit@2.70.3(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.1(@typescript-eslint/types@8.70.1))(vite@8.3.1(@types/node@26.6.4)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(svelte@5.57.1(@typescript-eslint/types@8.70.1))(typescript@6.0.3)(vite@8.3.1(@types/node@26.6.4)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)))(drizzle-kit@0.31.11)(drizzle-orm@0.45.3(kysely@0.29.6)(postgres@3.4.9))(svelte@5.57.1(@typescript-eslint/types@8.70.1))(vitest@5.0.2)
@@ -707,6 +710,9 @@ packages:
 
   '@fontsource-variable/mona-sans@5.3.0':
     resolution: {integrity: sha512-PkxRB3KI4z9Gjpk7vVqgO3GMSyQuOIIj4TaRDbvbcDj8SzWwI38jvLTQxJM/cTRorhcT7h8qjcllR+qjRtM/Fg==}
+
+  '@fontsource/monaspace-neon@5.3.0':
+    resolution: {integrity: sha512-a4B4L4nmW+mW42gDb6JUugy2fA3DC0QKi2yRMXKzuNsN+wHhUvrqgYndIBMds+Evq/cWaMJgd06x14dHuBNxwA==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -2966,6 +2972,8 @@ snapshots:
       levn: 0.4.1
 
   '@fontsource-variable/mona-sans@5.3.0': {}
+
+  '@fontsource/monaspace-neon@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:
