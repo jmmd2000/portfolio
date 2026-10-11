@@ -50,13 +50,6 @@
   </section>
 {/if}
 
-{#if data.currentlyRows.length > 0}
-  <section class="currently" aria-labelledby="currently-heading">
-    <h2 id="currently-heading">Currently</h2>
-    <CurrentlyCards rows={data.currentlyRows} />
-  </section>
-{/if}
-
 {#if data.articles.length > 0}
   <section class="articles" aria-labelledby="articles-heading">
     <div class="title-row">
@@ -73,6 +66,13 @@
         </li>
       {/each}
     </ul>
+  </section>
+{/if}
+
+{#if data.currentlyRows.length > 0}
+  <section class="currently" aria-labelledby="currently-heading">
+    <h2 id="currently-heading">Currently</h2>
+    <CurrentlyCards rows={data.currentlyRows} />
   </section>
 {/if}
 
@@ -138,7 +138,7 @@
   }
 
   .currently {
-    padding-block: var(--space-7) 0;
+    padding-block: var(--space-8) 0;
   }
 
   .articles {
@@ -232,9 +232,12 @@
       gap: var(--space-5);
     }
 
-    .currently,
     .articles {
       padding-block-start: var(--space-6);
+    }
+
+    .currently {
+      padding-block-start: var(--space-7);
     }
   }
 </style>
