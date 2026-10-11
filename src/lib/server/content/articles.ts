@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNotNull } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { articles, projects } from "$lib/server/db/schema";
 
@@ -77,6 +77,26 @@ export async function getHomeArticles(): Promise<PublishedArticle[]> {
 export async function getPublishedArticle(slug: string): Promise<PublishedArticle | null> {
   const [article] = await findPublishedArticles({ slug });
   return article ?? null;
+}
+
+export interface ArticleLink {
+  projectID: number;
+  slug: string;
+}
+
+/** Each published article that belongs to a project, so the projects page can link to it */
+export async function getPublishedArticleLinks(): Promise<ArticleLink[]> {
+  const rows = await db
+    .select({ projectID: articles.projectID, slug: articles.slug })
+    .from(articles)
+    .where(and(eq(articles.published, true), isNotNull(articles.projectID)));
+
+  // The query already drops rows without a project, but Drizzle still types projectID as nullable
+  const links: ArticleLink[] = [];
+  for (const row of rows) {
+    if (row.projectID !== null) links.push({ projectID: row.projectID, slug: row.slug });
+  }
+  return links;
 }
 
 /** The slugs of published articles, newest first, for the sitemap */

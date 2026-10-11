@@ -1,6 +1,6 @@
 <script lang="ts">
   import { linkText } from "$lib/components/contact/linkText";
-  import ExternalArrow from "$lib/components/links/ExternalArrow.svelte";
+  import LinkArrow from "$lib/components/links/LinkArrow.svelte";
   import type { Project } from "$lib/server/content/projects";
   import BulletList from "./BulletList.svelte";
   import DotList from "./DotList.svelte";
@@ -27,14 +27,16 @@
             {#if project.liveURL}
               <li>
                 <a href={project.liveURL} rel="external">
-                  <span class="label">{project.liveLabel}</span><span class="address">{linkText(project.liveURL)}</span><span class="visually-hidden"> for {project.title}</span><ExternalArrow />
+                  <span class="label">{project.liveLabel}</span><span class="address">{linkText(project.liveURL)}</span><span class="visually-hidden"> for {project.title}</span><LinkArrow
+                    kind="external"
+                  />
                 </a>
               </li>
             {/if}
             {#if project.sourceURL}
               <li>
                 <a href={project.sourceURL} rel="external">
-                  <span class="label">Source</span><span class="address">{linkText(project.sourceURL)}</span><span class="visually-hidden"> for {project.title}</span><ExternalArrow />
+                  <span class="label">Source</span><span class="address">{linkText(project.sourceURL)}</span><span class="visually-hidden"> for {project.title}</span><LinkArrow kind="external" />
                 </a>
               </li>
             {/if}

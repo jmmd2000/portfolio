@@ -13,7 +13,7 @@
 
 <ul class="project-list">
   {#each data.projects as project, index (project.id)}
-    <li><ProjectDetail {project} headingLevel="h2" imageLoading={index === 0 ? "eager" : "lazy"} /></li>
+    <li><ProjectDetail {project} headingLevel="h2" imageLoading={index === 0 ? "eager" : "lazy"} writeUpSlug={project.writeUpSlug} /></li>
   {/each}
 </ul>
 

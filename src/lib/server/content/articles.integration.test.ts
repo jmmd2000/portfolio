@@ -5,7 +5,7 @@ import { articles, projects } from "$lib/server/db/schema";
 import { seedDatabase } from "$lib/server/db/seed";
 import { testEnvironment } from "$lib/server/db/testEnvironment";
 import { wipeDatabase } from "$lib/server/db/wipe";
-import { countPublishedArticles, getPublishedArticle, getPublishedArticles, getPublishedArticleSlugs } from "./articles";
+import { countPublishedArticles, getPublishedArticle, getPublishedArticleLinks, getPublishedArticles, getPublishedArticleSlugs } from "./articles";
 
 beforeEach(async () => {
   await wipeDatabase(testEnvironment.DATABASE_URL_TEST);
@@ -84,6 +84,17 @@ describe("the project an article belongs to", () => {
     await db.delete(projects).where(eq(projects.id, projectID));
 
     expect((await getPublishedArticle("sand"))?.project).toBeNull();
+  });
+
+  it("gets a link to its article only once the article is published", async () => {
+    const projectID = await insertProject(true);
+    await insertArticle({ slug: "draft", projectID, published: false, publishedAt: null });
+    await insertArticle({ slug: "no-project" });
+    expect(await getPublishedArticleLinks()).toEqual([]);
+
+    await db.update(articles).set({ published: true, publishedAt: new Date() }).where(eq(articles.slug, "draft"));
+
+    expect(await getPublishedArticleLinks()).toEqual([{ projectID, slug: "draft" }]);
   });
 
   it("can only have one article", async () => {
