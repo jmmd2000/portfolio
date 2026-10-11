@@ -5,7 +5,7 @@ import { articles, projects } from "$lib/server/db/schema";
 import { seedDatabase } from "$lib/server/db/seed";
 import { testEnvironment } from "$lib/server/db/testEnvironment";
 import { wipeDatabase } from "$lib/server/db/wipe";
-import { countPublishedArticles, getPublishedArticle, getPublishedArticleLinks, getPublishedArticles, getPublishedArticleSlugs } from "./articles";
+import { countPublishedArticles, createArticle, getPublishedArticle, getPublishedArticleLinks, getPublishedArticles, getPublishedArticleSlugs, isSlugTaken } from "./articles";
 
 beforeEach(async () => {
   await wipeDatabase(testEnvironment.DATABASE_URL_TEST);
@@ -124,5 +124,23 @@ describe("the articles table", () => {
 
     const [edited] = await db.select({ updatedAt: articles.updatedAt }).from(articles);
     expect(edited?.updatedAt.getTime()).toBeGreaterThan(startedAt.getTime());
+  });
+});
+
+describe("admin editing", () => {
+  it("adds a new article as a draft, so it stays off the site", async () => {
+    const created = await createArticle({ title: "New", slug: "new", summary: "Not ready." });
+
+    expect(created.published).toBe(false);
+    expect(created.publishedAt).toBeNull();
+    expect(await getPublishedArticle("new")).toBeNull();
+  });
+
+  it("reports a slug as taken by another article, but not by the article being edited", async () => {
+    const created = await createArticle({ title: "New", slug: "new", summary: "Not ready." });
+
+    expect(await isSlugTaken("new")).toBe(true);
+    expect(await isSlugTaken("new", created.id)).toBe(false);
+    expect(await isSlugTaken("other")).toBe(false);
   });
 });

@@ -14,6 +14,7 @@
     <li><a href={resolve("/admin/socials")}>Socials</a></li>
     <li><a href={resolve("/admin/cv")}>CV</a></li>
     <li><a href={resolve("/admin/projects")}>Projects</a></li>
+    <li><a href={resolve("/admin/articles")}>Articles</a></li>
     <li><a href={resolve("/admin/currently")}>Currently</a></li>
   </ul>
 
