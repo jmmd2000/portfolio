@@ -1,64 +1,68 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import { page } from "$app/state";
   import PageHead from "$lib/components/head/PageHead.svelte";
+
+  const notFound = $derived(page.status === 404);
 </script>
 
-{#if page.status === 404}
-  <PageHead title="Page not found" description="This page does not exist." noindex />
+{#if notFound}
+  <PageHead title="Page not found" description="This page doesn't exist." noindex />
 {:else}
   <PageHead title="Something went wrong" description="Something went wrong loading this page." noindex />
 {/if}
 
-<section class="error">
-  {#if page.status === 404}
-    <h1>404</h1>
-    <p class="message">This page does not exist.</p>
+<section class="error" aria-labelledby="error-heading">
+  <p class="code" aria-hidden="true">{page.status}</p>
+  {#if notFound}
+    <h1 id="error-heading">This page doesn't exist.</h1>
+    <p class="detail">Nothing lives at <code>{page.url.pathname}</code>.</p>
   {:else}
-    <h1>{page.status}</h1>
-    <p class="message">Something went wrong :(</p>
+    <h1 id="error-heading">Something went wrong on my end.</h1>
+    <p class="detail">It's not you. Try again in a minute, or head somewhere else.</p>
   {/if}
-  <a href={resolve("/")} class="home-link">Go home</a>
 </section>
 
 <style>
+  /* The code is set wide like the home page name, the only other place type is this big */
   .error {
-    padding: var(--space-6) 0;
-
-    h1 {
-      color: var(--colour-orange);
-      font-size: var(--font-size-giant);
-      font-weight: 800;
-      font-stretch: 80%;
-      letter-spacing: -0.06em;
-    }
+    padding-block: var(--space-8) var(--space-7);
   }
 
-  .message {
-    max-width: 62ch;
+  .code {
+    color: var(--colour-foreground);
+    font-size: clamp(5rem, 16vw, 11rem);
+    font-weight: 620;
+    font-stretch: 125%;
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+  }
+
+  h1 {
+    max-width: 34ch;
+    margin-top: var(--space-5);
+    font-size: var(--font-size-lead);
+    font-weight: 450;
+    font-stretch: 100%;
+    line-height: 1.4;
+  }
+
+  .detail {
+    max-width: 60ch;
     margin-top: var(--space-3);
-    font-size: var(--font-size-4);
   }
 
-  .home-link {
-    display: inline-block;
-    margin-top: var(--space-4);
-    padding: var(--space-1) var(--space-3);
-    border: var(--border-thick) solid var(--colour-orange);
-    background: var(--colour-orange);
-    color: var(--colour-text-on-orange);
-    font-size: var(--font-size-2);
-    font-weight: 600;
-    text-decoration: none;
-    transition:
-      background var(--duration-quick) var(--ease-out),
-      border-color var(--duration-quick) var(--ease-out),
-      color var(--duration-quick) var(--ease-out);
+  code {
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-small);
+    background: var(--colour-surface);
+    color: var(--colour-foreground);
+    font-family: inherit;
+    overflow-wrap: anywhere;
+  }
 
-    &:hover {
-      border-color: var(--colour-foreground);
-      background: var(--colour-foreground);
-      color: var(--colour-background);
+  @media (max-width: 52rem) {
+    .error {
+      padding-block: var(--space-7) var(--space-6);
     }
   }
 </style>

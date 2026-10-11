@@ -19,7 +19,8 @@
 <div class="site">
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="inner">
-    <Nav currentPath={page.url.pathname} signedIn={data.signedIn} />
+    <!-- An error page isn't any of the nav's pages, even when its address starts like one -->
+    <Nav currentPath={page.error ? null : page.url.pathname} signedIn={data.signedIn} />
   </div>
   <main id="main" class="inner">
     {@render children()}

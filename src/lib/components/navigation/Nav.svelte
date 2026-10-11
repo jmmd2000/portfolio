@@ -4,18 +4,24 @@
   import { isCurrentPage, navigationLinks } from "./navigation";
 
   interface Props {
-    currentPath: string;
+    /** The page's path, or null when no nav link should show as the current page */
+    currentPath: string | null;
     signedIn: boolean;
   }
 
   let { currentPath, signedIn }: Props = $props();
+
+  function ariaCurrent(linkPath: string): "page" | undefined {
+    if (currentPath === null) return undefined;
+    return isCurrentPage(linkPath, currentPath) ? "page" : undefined;
+  }
 
   // Home is the mark on the left, so it isn't repeated in the links
   const pageLinks = navigationLinks.filter(link => link.path !== "/");
 </script>
 
 <nav aria-label="Main">
-  <a class="home" href={resolve("/")} aria-label="Home" aria-current={isCurrentPage("/", currentPath) ? "page" : undefined}>
+  <a class="home" href={resolve("/")} aria-label="Home" aria-current={ariaCurrent("/")}>
     <svg viewBox="0 0 32 32" aria-hidden="true">
       <rect width="32" height="32" rx="5" fill="var(--colour-accent)" />
       <path
@@ -27,10 +33,10 @@
   </a>
   <div class="links">
     {#each pageLinks as link (link.path)}
-      <a class="nav-link" href={resolve(link.path)} aria-current={isCurrentPage(link.path, currentPath) ? "page" : undefined}>{link.label}</a>
+      <a class="nav-link" href={resolve(link.path)} aria-current={ariaCurrent(link.path)}>{link.label}</a>
     {/each}
     {#if signedIn}
-      <a class="nav-link" href={resolve("/admin")} aria-current={isCurrentPage("/admin", currentPath) ? "page" : undefined}>Admin</a>
+      <a class="nav-link" href={resolve("/admin")} aria-current={ariaCurrent("/admin")}>Admin</a>
     {/if}
   </div>
   <ThemeToggle />
