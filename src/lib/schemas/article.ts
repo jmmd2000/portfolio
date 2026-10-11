@@ -18,10 +18,13 @@ const optionalProjectID = z
   .refine(text => text === "" || /^\d+$/.test(text), "Pick a project from the list.")
   .transform(text => (text === "" ? null : Number(text)));
 
+// Below the server's 512KB request limit, even when every character takes several bytes
+export const articleBody = z.string().max(100_000, "Keep the body to 100,000 characters or fewer.");
+
 /** The fields a new article needs. The rest are filled in on the article's own page */
 export const newArticleSchema = z.object({ title, slug, summary });
 
-export const articleSchema = z.object({ title, slug, summary, body: z.string(), projectID: optionalProjectID, published: checkbox });
+export const articleSchema = z.object({ title, slug, summary, body: articleBody, projectID: optionalProjectID, published: checkbox });
 
 export const slugTakenMessage = "Another article already uses this slug.";
 

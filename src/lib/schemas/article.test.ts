@@ -35,6 +35,11 @@ describe("articleSchema", () => {
     expect(articleSchema.safeParse({ ...typedEdit, projectID: "seven" }).success).toBe(false);
   });
 
+  it("refuses a body over 100,000 characters", () => {
+    expect(articleSchema.safeParse({ ...typedEdit, body: "a".repeat(100_000), projectID: "" }).success).toBe(true);
+    expect(articleSchema.safeParse({ ...typedEdit, body: "a".repeat(100_001), projectID: "" }).success).toBe(false);
+  });
+
   it("reads a ticked Published box as true, and a missing one as false", () => {
     expect(articleSchema.parse({ ...typedEdit, projectID: "", published: "on" }).published).toBe(true);
     expect(articleSchema.parse({ ...typedEdit, projectID: "" }).published).toBe(false);
