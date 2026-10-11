@@ -1,15 +1,16 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import ThemeToggle from "$lib/components/theme/ThemeToggle.svelte";
-  import { isCurrentPage, navigationLinks } from "./navigation";
+  import { isCurrentPage, shownNavigationLinks } from "./navigation";
 
   interface Props {
     /** The page's path, or null when no nav link should show as the current page */
     currentPath: string | null;
     signedIn: boolean;
+    hasArticles: boolean;
   }
 
-  let { currentPath, signedIn }: Props = $props();
+  let { currentPath, signedIn, hasArticles }: Props = $props();
 
   function ariaCurrent(linkPath: string): "page" | undefined {
     if (currentPath === null) return undefined;
@@ -17,7 +18,7 @@
   }
 
   // Home is the mark on the left, so it isn't repeated in the links
-  const pageLinks = navigationLinks.filter(link => link.path !== "/");
+  const pageLinks = $derived(shownNavigationLinks(hasArticles).filter(link => link.path !== "/"));
 </script>
 
 <nav aria-label="Main">

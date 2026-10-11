@@ -8,15 +8,18 @@
 </script>
 
 <script lang="ts">
-  import ExternalArrow from "$lib/components/links/ExternalArrow.svelte";
+  import { resolve } from "$app/paths";
+  import LinkArrow from "$lib/components/links/LinkArrow.svelte";
 
   interface Props {
     project: ProjectDetailFields;
     headingLevel: "h2" | "h3";
     imageLoading?: "eager" | "lazy";
+    /** The slug of the project's published article, if it has one */
+    writeUpSlug?: string | null;
   }
 
-  let { project, headingLevel, imageLoading = "lazy" }: Props = $props();
+  let { project, headingLevel, imageLoading = "lazy", writeUpSlug = null }: Props = $props();
 
   let imageFailed = $state(false);
 </script>
@@ -35,16 +38,21 @@
     {#if project.stack.length > 0}
       <p class="stack">Built with {stackList.format(project.stack)}</p>
     {/if}
-    {#if project.liveURL || project.sourceURL}
+    {#if project.liveURL || project.sourceURL || writeUpSlug}
       <ul class="links">
         {#if project.liveURL}
           <li>
-            <a href={project.liveURL} rel="external">{project.liveLabel}<span class="visually-hidden"> for {project.title}</span><ExternalArrow /></a>
+            <a href={project.liveURL} rel="external">{project.liveLabel}<span class="visually-hidden"> for {project.title}</span><LinkArrow kind="external" /></a>
           </li>
         {/if}
         {#if project.sourceURL}
           <li>
-            <a href={project.sourceURL} rel="external">Source<span class="visually-hidden"> for {project.title}</span><ExternalArrow /></a>
+            <a href={project.sourceURL} rel="external">Source<span class="visually-hidden"> for {project.title}</span><LinkArrow kind="external" /></a>
+          </li>
+        {/if}
+        {#if writeUpSlug}
+          <li>
+            <a href={resolve("/articles/[slug]", { slug: writeUpSlug })}>Read the write-up<span class="visually-hidden"> for {project.title}</span><LinkArrow kind="internal" /></a>
           </li>
         {/if}
       </ul>

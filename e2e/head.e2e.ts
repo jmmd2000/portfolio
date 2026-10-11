@@ -1,5 +1,7 @@
+import type { APIRequestContext } from "@playwright/test";
 import { navigationLinks } from "$lib/components/navigation/navigation";
 import { siteURL } from "$lib/site";
+import { insertArticle } from "./articles";
 import { expect, test } from "./fixtures";
 
 test("every page in the nav has its own title, a description and a canonical URL", async ({ page }) => {
@@ -23,11 +25,25 @@ test("a missing page is noindex and has no canonical URL", async ({ page }) => {
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
 });
 
-test("sitemap.xml lists every page in the nav", async ({ request }) => {
+async function sitemapURLs(request: APIRequestContext): Promise<string[]> {
   const response = await request.get("/sitemap.xml");
   const sitemap = await response.text();
+  return [...sitemap.matchAll(/<loc>(.+?)<\/loc>/g)].map(match => match[1]);
+}
 
-  const listedURLs = [...sitemap.matchAll(/<loc>(.+?)<\/loc>/g)].map(match => match[1]);
-  const pageURLs = navigationLinks.map(link => new URL(link.path, siteURL).href);
-  expect(listedURLs).toEqual(pageURLs);
+test("sitemap.xml lists the pages in the nav, without Articles while none are published", async ({ request }) => {
+  const pageURLs = ["/", "/projects", "/cv"].map(path => new URL(path, siteURL).href);
+
+  expect(await sitemapURLs(request)).toEqual(pageURLs);
+});
+
+test("sitemap.xml lists Articles and each published article, but never a draft", async ({ request }) => {
+  await insertArticle({ slug: "published" });
+  await insertArticle({ slug: "draft", published: false, publishedAt: null });
+
+  const listedURLs = await sitemapURLs(request);
+
+  expect(listedURLs).toContain(new URL("/articles", siteURL).href);
+  expect(listedURLs).toContain(new URL("/articles/published", siteURL).href);
+  expect(listedURLs).not.toContain(new URL("/articles/draft", siteURL).href);
 });

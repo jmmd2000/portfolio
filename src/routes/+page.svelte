@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ArrowRight from "@lucide/svelte/icons/arrow-right";
   import { resolve } from "$app/paths";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
@@ -53,6 +54,25 @@
   <section class="currently" aria-labelledby="currently-heading">
     <h2 id="currently-heading">Currently</h2>
     <CurrentlyCards rows={data.currentlyRows} />
+  </section>
+{/if}
+
+{#if data.articles.length > 0}
+  <section class="articles" aria-labelledby="articles-heading">
+    <div class="title-row">
+      <h2 id="articles-heading">Articles</h2>
+      <a href={resolve("/articles")}>All articles</a>
+    </div>
+    <ul>
+      {#each data.articles as article (article.slug)}
+        <li>
+          <a class="article" href={resolve("/articles/[slug]", { slug: article.slug })}>
+            <strong><span class="words">{article.title}</span> <span class="arrow" aria-hidden="true"><ArrowRight size="1em" strokeWidth={2} /></span></strong>
+            <time datetime={article.dateTime}>{article.date}</time>
+          </a>
+        </li>
+      {/each}
+    </ul>
   </section>
 {/if}
 
@@ -121,6 +141,81 @@
     padding-block: var(--space-7) 0;
   }
 
+  .articles {
+    padding-block: var(--space-7) 0;
+
+    ul {
+      display: grid;
+      gap: var(--space-4);
+      max-width: var(--reading-width);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+  }
+
+  .article {
+    display: block;
+    border-radius: var(--radius-medium);
+    color: var(--colour-text);
+    text-decoration: none;
+
+    strong {
+      display: block;
+      color: var(--colour-foreground);
+      font-weight: 560;
+      line-height: 1.35;
+    }
+
+    time {
+      color: var(--colour-text-muted);
+      font-size: var(--font-size-label);
+    }
+
+    &:focus-visible {
+      outline-offset: 6px;
+
+      .words {
+        text-decoration-color: var(--colour-accent);
+      }
+
+      .arrow {
+        transform: translateX(3px);
+        color: var(--colour-accent);
+      }
+    }
+  }
+
+  .words {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    transition: text-decoration-color var(--duration-quick) var(--ease-out);
+  }
+
+  .arrow {
+    display: inline-block;
+    color: var(--colour-text-muted);
+    vertical-align: -0.125em;
+    transition:
+      transform 250ms var(--ease-out),
+      color 250ms var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .article:hover {
+      .words {
+        text-decoration-color: var(--colour-accent);
+      }
+
+      .arrow {
+        transform: translateX(3px);
+        color: var(--colour-accent);
+      }
+    }
+  }
+
   @media (max-width: 52rem) {
     .two-columns {
       grid-template-columns: minmax(0, 1fr);
@@ -137,7 +232,8 @@
       gap: var(--space-5);
     }
 
-    .currently {
+    .currently,
+    .articles {
       padding-block-start: var(--space-6);
     }
   }

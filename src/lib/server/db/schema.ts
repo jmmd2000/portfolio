@@ -72,6 +72,28 @@ export const projects = pgTable(
   table => [check("projects_live_link", sql`(${table.liveURL} is null) = (${table.liveLabel} is null)`)]
 );
 
+export const articles = pgTable(
+  "articles",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    slug: text().notNull().unique(),
+    title: text().notNull(),
+    summary: text().notNull(),
+    body: text().notNull(),
+    published: boolean().notNull().default(false),
+    publishedAt: timestamp({ withTimezone: true }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    projectID: integer()
+      .unique("articles_project_id_unique")
+      .references(() => projects.id, { onDelete: "set null" }),
+  },
+  table => [check("articles_published_date", sql`not ${table.published} or ${table.publishedAt} is not null`)]
+);
+
 export const currently = pgTable("currently", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   label: text().notNull(),
