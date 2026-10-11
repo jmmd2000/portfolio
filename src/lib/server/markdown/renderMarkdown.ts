@@ -1,10 +1,10 @@
 import { Marked, type Tokens } from "marked";
 import sanitizeHtml from "sanitize-html";
+import { createCodeBlockRenderer } from "./highlightCode";
 
 const imageHost = "assets.jamesmddoyle.com";
 const siteHost = "jamesmddoyle.com";
 
-/** The first heading level an article uses, below the page's own h1, and the last */
 const topHeadingLevel = 2;
 const bottomHeadingLevel = 4;
 
@@ -48,9 +48,10 @@ function isAllowedImage(src: string | undefined): boolean {
 /**
  * Turns an article's markdown into HTML. marked does not sanitise, so sanitize-html runs
  * last over everything with a strict allowlist. Headings get ids from their text, links
- * keep only safe addresses, and images only come from the site's asset host.
+ * keep only safe addresses, images only come from the site's asset host, and code blocks are highlighted.
  */
-export function renderMarkdown(markdown: string): string {
+export async function renderMarkdown(markdown: string): Promise<string> {
+  const renderCodeBlock = await createCodeBlockRenderer();
   // The ids this render made, so a hand-written id in raw HTML can be told apart and dropped
   const headingIDs = new Set<string>();
 
@@ -66,6 +67,9 @@ export function renderMarkdown(markdown: string): string {
         headingIDs.add(id);
         return `<h${level} id="${id}">${this.parser.parseInline(tokens)}</h${level}>\n`;
       },
+      code({ text, lang }: Tokens.Code): string {
+        return renderCodeBlock(text, lang);
+      },
     },
   });
 
@@ -80,7 +84,35 @@ export function renderMarkdown(markdown: string): string {
   }
 
   return sanitizeHtml(html, {
-    allowedTags: ["p", "br", "h2", "h3", "h4", "ul", "ol", "li", "blockquote", "strong", "em", "del", "a", "code", "pre", "img", "hr", "table", "thead", "tbody", "tr", "th", "td", "div"],
+    allowedTags: [
+      "p",
+      "br",
+      "h2",
+      "h3",
+      "h4",
+      "ul",
+      "ol",
+      "li",
+      "blockquote",
+      "strong",
+      "em",
+      "del",
+      "a",
+      "code",
+      "pre",
+      "img",
+      "hr",
+      "table",
+      "thead",
+      "tbody",
+      "tr",
+      "th",
+      "td",
+      "div",
+      "figure",
+      "figcaption",
+      "span",
+    ],
     allowedAttributes: {
       a: ["href", "rel"],
       h2: ["id"],
@@ -90,6 +122,11 @@ export function renderMarkdown(markdown: string): string {
       th: [{ name: "align", values: ["left", "center", "right"] }],
       td: [{ name: "align", values: ["left", "center", "right"] }],
       div: ["data-demo"],
+      pre: [{ name: "tabindex", values: ["0"] }],
+    },
+    allowedClasses: {
+      figure: ["code-block"],
+      span: ["line", "keyword", "comment"],
     },
     allowedSchemes: ["http", "https", "mailto"],
     allowProtocolRelative: false,
