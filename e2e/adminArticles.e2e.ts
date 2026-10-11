@@ -65,3 +65,22 @@ test("publishing an article puts it on the site as a write-up for its project", 
   await page.goto("/articles/how-the-sand-falls");
   await expect(page.getByText("Write-up for SandSim")).toBeVisible();
 });
+
+test("deleting an article asks first, then removes it from the admin and the site", async ({ page }) => {
+  await insertArticle({ slug: "how-the-sand-falls" });
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/articles");
+  await page.getByRole("link", { name: "How the sand falls" }).click();
+
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await page.getByRole("button", { name: "Keep" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("How the sand falls");
+
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await page.getByRole("button", { name: "Delete How the sand falls" }).click();
+
+  await expect(page.getByText("No articles yet.")).toBeVisible();
+  const response = await page.goto("/articles/how-the-sand-falls");
+  expect(response?.status()).toBe(404);
+});

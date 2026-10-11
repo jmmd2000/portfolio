@@ -165,3 +165,8 @@ export async function getProjectChoices(editedArticleID: number): Promise<Articl
     .where(or(isNull(articles.id), eq(articles.id, editedArticleID)))
     .orderBy(asc(projects.sort));
 }
+
+export async function deleteArticle(id: number): Promise<boolean> {
+  const deleted = await db.delete(articles).where(eq(articles.id, id)).returning({ id: articles.id });
+  return deleted.length > 0;
+}

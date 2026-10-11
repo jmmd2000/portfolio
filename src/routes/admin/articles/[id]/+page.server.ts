@@ -1,7 +1,7 @@
-import { error, fail } from "@sveltejs/kit";
+import { error, fail, redirect } from "@sveltejs/kit";
 import { z } from "zod";
 import { requireAdmin } from "$lib/server/auth/requireAdmin";
-import { getArticle, getProjectChoices, isSlugTaken, updateArticle } from "$lib/server/content/articles";
+import { deleteArticle, getArticle, getProjectChoices, isSlugTaken, updateArticle } from "$lib/server/content/articles";
 import { formText } from "$lib/server/formText";
 import { articleSchema, slugTakenMessage, type ArticleInput } from "$lib/schemas/article";
 import type { Actions, PageServerLoad } from "./$types";
@@ -48,5 +48,13 @@ export const actions: Actions = {
     const updated = await updateArticle(id, result.data);
     if (!updated) error(404, "No article with that id");
     return { message: `${updated.title} saved.` };
+  },
+
+  delete: async ({ locals, params }) => {
+    requireAdmin(locals);
+
+    const deleted = await deleteArticle(articleID(params.id));
+    if (!deleted) error(404, "No article with that id");
+    redirect(303, "/admin/articles");
   },
 };

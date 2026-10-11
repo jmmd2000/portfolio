@@ -2,6 +2,7 @@
   import { enhance } from "$app/forms";
   import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
+  import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
@@ -45,6 +46,7 @@
 
     <div class="actions">
       <Button type="submit" variant="primary">Save</Button>
+      <ConfirmDelete name={data.article.title} formaction="?/delete" />
       {#if form?.message}
         <FormMessage status="success">{form.message}</FormMessage>
       {/if}
