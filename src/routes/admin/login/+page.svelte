@@ -29,14 +29,13 @@
 
 <style>
   section {
-    padding-top: var(--space-5);
+    padding-block: var(--space-7) 0;
   }
 
   h1 {
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-6);
     font-size: var(--font-size-page-title);
-    font-weight: 800;
-    font-stretch: 90%;
+    line-height: 1.05;
   }
 
   form {
@@ -47,5 +46,11 @@
 
   .actions {
     margin-top: var(--space-1);
+  }
+
+  @media (max-width: 52rem) {
+    section {
+      padding-block-start: var(--space-6);
+    }
   }
 </style>

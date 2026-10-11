@@ -21,14 +21,19 @@
 <style>
   section {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--space-6);
     justify-items: start;
-    padding-top: var(--space-5);
+    padding-block: var(--space-7) 0;
   }
 
   h1 {
     font-size: var(--font-size-page-title);
-    font-weight: 800;
-    font-stretch: 90%;
+    line-height: 1.05;
+  }
+
+  @media (max-width: 52rem) {
+    section {
+      padding-block-start: var(--space-6);
+    }
   }
 </style>

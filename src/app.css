@@ -23,6 +23,7 @@
   --colour-text-on-deep-muted: oklch(0.84 0.04 var(--hue));
   --colour-surface: color-mix(in oklch, var(--colour-foreground) 5%, var(--colour-background));
   --colour-shadow: light-dark(oklch(0.2 0.03 var(--hue) / 0.55), oklch(0.05 0.01 var(--hue) / 0.8));
+  --colour-divider: color-mix(in oklch, var(--colour-text-muted) 30%, transparent);
   --colour-edge: light-dark(transparent, color-mix(in oklch, oklch(0.95 0.006 var(--hue)) 12%, transparent));
   --colour-red: light-dark(oklch(0.55 0.19 27), oklch(0.68 0.17 27));
   --colour-text-on-red: light-dark(oklch(0.98 0.01 27), oklch(0.17 0.03 27));
@@ -68,32 +69,6 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-quick: 150ms;
   --duration-lift: 400ms;
-
-  /* Old names */
-  --colour-panel: var(--colour-tint);
-  --colour-divider: color-mix(in oklch, var(--colour-text-muted) 30%, transparent);
-  --colour-orange: var(--colour-accent);
-  --colour-text-on-orange: var(--colour-background);
-  --colour-teal: var(--colour-accent);
-  --colour-text-on-teal: var(--colour-background);
-  --colour-text-on-teal-muted: var(--colour-background);
-  --colour-text-on-foreground: var(--colour-background);
-  --colour-text-on-foreground-muted: var(--colour-text-muted);
-  --colour-link-on-foreground: var(--colour-accent);
-  --font-display: var(--font-body);
-  --font-mono: var(--font-body);
-  --font-size-1: 0.875rem;
-  --font-size-2: var(--font-size-label);
-  --font-size-3: 1rem;
-  --font-size-4: var(--font-size-summary);
-  --font-size-5: var(--font-size-title);
-  --font-size-6: 1.5rem;
-  --font-size-hero: var(--font-size-display);
-  --font-size-giant: var(--font-size-display);
-  --space-panel: var(--space-5);
-  --border-thin: 1px;
-  --border-thick: 2px;
-  --duration-entrance: 0.6s;
 }
 
 :root[data-theme="light"] {

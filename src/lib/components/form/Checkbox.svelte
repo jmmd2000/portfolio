@@ -19,15 +19,15 @@
     align-items: center;
     gap: var(--space-2);
     color: var(--colour-foreground);
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
   }
 
   input {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.125rem;
+    height: 1.125rem;
     margin: 0;
-    accent-color: var(--colour-orange);
+    accent-color: var(--colour-accent);
     cursor: pointer;
   }
 </style>

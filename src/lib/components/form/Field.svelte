@@ -49,7 +49,7 @@
 <style>
   .field {
     display: grid;
-    justify-items: start;
+    gap: var(--space-1);
     transition: translate var(--duration-quick) var(--ease-out);
 
     &:focus-within {
@@ -58,37 +58,32 @@
   }
 
   label {
-    padding: 0.3rem var(--space-2) 0.2rem;
-    background: var(--colour-foreground);
-    color: var(--colour-text-on-foreground);
-    font-size: var(--font-size-2);
-    font-weight: 700;
-    transition:
-      background var(--duration-quick) var(--ease-out),
-      color var(--duration-quick) var(--ease-out);
+    color: var(--colour-foreground);
+    font-size: var(--font-size-label);
+    font-weight: 500;
   }
 
   input,
   textarea {
     width: 100%;
     padding: var(--space-2) var(--space-3);
-    border: var(--border-thick) solid var(--colour-foreground);
-    border-radius: 0;
+    border: 1px solid color-mix(in oklch, var(--colour-text-muted) 55%, transparent);
+    border-radius: var(--radius-medium);
     background: var(--colour-background);
     color: var(--colour-foreground);
     font: inherit;
-    font-size: var(--font-size-4);
-    caret-color: var(--colour-orange);
+    caret-color: var(--colour-accent);
+    transition: border-color var(--duration-quick) var(--ease-out);
+
+    &:hover {
+      border-color: var(--colour-text-muted);
+    }
 
     &:focus-visible {
-      outline: none;
-      background: var(--colour-panel);
+      border-color: var(--colour-accent);
+      outline: 2px solid color-mix(in oklch, var(--colour-accent) 35%, transparent);
+      outline-offset: 0;
     }
-  }
-
-  .field:focus-within label {
-    background: var(--colour-orange);
-    color: var(--colour-text-on-orange);
   }
 
   textarea {
@@ -96,30 +91,17 @@
   }
 
   .invalid :is(input, textarea) {
-    border-style: dashed;
+    border-color: var(--colour-red);
   }
 
   .hint {
-    margin-top: var(--space-1);
     color: var(--colour-text-muted);
-    font-size: var(--font-size-2);
+    font-size: var(--font-size-label);
   }
 
   .error {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    margin-top: var(--space-1);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-2);
-    font-weight: 600;
-
-    &::before {
-      content: "";
-      flex: none;
-      width: 0.5rem;
-      height: 0.5rem;
-      background: var(--colour-orange);
-    }
+    color: var(--colour-red);
+    font-size: var(--font-size-label);
+    font-weight: 500;
   }
 </style>

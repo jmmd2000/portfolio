@@ -185,22 +185,21 @@
     flex-wrap: wrap;
     gap: var(--space-4);
     margin-top: calc(-1 * var(--space-3));
-    font-size: var(--font-size-2);
-    font-weight: 600;
+    font-size: var(--font-size-label);
+    font-weight: 500;
   }
 
   section {
     display: grid;
     gap: var(--space-5);
     width: 100%;
-    padding-top: var(--space-4);
-    border-top: var(--border-thick) solid var(--colour-foreground);
+    scroll-margin-top: var(--space-5);
   }
 
   .order {
     margin-top: calc(-1 * var(--space-4));
     color: var(--colour-text-muted);
-    font-size: var(--font-size-2);
+    font-size: var(--font-size-label);
   }
 
   .items {

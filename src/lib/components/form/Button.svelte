@@ -18,30 +18,23 @@
 <style>
   button {
     padding: var(--space-2) var(--space-4);
-    border: var(--border-thick) solid var(--colour-foreground);
-    border-radius: 0;
+    border: 1px solid transparent;
+    border-radius: var(--radius-medium);
     font: inherit;
-    font-weight: 700;
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    line-height: 1.4;
     cursor: pointer;
     transition:
       translate var(--duration-quick) var(--ease-out),
       background var(--duration-quick) var(--ease-out),
-      color var(--duration-quick) var(--ease-out);
-
-    @media (hover: hover) {
-      &:hover:not(:disabled) {
-        background: var(--colour-foreground);
-        color: var(--colour-background);
-        translate: 0 -2px;
-      }
-    }
+      border-color var(--duration-quick) var(--ease-out);
 
     &:active:not(:disabled) {
-      translate: 0 4px;
+      translate: 0 1px;
     }
 
     &:disabled {
-      border-style: dashed;
       color: var(--colour-text-muted);
       cursor: not-allowed;
     }
@@ -59,17 +52,37 @@
   }
 
   .primary {
-    background: var(--colour-orange);
-    color: var(--colour-text-on-orange);
+    background: var(--colour-accent);
+    color: var(--colour-background);
   }
 
   .secondary {
-    background: var(--colour-background);
+    border-color: var(--colour-divider);
+    background: transparent;
     color: var(--colour-foreground);
   }
 
   .destructive {
     background: var(--colour-red);
     color: var(--colour-text-on-red);
+  }
+
+  .secondary:disabled {
+    border-style: dashed;
+  }
+
+  @media (hover: hover) {
+    .primary:hover:not(:disabled) {
+      background: color-mix(in oklch, var(--colour-accent) 85%, var(--colour-foreground));
+    }
+
+    .secondary:hover:not(:disabled) {
+      border-color: var(--colour-text-muted);
+      background: var(--colour-surface);
+    }
+
+    .destructive:hover:not(:disabled) {
+      background: color-mix(in oklch, var(--colour-red) 85%, var(--colour-foreground));
+    }
   }
 </style>

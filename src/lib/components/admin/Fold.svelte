@@ -30,7 +30,7 @@
     display: grid;
     width: 100%;
     max-width: 48rem;
-    border-bottom: var(--border-thin) solid var(--colour-divider);
+    border-bottom: 1px solid var(--colour-divider);
   }
 
   .buttons {
@@ -66,11 +66,10 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-height: 4.5rem;
+    min-height: 4rem;
     color: var(--colour-foreground);
-    font-family: var(--font-display);
-    font-size: var(--font-size-5);
-    font-weight: 700;
+    font-size: var(--font-size-title);
+    font-weight: 600;
     list-style: none;
     cursor: pointer;
 
@@ -80,6 +79,9 @@
 
     :global(svg) {
       flex: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      color: var(--colour-text-muted);
       transition: rotate var(--duration-quick) var(--ease-out);
     }
   }

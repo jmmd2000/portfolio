@@ -26,21 +26,22 @@
   dialog {
     width: min(26rem, calc(100% - 2 * var(--page-gutter)));
     padding: var(--space-5);
-    border: var(--border-thick) solid var(--colour-foreground);
+    border: 1px solid var(--colour-divider);
+    border-radius: var(--radius-large);
     background: var(--colour-background);
     color: var(--colour-foreground);
+    box-shadow: 0 24px 48px -24px var(--colour-shadow);
 
     &::backdrop {
-      background: oklch(0.2 0.02 60 / 45%);
-      backdrop-filter: blur(3px);
+      background: oklch(0.2 0.02 var(--hue) / 45%);
     }
 
     h2 {
-      font-size: var(--font-size-heading);
+      font-size: var(--font-size-title);
     }
 
     p {
-      margin-block: var(--space-2) var(--space-4);
+      margin-block: var(--space-2) var(--space-5);
       color: var(--colour-text);
     }
   }

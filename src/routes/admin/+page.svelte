@@ -28,41 +28,35 @@
 <style>
   section {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--space-6);
     max-width: 30rem;
-    padding-top: var(--space-5);
+    padding-block: var(--space-7) 0;
   }
 
   h1 {
     font-size: var(--font-size-page-title);
-    font-weight: 800;
-    font-stretch: 90%;
+    line-height: 1.05;
   }
 
   .sections {
     margin: 0;
     padding: 0;
-    border-top: var(--border-thick) solid var(--colour-foreground);
     list-style: none;
 
     li {
-      border-bottom: var(--border-thin) solid var(--colour-divider);
+      border-bottom: 1px solid var(--colour-divider);
     }
 
     a {
       display: block;
-      padding: var(--space-3) 0;
-      color: var(--colour-foreground);
-      font-family: var(--font-display);
-      font-size: var(--font-size-5);
-      font-weight: 700;
-      text-decoration: none;
-      transition: translate var(--duration-quick) var(--ease-out);
+      padding-block: var(--space-3);
+      font-size: var(--font-size-title);
+      font-weight: 600;
+      text-decoration-color: transparent;
+      transition: text-decoration-color var(--duration-quick) var(--ease-out);
 
-      &:hover {
-        translate: 4px 0;
-        text-decoration: underline var(--border-thick) var(--colour-orange);
-        text-underline-offset: 0.2em;
+      &:focus-visible {
+        text-decoration-color: var(--colour-accent);
       }
     }
   }
@@ -73,5 +67,17 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3);
+  }
+
+  @media (hover: hover) {
+    .sections a:hover {
+      text-decoration-color: var(--colour-accent);
+    }
+  }
+
+  @media (max-width: 52rem) {
+    section {
+      padding-block-start: var(--space-6);
+    }
   }
 </style>

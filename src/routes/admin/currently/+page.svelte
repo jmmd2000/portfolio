@@ -66,7 +66,6 @@
   .rows {
     width: 100%;
     max-width: 48rem;
-    border-top: var(--border-thick) solid var(--colour-foreground);
     margin: 0;
     padding: 0;
     list-style: none;

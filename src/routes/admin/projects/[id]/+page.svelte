@@ -137,10 +137,10 @@
 
   legend {
     margin-bottom: var(--space-3);
+    padding: 0;
     color: var(--colour-foreground);
-    font-family: var(--font-display);
-    font-size: var(--font-size-5);
-    font-weight: 700;
+    font-size: var(--font-size-title);
+    font-weight: 600;
   }
 
   .fields {
@@ -166,11 +166,9 @@
 
     h2 {
       color: var(--colour-text-muted);
-      font-family: var(--font-body);
-      font-size: var(--font-size-2);
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      font-size: var(--font-size-label);
+      font-weight: 500;
+      font-stretch: 100%;
     }
   }
 

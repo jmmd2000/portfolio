@@ -30,6 +30,6 @@
   .hint {
     margin-top: var(--space-1);
     color: var(--colour-text-muted);
-    font-size: var(--font-size-2);
+    font-size: var(--font-size-label);
   }
 </style>

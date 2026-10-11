@@ -6,9 +6,20 @@
   import MoveButtons from "$lib/components/admin/MoveButtons.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import Field from "$lib/components/form/Field.svelte";
+  import type { Project } from "$lib/server/content/projects";
   import type { PageProps } from "./$types";
 
   let { data, form }: PageProps = $props();
+
+  /** Where a project shows, as one line: "Published · Featured · On the CV", or "Not published" */
+  function projectStatus(project: Project): string {
+    if (!project.published) return "Not published";
+
+    const places = ["Published"];
+    if (project.featured) places.push("Featured");
+    if (project.showOnCV) places.push("On the CV");
+    return places.join(" · ");
+  }
 </script>
 
 <AdminPage title="Projects" description="Edit the projects.">
@@ -18,19 +29,7 @@
         <img src={project.imageURL} alt="" width="160" height="100" />
         <div>
           <a class="name" href={resolve("/admin/projects/[id]", { id: String(project.id) })}>{project.title}</a>
-          <p class="tags">
-            {#if project.published}
-              <span class="tag published">Published</span>
-            {:else}
-              <span class="tag draft">Not published</span>
-            {/if}
-            {#if project.featured}
-              <span class="tag">Featured</span>
-            {/if}
-            {#if project.showOnCV}
-              <span class="tag">On the CV</span>
-            {/if}
-          </p>
+          <p class="status" class:draft={!project.published}>{projectStatus(project)}</p>
         </div>
         <form method="POST" action="?/move" use:enhance>
           <input type="hidden" name="id" value={project.id} />
@@ -61,7 +60,6 @@
     width: 100%;
     margin: 0;
     padding: 0;
-    border-top: var(--border-thick) solid var(--colour-foreground);
     list-style: none;
   }
 
@@ -69,9 +67,9 @@
     display: grid;
     grid-template-columns: 4.5rem 1fr auto;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-4);
     padding-block: var(--space-3);
-    border-bottom: var(--border-thin) solid var(--colour-divider);
+    border-bottom: 1px solid var(--colour-divider);
 
     @media (max-width: 40rem) {
       grid-template-columns: 4.5rem 1fr;
@@ -86,48 +84,31 @@
     width: 4.5rem;
     height: auto;
     aspect-ratio: 16 / 10;
+    border-radius: var(--radius-small);
     object-fit: cover;
-    outline: var(--border-thin) solid var(--colour-divider);
+    object-position: top left;
+    box-shadow: 0 0 0 1px var(--colour-divider);
+    filter: var(--filter-picture);
   }
 
   .name {
-    color: var(--colour-foreground);
-    font-family: var(--font-display);
-    font-size: var(--font-size-5);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    text-decoration: none;
+    font-size: var(--font-size-title);
+    font-weight: 600;
+    text-decoration-color: transparent;
+    transition: text-decoration-color var(--duration-quick) var(--ease-out);
 
-    &:hover {
-      text-decoration: underline;
+    &:focus-visible {
+      text-decoration-color: var(--colour-accent);
     }
   }
 
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1);
-    margin-top: 0.25rem;
-  }
-
-  .tag {
-    padding: 0 0.5rem;
-    border: var(--border-thin) solid var(--colour-foreground);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-1);
-    font-weight: 600;
-  }
-
-  .published {
-    border-color: var(--colour-teal);
-    background: var(--colour-teal);
-    color: var(--colour-text-on-teal);
+  .status {
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-label);
   }
 
   .draft {
-    border-style: dashed;
-    border-color: var(--colour-text-muted);
-    color: var(--colour-text-muted);
+    font-style: italic;
   }
 
   form {
@@ -137,5 +118,11 @@
 
   .wide {
     grid-column: 1 / -1;
+  }
+
+  @media (hover: hover) {
+    .name:hover {
+      text-decoration-color: var(--colour-accent);
+    }
   }
 </style>

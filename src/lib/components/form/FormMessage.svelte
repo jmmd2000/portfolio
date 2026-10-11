@@ -14,16 +14,18 @@
 <style>
   p {
     padding: var(--space-2) var(--space-3);
-    font-weight: 600;
+    border-radius: var(--radius-medium);
+    font-size: var(--font-size-label);
+    font-weight: 500;
   }
 
   .success {
-    background: var(--colour-teal);
-    color: var(--colour-text-on-teal);
+    background: var(--colour-tint);
+    color: var(--colour-foreground);
   }
 
   .error {
-    background: var(--colour-foreground);
-    color: var(--colour-text-on-foreground);
+    background: color-mix(in oklch, var(--colour-red) 12%, var(--colour-background));
+    color: var(--colour-red);
   }
 </style>

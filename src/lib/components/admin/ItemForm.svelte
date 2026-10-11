@@ -59,10 +59,10 @@
 
   legend {
     margin-bottom: var(--space-3);
+    padding: 0;
     color: var(--colour-foreground);
-    font-family: var(--font-display);
-    font-size: var(--font-size-5);
-    font-weight: 700;
+    font-size: var(--font-size-title);
+    font-weight: 600;
   }
 
   .fields {
@@ -101,9 +101,9 @@
         align-items: start;
       }
 
-      /* The height of a field's label, so the buttons line up with the inputs even when a field shows an error */
+      /* The height of a field's label and gap, so the buttons line up with the inputs even when a field shows an error */
       .actions {
-        margin-top: 1.9rem;
+        margin-top: 1.6rem;
       }
 
       .message {
