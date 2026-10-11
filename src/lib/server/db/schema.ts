@@ -7,6 +7,7 @@ export const profile = pgTable(
     id: integer().primaryKey().default(1),
     name: text().notNull(),
     role: text().notNull(),
+    intro: text().notNull(),
     bio: text().notNull(),
     location: text().notNull(),
   },

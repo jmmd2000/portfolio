@@ -3,7 +3,7 @@ import type { Profile } from "$lib/server/content/profile";
 import type { Social } from "$lib/server/content/socials";
 import { buildPersonStructuredData, toScriptJSON } from "./structuredData";
 
-const profile: Profile = { id: 1, name: "James Doyle", role: "Software Engineer", bio: "Bio.", location: "Dublin, Ireland" };
+const profile: Profile = { id: 1, name: "James Doyle", role: "Software Engineer", intro: "Intro.", bio: "Bio.", location: "Dublin, Ireland" };
 
 const socials: Social[] = [
   { id: 1, name: "GitHub", url: "https://github.com/jmmd2000", sort: 1 },

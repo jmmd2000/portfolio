@@ -2,7 +2,7 @@ import { z } from "zod";
 import { describe, expect, it } from "vitest";
 import { profileSchema } from "./profile";
 
-const profile = { name: "James Doyle", role: "Software Engineer", location: "Dublin, Ireland", bio: "Software Engineer." };
+const profile = { name: "James Doyle", role: "Software Engineer", intro: "Software engineer in Dublin.", location: "Dublin, Ireland", bio: "Software Engineer." };
 
 describe("profileSchema", () => {
   it("trims the spaces around a value", () => {

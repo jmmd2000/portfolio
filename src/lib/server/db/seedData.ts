@@ -15,6 +15,7 @@ export const seedData: SeedData = {
   profile: {
     name: "James Doyle",
     role: "Software Engineer",
+    intro: "Software engineer at Ericsson in Dublin. In my own time I build a music blog, a sand simulation and the issue tracker I plan my projects in.",
     bio: "I got into development through CoderDojo as a kid, studied Computer Science at Maynooth University, and now work as a Software Engineer at Ericsson. I like building for the web and messing around with side projects. When I’m not coding, I’m usually listening to music, playing games, or spending time with my partner.",
     location: "Dublin, Ireland ☘️",
   },

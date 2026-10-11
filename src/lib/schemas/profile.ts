@@ -5,6 +5,7 @@ import { requiredText } from "./requiredText";
 export const profileSchema = z.object({
   name: requiredText("name", 80),
   role: requiredText("role", 80),
+  intro: requiredText("intro", 200),
   location: requiredText("location", 80),
   bio: requiredText("bio", 1000),
 });

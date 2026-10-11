@@ -18,6 +18,7 @@
   <form method="POST" use:enhance={keepValues}>
     <Field label="Name" name="name" value={values.name} error={form?.errors?.name?.[0]} />
     <Field label="Role" name="role" value={values.role} error={form?.errors?.role?.[0]} />
+    <Field label="Intro" name="intro" hint="One line at the top of the home page" value={values.intro} error={form?.errors?.intro?.[0]} />
     <Field label="Location" name="location" value={values.location} error={form?.errors?.location?.[0]} />
     <Field label="Bio" name="bio" multiline value={values.bio} error={form?.errors?.bio?.[0]} />
 
