@@ -1,7 +1,6 @@
 <script lang="ts">
   import "../app.css";
-  import bricolageLatin from "@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wdth-normal.woff2?url";
-  import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
+  import monaSansLatin from "@fontsource-variable/mona-sans/files/mona-sans-latin-standard-normal.woff2?url";
   import { page } from "$app/state";
   import Footer from "$lib/components/navigation/Footer.svelte";
   import Nav from "$lib/components/navigation/Nav.svelte";
@@ -14,8 +13,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <link rel="preload" href={bricolageLatin} as="font" type="font/woff2" crossorigin="anonymous" />
-  <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href={monaSansLatin} as="font" type="font/woff2" crossorigin="anonymous" />
 </svelte:head>
 
 <div class="page">

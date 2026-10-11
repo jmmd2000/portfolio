@@ -1,84 +1,97 @@
 @font-face {
-  font-family: "Bricolage Grotesque Variable";
+  font-family: "Mona Sans Variable";
   font-style: normal;
   font-display: block;
-  font-weight: 200 800;
-  font-stretch: 75% 100%;
-  src: url("@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wdth-normal.woff2") format("woff2-variations");
-}
-
-@font-face {
-  font-family: "Geist Variable";
-  font-style: normal;
-  font-display: block;
-  font-weight: 100 900;
-  src: url("@fontsource-variable/geist/files/geist-latin-wght-normal.woff2") format("woff2-variations");
-}
-
-@font-face {
-  font-family: "Geist Mono Variable";
-  font-style: normal;
-  font-display: block;
-  font-weight: 100 900;
-  src: url("@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2") format("woff2-variations");
+  font-weight: 200 900;
+  font-stretch: 75% 125%;
+  src: url("@fontsource-variable/mona-sans/files/mona-sans-latin-standard-normal.woff2") format("woff2-variations");
 }
 
 :root {
   color-scheme: light dark;
 
-  --colour-background: light-dark(oklch(0.972 0.008 85), oklch(0.195 0.012 60));
-  --colour-panel: light-dark(oklch(0.945 0.012 82), oklch(0.245 0.014 60));
-  --colour-foreground: light-dark(oklch(0.22 0.018 60), oklch(0.95 0.008 85));
-  --colour-text: light-dark(oklch(0.42 0.015 60), oklch(0.775 0.012 70));
-  --colour-text-muted: light-dark(oklch(0.575 0.012 62), oklch(0.6 0.012 65));
-  --colour-divider: light-dark(oklch(0.875 0.013 75), oklch(0.315 0.014 62));
-  --colour-orange: light-dark(oklch(0.685 0.185 48), oklch(0.725 0.175 50));
-  --colour-text-on-orange: light-dark(oklch(0.2 0.035 45), oklch(0.17 0.03 45));
-  --colour-teal: light-dark(oklch(0.495 0.085 195), oklch(0.7 0.09 195));
-  --colour-text-on-teal: light-dark(oklch(0.97 0.01 195), oklch(0.16 0.02 195));
-  --colour-text-on-teal-muted: light-dark(oklch(0.9 0.03 195), oklch(0.24 0.03 195));
+  --hue: 158;
+
+  --colour-background: light-dark(oklch(0.99 0.004 var(--hue)), oklch(0.165 0.008 var(--hue)));
+  --colour-foreground: light-dark(oklch(0.2 0.012 var(--hue)), oklch(0.95 0.006 var(--hue)));
+  --colour-text: light-dark(oklch(0.36 0.012 var(--hue)), oklch(0.82 0.008 var(--hue)));
+  --colour-text-muted: light-dark(oklch(0.52 0.012 var(--hue)), oklch(0.66 0.01 var(--hue)));
+  --colour-accent: light-dark(oklch(0.52 0.13 var(--hue)), oklch(0.76 0.13 var(--hue)));
+  --colour-tint: light-dark(oklch(0.94 0.03 var(--hue)), oklch(0.22 0.022 var(--hue)));
+  --colour-deep: light-dark(oklch(0.31 0.07 var(--hue)), oklch(0.33 0.075 var(--hue)));
+  --colour-text-on-deep: oklch(0.97 0.012 var(--hue));
+  --colour-text-on-deep-muted: oklch(0.84 0.04 var(--hue));
+  --colour-surface: color-mix(in oklch, var(--colour-foreground) 5%, var(--colour-background));
+  --colour-shadow: light-dark(oklch(0.2 0.03 var(--hue) / 0.55), oklch(0.05 0.01 var(--hue) / 0.8));
+  --colour-edge: light-dark(transparent, color-mix(in oklch, oklch(0.95 0.006 var(--hue)) 12%, transparent));
   --colour-red: light-dark(oklch(0.55 0.19 27), oklch(0.68 0.17 27));
   --colour-text-on-red: light-dark(oklch(0.98 0.01 27), oklch(0.17 0.03 27));
-  --colour-text-on-foreground: var(--colour-background);
-  --colour-text-on-foreground-muted: light-dark(oklch(0.8 0.02 80), oklch(0.4 0.015 60));
-  --colour-link-on-foreground: light-dark(oklch(0.685 0.185 48), oklch(0.5 0.15 45));
 
-  --font-display: "Bricolage Grotesque Variable", system-ui, sans-serif;
-  --font-body: "Geist Variable", system-ui, sans-serif;
-  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+  --shadow-picture: 0 18px 30px -22px var(--colour-shadow), 0 0 0 1px var(--colour-edge);
+  --shadow-picture-lifted: 0 24px 36px -22px var(--colour-shadow), 0 0 0 1px var(--colour-edge);
 
-  --font-size-1: 0.75rem;
-  --font-size-2: 0.875rem;
-  --font-size-3: 1rem;
-  --font-size-4: 1.125rem;
-  --font-size-5: 1.25rem;
-  --font-size-6: 1.5rem;
-  --font-size-heading: clamp(1.5rem, 3.5vw, 2rem);
-  --font-size-page-title: clamp(2rem, 5vw, 3rem);
-  --font-size-hero: clamp(2.8rem, 11.5vw, 7rem);
-  --font-size-giant: clamp(4rem, 18vw, 11rem);
+  --font-body: "Mona Sans Variable", system-ui, sans-serif;
+
+  --font-size-label: 0.9375rem;
+  --font-size-body: 1.0625rem;
+  --font-size-summary: 1.125rem;
+  --font-size-title: 1.25rem;
+  --font-size-lead: clamp(1.25rem, 2.2vw, 1.5rem);
+  --font-size-heading: 1.75rem;
+  --font-size-page-title: clamp(2.5rem, 5vw, 3.5rem);
+  --font-size-display: clamp(3.25rem, 10vw, 7.5rem);
+
+  --font-stretch-heading: 112%;
+  --font-stretch-display: 118%;
 
   --line-height-body: 1.6;
-  --line-height-heading: 0.95;
+  --line-height-heading: 1.2;
 
-  --space-1: 0.5rem;
-  --space-2: 0.75rem;
-  --space-3: 1rem;
-  --space-4: 1.5rem;
-  --space-5: 2rem;
-  --space-6: 3rem;
-  --space-7: 4.5rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2.5rem;
+  --space-7: 4rem;
   --space-8: 6rem;
-  --space-panel: clamp(1.25rem, 2vw, 1.75rem);
 
-  --page-width: 72rem;
-  --page-gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --page-width: 70rem;
+  --page-gutter: clamp(1rem, 4vw, 2.5rem);
+  --reading-width: 44.5rem;
 
+  --radius-small: 3px;
+  --radius-medium: 6px;
+  --radius-large: 8px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-quick: 150ms;
+  --duration-lift: 400ms;
+
+  /* Old names */
+  --colour-panel: var(--colour-tint);
+  --colour-divider: color-mix(in oklch, var(--colour-text-muted) 30%, transparent);
+  --colour-orange: var(--colour-accent);
+  --colour-text-on-orange: var(--colour-background);
+  --colour-teal: var(--colour-accent);
+  --colour-text-on-teal: var(--colour-background);
+  --colour-text-on-teal-muted: var(--colour-background);
+  --colour-text-on-foreground: var(--colour-background);
+  --colour-text-on-foreground-muted: var(--colour-text-muted);
+  --colour-link-on-foreground: var(--colour-accent);
+  --font-display: var(--font-body);
+  --font-mono: var(--font-body);
+  --font-size-1: 0.875rem;
+  --font-size-2: var(--font-size-label);
+  --font-size-3: 1rem;
+  --font-size-4: var(--font-size-summary);
+  --font-size-5: var(--font-size-title);
+  --font-size-6: 1.5rem;
+  --font-size-hero: var(--font-size-display);
+  --font-size-giant: var(--font-size-display);
+  --space-panel: var(--space-5);
   --border-thin: 1px;
   --border-thick: 2px;
-
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-quick: 0.3s;
   --duration-entrance: 0.6s;
 }
 
@@ -88,6 +101,7 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
+  --line-height-body: 1.65;
 }
 
 /* Base styles */
@@ -102,9 +116,10 @@ body {
   background: var(--colour-background);
   color: var(--colour-text);
   font-family: var(--font-body);
-  font-size: var(--font-size-3);
+  font-size: var(--font-size-body);
   line-height: var(--line-height-body);
   -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
 }
 
 img {
@@ -117,20 +132,20 @@ h2,
 h3 {
   margin: 0;
   color: var(--colour-foreground);
-  font-family: var(--font-display);
+  font-family: var(--font-body);
+  font-weight: 620;
+  font-stretch: var(--font-stretch-heading);
   line-height: var(--line-height-heading);
-  letter-spacing: -0.03em;
+  text-wrap: balance;
 }
 
 h2 {
   font-size: var(--font-size-heading);
-  font-weight: 800;
-  font-stretch: 90%;
 }
 
 h3 {
-  font-size: var(--font-size-4);
-  font-weight: 700;
+  font-size: var(--font-size-title);
+  font-weight: 600;
 }
 
 p {
@@ -138,12 +153,21 @@ p {
 }
 
 a {
-  color: var(--colour-teal);
+  color: var(--colour-foreground);
+  text-decoration-color: color-mix(in oklch, var(--colour-accent) 80%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+::selection {
+  background: var(--colour-accent);
+  color: var(--colour-background);
 }
 
 :where(a, button, input, textarea, select, [tabindex]):focus-visible {
-  outline: var(--border-thick) solid var(--colour-orange);
-  outline-offset: var(--border-thick);
+  outline: 2px solid var(--colour-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-small);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -156,7 +180,7 @@ a {
 }
 
 @page {
-  margin: 1.5cm;
+  margin: 14mm 16mm;
 }
 
 @media print {
