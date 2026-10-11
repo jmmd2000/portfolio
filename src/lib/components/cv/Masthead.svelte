@@ -18,86 +18,86 @@
     <p class="role">{profile.role}</p>
   </div>
   <ul class="contact">
-    <li>{profile.location}</li>
+    <li class="location">{profile.location}</li>
     {#each socials as social (social.id)}
       <li><a href={social.url} rel="external">{linkText(social.url)}</a></li>
     {/each}
-    <li class="site"><a href={siteURL} rel="external">{linkText(siteURL)}</a></li>
+    <li class="site">{linkText(siteURL)}</li>
   </ul>
 </header>
 
 <style>
   .masthead {
     display: grid;
-    gap: var(--space-3);
-    margin-top: var(--space-4);
-    padding: var(--space-5);
-    background: var(--colour-foreground);
-    color: var(--colour-text-on-foreground);
+    gap: var(--space-5) var(--space-7);
+    padding-block: var(--space-7) 0;
 
     @media (min-width: 44rem) {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: end;
     }
 
     h1 {
-      color: var(--colour-text-on-foreground);
       font-size: var(--font-size-page-title);
-      font-weight: 800;
-      font-stretch: 88%;
-      text-transform: uppercase;
+      line-height: 1.05;
     }
   }
 
   .role {
-    margin-top: var(--space-1);
-    color: var(--colour-text-on-foreground-muted);
+    margin-top: var(--space-3);
+    color: var(--colour-text);
+    font-size: var(--font-size-title);
+    font-weight: 450;
   }
 
   .contact {
     margin: 0;
     padding: 0;
-    color: var(--colour-text-on-foreground-muted);
-    font-family: var(--font-mono);
-    font-size: var(--font-size-1);
+    font-size: var(--font-size-label);
     list-style: none;
 
-    a {
-      border-bottom: var(--border-thin) solid var(--colour-text-on-foreground-muted);
-      color: var(--colour-text-on-foreground);
-      text-decoration: none;
+    li + li {
+      margin-top: var(--space-1);
     }
+
+    a {
+      font-weight: 500;
+    }
+  }
+
+  .location {
+    color: var(--colour-text-muted);
   }
 
   .site {
     display: none;
   }
 
+  @media (hover: none) {
+    .contact a {
+      display: inline-block;
+      margin-block: calc(-1 * var(--space-3));
+      padding-block: var(--space-3);
+    }
+  }
+
+  @media (max-width: 52rem) {
+    .masthead {
+      padding-block-start: var(--space-6);
+    }
+  }
+
   @media print {
     .masthead {
-      margin-top: 0;
-      padding: 0 0 var(--space-3);
-      border-bottom: var(--border-thick) solid var(--colour-foreground);
-      background: none;
-      color: var(--colour-foreground);
-
-      h1 {
-        color: var(--colour-foreground);
-      }
-    }
-
-    .role,
-    .contact {
-      color: var(--colour-text);
+      padding: 0;
     }
 
     .contact a {
-      border-bottom: none;
-      color: var(--colour-foreground);
+      text-decoration: none;
     }
 
     .site {
-      display: block;
+      display: list-item;
     }
   }
 </style>

@@ -16,8 +16,8 @@
 
 <Masthead profile={data.profile} socials={data.socials} />
 
-<section>
-  <h2>Experience</h2>
+<section aria-labelledby="experience-heading">
+  <h2 id="experience-heading">Experience</h2>
   <div class="jobs">
     {#each data.jobs as job (job.id)}
       <JobEntry {job} />
@@ -25,46 +25,80 @@
   </div>
 </section>
 
-<section class="two-columns">
-  <div>
-    <h2>Skills</h2>
+<div class="two-columns">
+  <section aria-labelledby="skills-heading">
+    <h2 id="skills-heading">Skills</h2>
     <SkillList skillCategories={data.skillCategories} />
-  </div>
-  <div>
-    <h2>Education</h2>
+  </section>
+  <section id="education" aria-labelledby="education-heading">
+    <h2 id="education-heading">Education</h2>
     <QualificationList qualifications={data.qualifications} />
-  </div>
-</section>
+  </section>
+</div>
 
-<section>
-  <h2>Projects</h2>
-  <ProjectList projects={data.projects} />
-</section>
+{#if data.projects.length > 0}
+  <section aria-labelledby="projects-heading">
+    <h2 id="projects-heading">Projects</h2>
+    <ProjectList projects={data.projects} />
+  </section>
+{/if}
 
 <style>
-  section {
-    margin-top: clamp(var(--space-7), 8vw, var(--space-8));
-
-    @media print {
-      margin-top: var(--space-5);
-    }
+  section,
+  .two-columns {
+    margin-top: var(--space-8);
   }
 
   h2 {
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-5);
     break-after: avoid;
+    scroll-margin-top: var(--space-6);
   }
 
   .jobs {
-    border-top: var(--border-thick) solid var(--colour-foreground);
+    display: grid;
+    gap: var(--space-7);
   }
 
   .two-columns {
     display: grid;
-    gap: var(--space-6);
+    gap: var(--space-8);
     break-inside: avoid;
 
+    section {
+      margin-top: 0;
+    }
+
     @media (min-width: 44rem) {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-7);
+    }
+  }
+
+  @media (max-width: 52rem) {
+    section,
+    .two-columns {
+      margin-top: var(--space-7);
+    }
+  }
+
+  /* Print uses tighter spacing, so the CV takes fewer pages */
+  @media print {
+    section,
+    .two-columns {
+      margin-top: var(--space-5);
+    }
+
+    h2 {
+      margin-bottom: var(--space-3);
+      font-size: var(--font-size-title);
+    }
+
+    .jobs {
+      gap: var(--space-4);
+    }
+
+    .two-columns {
       grid-template-columns: 1fr 1fr;
       gap: var(--space-5);
     }

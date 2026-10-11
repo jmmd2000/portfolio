@@ -8,108 +8,118 @@
   }
 
   let { job }: Props = $props();
+
+  let logoFailed = $state(false);
 </script>
 
-<article class="job">
+<article class="job" id="job-{job.id}">
   <div class="heading">
-    <img class="logo" src={job.logoURL} alt="{job.company} logo" width="96" height="96" />
+    <span class="logo">
+      {#if logoFailed}
+        <span class="fallback" aria-hidden="true">{job.company.charAt(0)}</span>
+      {:else}
+        <img src={job.logoURL} alt="{job.company} logo" width="96" height="96" onerror={() => (logoFailed = true)} />
+      {/if}
+    </span>
     <div class="summary">
-      <p class="title">{job.title}</p>
-      <p class="location">
+      <h3 class="title">{job.title}</h3>
+      <span class="period">{formatDateRange(job.startDate, job.endDate)}</span>
+      <span class="place">
         {#if job.companyURL}
-          <a class="company" href={job.companyURL} rel="external">{job.company}</a>
-        {:else}
-          <span>{job.company}</span>
-        {/if}
-        {#if job.location}
-          <span>· {job.location}</span>
-        {/if}
-      </p>
-      <p class="period">{formatDateRange(job.startDate, job.endDate)}</p>
+          <a class="company" href={job.companyURL} rel="external">{job.company}</a>{:else}<span class="company">{job.company}</span>{/if}{#if job.location}, {job.location}{/if}
+      </span>
     </div>
   </div>
   <BulletList items={job.bullets} />
-  <p class="tags">{job.tags.join(" · ")}</p>
+  {#if job.tags.length > 0}
+    <p class="tags">{job.tags.join(" · ")}</p>
+  {/if}
 </article>
 
 <style>
   .job {
-    padding: var(--space-4) 0;
-    border-bottom: var(--border-thin) solid var(--colour-divider);
+    max-width: 52rem;
     break-inside: avoid;
+    scroll-margin-top: var(--space-6);
   }
 
   .heading {
-    display: flex;
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-4);
+  }
+
+  /* Logos are made for white, so they sit on a light tile in both themes */
+  .logo {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    padding: var(--space-1);
+    border-radius: var(--radius-medium);
+    background: oklch(0.99 0.004 var(--hue));
+    box-shadow: 0 0 0 1px color-mix(in oklch, var(--colour-text) 10%, transparent);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .fallback {
+    color: oklch(0.2 0.012 var(--hue));
+    font-weight: 600;
   }
 
   .summary {
-    flex: 1;
-
-    @media (min-width: 36rem) {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: baseline;
-      column-gap: var(--space-3);
-
-      .location {
-        grid-column: 1 / -1;
-      }
-
-      .period {
-        grid-row: 1;
-        grid-column: 2;
-      }
-    }
-  }
-
-  .logo {
-    flex: none;
-    width: 2.5rem;
-    height: 2.5rem;
-    object-fit: contain;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0 var(--space-4);
   }
 
   .title {
-    color: var(--colour-foreground);
-    font-family: var(--font-display);
-    font-size: var(--font-size-4);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-
-  .location {
-    font-size: var(--font-size-2);
-  }
-
-  .company {
-    border-bottom: var(--border-thin) solid var(--colour-divider);
-    color: inherit;
-    text-decoration: none;
-    transition: border-color var(--duration-quick) var(--ease-out);
-
-    &:hover {
-      border-bottom-color: var(--colour-text);
-    }
-
-    @media print {
-      border-bottom: none;
-    }
+    font-size: var(--font-size-title);
+    font-weight: 600;
+    line-height: 1.3;
   }
 
   .period {
     color: var(--colour-text-muted);
-    font-family: var(--font-mono);
-    font-size: var(--font-size-1);
+    font-size: var(--font-size-label);
     white-space: nowrap;
   }
 
+  .place {
+    grid-column: 1 / -1;
+  }
+
+  .company {
+    color: var(--colour-foreground);
+    font-weight: 500;
+  }
+
   .tags {
-    margin-top: var(--space-2);
+    margin-top: var(--space-3);
     color: var(--colour-text-muted);
-    font-family: var(--font-mono);
-    font-size: var(--font-size-1);
+    font-size: var(--font-size-label);
+  }
+
+  @media (max-width: 36rem) {
+    .summary {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media print {
+    .tags {
+      margin-top: var(--space-2);
+    }
+
+    .company {
+      text-decoration: none;
+    }
   }
 </style>

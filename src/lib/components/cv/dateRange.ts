@@ -1,4 +1,4 @@
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 interface MonthAndYear {
   month: string;
@@ -18,17 +18,17 @@ function parseDate(date: string): MonthAndYear {
 }
 
 /**
- * Formats a job's dates as "Jul 2023 - Present", "Jan - Jul 2022" or "Oct 2021 - Mar 2022". A null end date
+ * Formats a job's dates as "July 2023 to now", "January to July 2022" or "October 2021 to March 2022". A null end date
  * means the job is current. When both ends fall in the same year, the year is only written once.
  */
 export function formatDateRange(startDate: string, endDate: string | null): string {
   const start = parseDate(startDate);
-  if (endDate === null) return `${start.month} ${start.year} - Present`;
+  if (endDate === null) return `${start.month} ${start.year} to now`;
 
   const end = parseDate(endDate);
-  if (start.year !== end.year) return `${start.month} ${start.year} - ${end.month} ${end.year}`;
+  if (start.year !== end.year) return `${start.month} ${start.year} to ${end.month} ${end.year}`;
 
   if (start.month === end.month) return `${start.month} ${start.year}`;
 
-  return `${start.month} - ${end.month} ${end.year}`;
+  return `${start.month} to ${end.month} ${end.year}`;
 }

@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-  import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
+  import ExternalArrow from "$lib/components/links/ExternalArrow.svelte";
 
   interface Props {
     project: ProjectDetailFields;
@@ -39,16 +39,12 @@
       <ul class="links">
         {#if project.liveURL}
           <li>
-            <a href={project.liveURL} rel="external"
-              >{project.liveLabel}<span class="visually-hidden"> for {project.title}</span><span class="arrow" aria-hidden="true"><ArrowUpRight size="1em" strokeWidth={2} /></span></a
-            >
+            <a href={project.liveURL} rel="external">{project.liveLabel}<span class="visually-hidden"> for {project.title}</span><ExternalArrow /></a>
           </li>
         {/if}
         {#if project.sourceURL}
           <li>
-            <a href={project.sourceURL} rel="external"
-              >Source<span class="visually-hidden"> for {project.title}</span><span class="arrow" aria-hidden="true"><ArrowUpRight size="1em" strokeWidth={2} /></span></a
-            >
+            <a href={project.sourceURL} rel="external">Source<span class="visually-hidden"> for {project.title}</span><ExternalArrow /></a>
           </li>
         {/if}
       </ul>
@@ -128,17 +124,6 @@
     }
   }
 
-  /* A margin instead of a space, so the link's underline stops at the text */
-  .arrow {
-    display: inline-block;
-    margin-inline-start: 0.25em;
-    vertical-align: -0.125em;
-    color: var(--colour-text-muted);
-    transition:
-      transform 250ms var(--ease-out),
-      color 250ms var(--ease-out);
-  }
-
   /* The picture lifts when one of the project's links is in use */
   .project:has(.links a:focus-visible) .shot {
     transform: translateY(-4px);
@@ -147,22 +132,12 @@
       var(--shadow-picture-lifted);
   }
 
-  .links a:focus-visible .arrow {
-    transform: translate(2px, -2px);
-    color: var(--colour-accent);
-  }
-
   @media (hover: hover) {
     .project:has(.links a:hover) .shot {
       transform: translateY(-4px);
       box-shadow:
         0 1px 2px oklch(0.2 0.02 var(--hue) / 0.08),
         var(--shadow-picture-lifted);
-    }
-
-    .links a:hover .arrow {
-      transform: translate(2px, -2px);
-      color: var(--colour-accent);
     }
   }
 

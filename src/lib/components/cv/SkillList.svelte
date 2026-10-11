@@ -21,16 +21,13 @@
 <style>
   .skills {
     display: grid;
-    gap: var(--space-1);
+    gap: var(--space-3);
     margin: 0;
-    padding-top: var(--space-3);
-    border-top: var(--border-thick) solid var(--colour-foreground);
 
     div {
       display: grid;
-      grid-template-columns: 8.5rem 1fr;
-      gap: var(--space-3);
-      font-size: var(--font-size-2);
+      grid-template-columns: 10.5rem minmax(0, 1fr);
+      gap: var(--space-4);
     }
 
     dt {
@@ -44,8 +41,15 @@
   }
 
   .note {
-    margin-top: var(--space-1);
+    margin-top: var(--space-4);
     color: var(--colour-text-muted);
-    font-size: var(--font-size-1);
+    font-size: var(--font-size-label);
+  }
+
+  @media (max-width: 36rem) {
+    .skills div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
   }
 </style>

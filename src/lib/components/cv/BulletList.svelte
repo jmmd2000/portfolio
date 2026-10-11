@@ -7,34 +7,39 @@
 </script>
 
 <ul class="bullets">
-  {#each items as item (item)}
+  {#each items as item, index (index)}
     <li>{item}</li>
   {/each}
 </ul>
 
 <style>
   .bullets {
-    display: grid;
-    gap: var(--space-1);
-    margin: var(--space-2) 0 0;
-    padding: 0;
-    list-style: none;
+    max-width: 64ch;
+    margin: var(--space-4) 0 0;
+    padding-inline-start: 1.1rem;
+    list-style: disc;
 
     li {
-      position: relative;
-      max-width: 64ch;
-      padding-left: var(--space-3);
-      font-size: var(--font-size-2);
+      padding-inline-start: var(--space-1);
+    }
 
-      &::before {
-        content: "";
-        position: absolute;
-        top: 0.6em;
-        left: 0;
-        width: 6px;
-        height: 6px;
-        background: var(--colour-orange);
-        print-color-adjust: exact;
+    li + li {
+      margin-top: var(--space-2);
+    }
+
+    li::marker {
+      color: var(--colour-text-muted);
+    }
+  }
+
+  @media print {
+    .bullets {
+      max-width: none;
+      margin-top: var(--space-2);
+      line-height: 1.45;
+
+      li + li {
+        margin-top: var(--space-1);
       }
     }
   }
