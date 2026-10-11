@@ -5,7 +5,7 @@ import { articles, projects } from "$lib/server/db/schema";
 import { seedDatabase } from "$lib/server/db/seed";
 import { testEnvironment } from "$lib/server/db/testEnvironment";
 import { wipeDatabase } from "$lib/server/db/wipe";
-import { countPublishedArticles, getPublishedArticle, getPublishedArticles } from "./articles";
+import { countPublishedArticles, getPublishedArticle, getPublishedArticles, getPublishedArticleSlugs } from "./articles";
 
 beforeEach(async () => {
   await wipeDatabase(testEnvironment.DATABASE_URL_TEST);
@@ -38,8 +38,9 @@ describe("drafts", () => {
     await insertArticle({ slug: "draft", title: "Not ready", published: false, publishedAt: null });
   });
 
-  it("never appear in the list or the count", async () => {
+  it("never appear in the list, the slugs or the count", async () => {
     expect(await getPublishedArticles()).toEqual([]);
+    expect(await getPublishedArticleSlugs()).toEqual([]);
     expect(await countPublishedArticles()).toBe(0);
   });
 

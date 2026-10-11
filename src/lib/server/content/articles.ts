@@ -65,6 +65,12 @@ export async function getPublishedArticle(slug: string): Promise<PublishedArticl
   return article ?? null;
 }
 
+/** The slugs of published articles, newest first, for the sitemap */
+export async function getPublishedArticleSlugs(): Promise<string[]> {
+  const rows = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.published, true)).orderBy(desc(articles.publishedAt));
+  return rows.map(row => row.slug);
+}
+
 export async function countPublishedArticles(): Promise<number> {
   return db.$count(articles, eq(articles.published, true));
 }

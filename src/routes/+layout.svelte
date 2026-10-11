@@ -20,7 +20,7 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="inner">
     <!-- An error page isn't any of the nav's pages, even when its address starts like one -->
-    <Nav currentPath={page.error ? null : page.url.pathname} signedIn={data.signedIn} />
+    <Nav currentPath={page.error ? null : page.url.pathname} signedIn={data.signedIn} hasArticles={data.hasArticles} />
   </div>
   <main id="main" class="inner">
     {@render children()}
