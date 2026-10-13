@@ -68,11 +68,17 @@ describe("renderMarkdown", () => {
   });
 
   describe("images", () => {
-    it("keeps an image from the asset host with its alt text", async () => {
-      expect(await renderMarkdown("![A cat](https://assets.jamesmddoyle.com/cat.png)")).toBe('<p><img src="https://assets.jamesmddoyle.com/cat.png" alt="A cat" /></p>\n');
+    it("keeps an https image from any site with its alt text, loading lazily and without a referrer", async () => {
+      expect(await renderMarkdown("![A cat](https://example.com/cat.png)")).toBe('<p><img src="https://example.com/cat.png" alt="A cat" loading="lazy" referrerpolicy="no-referrer" /></p>\n');
     });
 
-    it.each(["https://example.com/cat.png", "http://assets.jamesmddoyle.com/cat.png", "https://assets.jamesmddoyle.com.example.com/cat.png", "/cat.png"])("drops an image from %s", async src => {
+    it("replaces loading and referrer settings written into the HTML by hand", async () => {
+      const html = await renderMarkdown('<img src="https://example.com/cat.png" alt="A cat" loading="eager" referrerpolicy="unsafe-url">');
+
+      expect(html).toBe('<img src="https://example.com/cat.png" alt="A cat" loading="lazy" referrerpolicy="no-referrer" />');
+    });
+
+    it.each(["http://example.com/cat.png", "/cat.png", "data:image/png;base64,AAAA", "javascript:alert(1)"])("drops an image from %s", async src => {
       expect(await renderMarkdown(`![A cat](${src})`)).not.toContain("<img");
     });
   });
