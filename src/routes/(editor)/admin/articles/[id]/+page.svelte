@@ -49,11 +49,19 @@
   const changedFields = $derived(Object.keys(savedValues).filter(field => currentValues[field as keyof ArticleValues] !== savedValues[field as keyof ArticleValues]));
   const hasDetailsError = $derived(Boolean(form?.errors?.slug ?? form?.errors?.projectID));
 
+  // Set by a save: whether it turned a draft live, or found nothing to save. Typing clears both
+  let justPublished = $state(false);
+  let nothingToSave = $state(false);
+
   const status = $derived.by(() => {
     if (form?.errors) return "Not saved. Fix the fields marked in red.";
     if (changedFields.length > 0) return "Unsaved changes";
+    if (nothingToSave) return "Nothing to save.";
+    if (justPublished) return "Published.";
     return form?.message ?? "";
   });
+
+  const wordCount = $derived(body.split(/\s+/).filter(word => word !== "").length);
 
   const projectOptions = $derived([{ value: "", label: "None" }, ...data.projectChoices.map(project => ({ value: String(project.id), label: project.title }))]);
 
@@ -106,6 +114,7 @@
   }
 
   function handleFormInput(): void {
+    nothingToSave = false;
     readDetails();
     scheduleDraft();
   }
@@ -178,14 +187,20 @@
   });
 
   /** Keeps every field after a save, the way `keepValues` does, then clears the kept draft once it matches what's saved */
-  const saveArticle: SubmitFunction = ({ action }) => {
+  const saveArticle: SubmitFunction = ({ action, cancel }) => {
     if (action.search === "?/delete") {
       clearTimeout(draftTimer);
       clearDraft(data.article.id);
+    } else if (changedFields.length === 0 && !form?.errors) {
+      nothingToSave = true;
+      cancel();
+      return;
     }
 
+    const wasPublished = data.article.published;
     return async ({ update }) => {
       await update({ reset: false });
+      justPublished = !wasPublished && data.article.published;
       keepDraft();
     };
   };
@@ -210,7 +225,7 @@
 <form class="editor" method="POST" action="?/save" bind:this={formElement} use:enhance={saveArticle} oninput={handleFormInput} onchange={readDetails}>
   <header class="bar">
     <a class="back" href={resolve("/admin/articles")}><ArrowLeft size="1.125em" aria-hidden="true" /> <span class="back-label">Articles</span></a>
-    <p class="state">{data.article.published ? "Published" : "Draft"}</p>
+    <p class="state" class:live={data.article.published}>{data.article.published ? "Published" : "Draft"}</p>
     <p class="status" class:error={form?.errors} role="status">{status}</p>
 
     <div class="tabs">
@@ -277,6 +292,11 @@
       {#if form?.errors?.body}
         <p class="field-error">{form.errors.body[0]}</p>
       {/if}
+      <p class="count">
+        {wordCount}
+        {wordCount === 1 ? "word" : "words"}
+        {#if wordCount > 0}· {preview.readingMinutes} minute read{/if}
+      </p>
     </div>
 
     <div class="preview" role="region" aria-label="Preview" bind:this={previewPane}>
@@ -285,6 +305,9 @@
       {/if}
       <div class="page">
         <ArticleView title={title || "Untitled"} date={data.preview.date} dateTime={data.preview.dateTime} readingMinutes={preview.readingMinutes} html={preview.html} />
+        {#if body.trim() === ""}
+          <p class="empty">The body shows here as you write.</p>
+        {/if}
       </div>
     </div>
   </div>
@@ -323,6 +346,12 @@
     background: var(--colour-surface);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
+
+    /* Green marks something live, and a published article is */
+    &.live {
+      color: var(--colour-accent);
+      font-weight: 500;
+    }
   }
 
   .status {
@@ -493,6 +522,17 @@
     background: var(--colour-surface);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
+  }
+
+  .count {
+    padding-block: var(--space-2) var(--space-3);
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-label);
+  }
+
+  .empty {
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-summary);
   }
 
   .page {

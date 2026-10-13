@@ -39,13 +39,19 @@
         /* The empty alt text keeps the mark out of the heading's name for screen readers */
         &::after {
           content: "#" / "";
+          display: inline-block;
           margin-inline-start: 0.35em;
           color: var(--colour-accent);
           font-weight: 500;
+          transition: translate var(--duration-quick) var(--ease-out);
         }
 
         &:focus-visible {
           text-decoration-color: var(--colour-accent);
+
+          &::after {
+            translate: 2px 0;
+          }
         }
       }
 
@@ -213,6 +219,10 @@
 
     .markdown :global(.heading-link:hover) {
       text-decoration-color: var(--colour-accent);
+    }
+
+    .markdown :global(.heading-link:hover::after) {
+      translate: 2px 0;
     }
   }
 
