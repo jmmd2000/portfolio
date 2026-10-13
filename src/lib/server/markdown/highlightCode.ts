@@ -19,11 +19,15 @@ const languages: Record<string, CodeLanguage> = {
   shell: { shikiID: "bash", name: "Bash" },
   json: { shikiID: "json", name: "JSON" },
   sql: { shikiID: "sql", name: "SQL" },
+  rust: { shikiID: "rust", name: "Rust" },
+  rs: { shikiID: "rust", name: "Rust" },
+  python: { shikiID: "python", name: "Python" },
+  py: { shikiID: "python", name: "Python" },
 };
 
 /** Each kind of token that gets its own class, and the TextMate scopes that make a token that kind */
 const tokenKinds = {
-  keyword: ["keyword.control", "keyword.operator.new", "keyword.operator.expression", "keyword.other", "storage.type", "storage.modifier", "entity.name.tag"],
+  keyword: ["keyword.control", "keyword.operator.new", "keyword.operator.expression", "keyword.other", "storage.type", "storage.modifier", "entity.name.tag", "keyword.operator.logical.python"],
   comment: ["comment", "punctuation.definition.comment"],
   string: ["string", "punctuation.definition.string"],
   constant: ["constant.numeric", "constant.language", "constant.character", "keyword.other.unit"],

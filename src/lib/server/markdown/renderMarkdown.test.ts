@@ -133,7 +133,7 @@ describe("renderMarkdown", () => {
     });
 
     it("shows an unknown language as typed, and no language as Code", async () => {
-      expect(await renderMarkdown("```Rust\nfn main() {}\n```")).toContain('<figcaption>Rust</figcaption><pre tabindex="0"><code>fn main() {}</code></pre>');
+      expect(await renderMarkdown("```Zig\nconst x = 1;\n```")).toContain('<figcaption>Zig</figcaption><pre tabindex="0"><code>const x = 1;</code></pre>');
       expect(await renderMarkdown("```\nplain\n```")).toContain("<figcaption>Code</figcaption>");
     });
 
