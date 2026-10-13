@@ -33,6 +33,8 @@ export const load: PageServerLoad = async ({ params, setHeaders, locals }) => {
       dateTime: articleDateTime(shownDate),
       readingMinutes: readingMinutes(article.body),
       draft: !article.published,
+      // Only the signed-in admin gets a link to the editor
+      editID: signedIn ? article.id : null,
     },
     html: await renderMarkdown(article.body),
   };

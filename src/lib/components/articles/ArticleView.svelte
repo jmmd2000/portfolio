@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import MarkdownContent from "$lib/components/markdown/MarkdownContent.svelte";
 
   interface Props {
@@ -11,9 +12,11 @@
     html: string;
     /** Labels the article as a draft, for the signed-in admin viewing it on the site */
     draft?: boolean;
+    /** The article's id, for an Edit link. Only the signed-in admin viewing it on the site gets one */
+    editID?: number | null;
   }
 
-  let { title, date, dateTime, readingMinutes, html, draft = false }: Props = $props();
+  let { title, date, dateTime, readingMinutes, html, draft = false, editID = null }: Props = $props();
 </script>
 
 <article>
@@ -25,6 +28,9 @@
       {/if}
       <time datetime={dateTime}>{date}</time>
       <span>{readingMinutes} minute read</span>
+      {#if editID !== null}
+        <a href={resolve("/(editor)/admin/articles/[id]", { id: String(editID) })}>Edit</a>
+      {/if}
     </p>
   </header>
   <MarkdownContent {html} />
@@ -51,6 +57,10 @@
 
     > * {
       white-space: nowrap;
+    }
+
+    a {
+      font-weight: 500;
     }
 
     strong {

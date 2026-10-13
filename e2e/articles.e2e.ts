@@ -19,6 +19,20 @@ test("a draft's address returns a 404", async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
+test("only the signed-in admin gets an Edit link on an article, and it opens the editor", async ({ page }) => {
+  await insertArticle();
+  await page.goto("/articles/how-the-sand-falls");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("How the sand falls");
+  await expect(page.getByRole("link", { name: "Edit" })).toHaveCount(0);
+
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/articles/how-the-sand-falls");
+  await page.getByRole("link", { name: "Edit" }).click();
+
+  await expect(page.getByLabel("Body")).toHaveValue("## The grid\n\nEach cell holds one material.");
+});
+
 test("the signed-in admin sees a draft at its address, labelled and kept out of search engines", async ({ page }) => {
   await insertArticle({ slug: "draft", published: false, publishedAt: null });
   await createAdmin();

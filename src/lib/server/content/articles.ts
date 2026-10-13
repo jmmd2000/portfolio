@@ -72,6 +72,7 @@ export async function getHomeArticles(): Promise<PublishedArticle[]> {
 }
 
 export interface ShownArticle extends Omit<PublishedArticle, "publishedAt" | "project"> {
+  id: number;
   published: boolean;
   /** Null when the article has never been published */
   publishedAt: Date | null;
@@ -80,7 +81,7 @@ export interface ShownArticle extends Omit<PublishedArticle, "publishedAt" | "pr
 /** Any article by its slug, published or not, for the signed-in admin's view of the site */
 export async function getArticleBySlug(slug: string): Promise<ShownArticle | null> {
   const [article] = await db
-    .select({ slug: articles.slug, title: articles.title, summary: articles.summary, body: articles.body, published: articles.published, publishedAt: articles.publishedAt })
+    .select({ id: articles.id, slug: articles.slug, title: articles.title, summary: articles.summary, body: articles.body, published: articles.published, publishedAt: articles.publishedAt })
     .from(articles)
     .where(eq(articles.slug, slug));
   return article ?? null;
