@@ -27,7 +27,7 @@ test("the preview endpoint renders sanitised markdown for the admin", async ({ p
 
   expect(response.status()).toBe(200);
   const { html } = (await response.json()) as { html: string };
-  expect(html).toContain('<h2 id="hello">Hello</h2>');
+  expect(html).toContain('<h2 id="hello"><a class="heading-link" href="#hello">Hello</a></h2>');
   expect(html).not.toContain("<script");
 });
 

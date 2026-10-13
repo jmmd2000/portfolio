@@ -37,6 +37,11 @@ function plainText(tokens: Token[]): string {
     .join("");
 }
 
+/** Whether any of the tokens, or the tokens inside them, is a link */
+function containsLink(tokens: Token[]): boolean {
+  return tokens.some(token => token.type === "link" || ("tokens" in token && token.tokens !== undefined && containsLink(token.tokens)));
+}
+
 function isExternalLink(href: string): boolean {
   if (!/^https?:\/\//i.test(href)) return false;
 
@@ -61,7 +66,7 @@ function isAllowedImage(src: string | undefined): boolean {
 
 /**
  * Turns an article's markdown into HTML. marked does not sanitise, so sanitize-html runs
- * last over everything with a strict allowlist. Headings get ids from their text, links
+ * last over everything with a strict allowlist. Headings get ids from their text and link to themselves, links
  * keep only safe addresses, images only come from the site's asset host, and code blocks are highlighted.
  */
 export async function renderMarkdown(markdown: string): Promise<string> {
@@ -79,7 +84,10 @@ export async function renderMarkdown(markdown: string): Promise<string> {
           id = `${baseID}-${repeat}`;
         }
         headingIDs.add(id);
-        return `<h${level} id="${id}">${this.parser.parseInline(tokens)}</h${level}>\n`;
+        const content = this.parser.parseInline(tokens);
+        // The heading links to its own section, unless it holds a link already, since links can't nest
+        const linkedContent = containsLink(tokens) ? content : `<a class="heading-link" href="#${id}">${content}</a>`;
+        return `<h${level} id="${id}">${linkedContent}</h${level}>\n`;
       },
       code({ text, lang }: Tokens.Code): string {
         return renderCodeBlock(text, lang);
@@ -139,6 +147,7 @@ export async function renderMarkdown(markdown: string): Promise<string> {
       pre: [{ name: "tabindex", values: ["0"] }],
     },
     allowedClasses: {
+      a: ["heading-link"],
       figure: ["code-block"],
       span: ["line", "keyword", "comment", "string", "constant", "function", "type"],
     },

@@ -31,6 +31,24 @@
         scroll-margin-top: var(--space-6);
       }
 
+      .heading-link {
+        color: inherit;
+        text-decoration-color: transparent;
+        transition: text-decoration-color var(--duration-quick) var(--ease-out);
+
+        /* The empty alt text keeps the mark out of the heading's name for screen readers */
+        &::after {
+          content: "#" / "";
+          margin-inline-start: 0.35em;
+          color: var(--colour-accent);
+          font-weight: 500;
+        }
+
+        &:focus-visible {
+          text-decoration-color: var(--colour-accent);
+        }
+      }
+
       h2 {
         margin-top: var(--space-7);
       }
@@ -195,6 +213,10 @@
   @media (hover: hover) {
     .markdown :global(a[rel~="external"]:hover::after) {
       background: var(--colour-accent);
+    }
+
+    .markdown :global(.heading-link:hover) {
+      text-decoration-color: var(--colour-accent);
     }
   }
 
