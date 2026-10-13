@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { articleSchema, newArticleSchema } from "./article";
+import { articleSchema, articleSlugFrom, newArticleSchema } from "./article";
 
 const typedArticle = { title: "How the sand falls", slug: "how-the-sand-falls", summary: "One rule per material." };
 
@@ -43,5 +43,26 @@ describe("articleSchema", () => {
   it("reads a ticked Published box as true, and a missing one as false", () => {
     expect(articleSchema.parse({ ...typedEdit, projectID: "", published: "on" }).published).toBe(true);
     expect(articleSchema.parse({ ...typedEdit, projectID: "" }).published).toBe(false);
+  });
+});
+
+describe("articleSlugFrom", () => {
+  it("makes a slug the slug rules accept", () => {
+    const slug = articleSlugFrom("Svelte 5: runes & more!");
+
+    expect(slug).toBe("svelte-5-runes-more");
+    expect(newArticleSchema.safeParse({ title: "A", slug, summary: "B" }).success).toBe(true);
+  });
+
+  it("cuts a long title at the last whole word that fits in 80 characters", () => {
+    const slug = articleSlugFrom(`${"word ".repeat(15)}ending`);
+
+    expect(slug).toBe(Array(15).fill("word").join("-"));
+  });
+
+  it("keeps a word that ends exactly at 80 characters", () => {
+    const slug = articleSlugFrom(`${"a".repeat(75)} last word`);
+
+    expect(slug).toBe(`${"a".repeat(75)}-last`);
   });
 });

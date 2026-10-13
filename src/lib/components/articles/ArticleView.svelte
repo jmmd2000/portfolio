@@ -12,15 +12,20 @@
     project: ArticleProject | null;
     /** HTML from renderMarkdown, which has already sanitised it */
     html: string;
+    /** Labels the article as a draft, for the signed-in admin viewing it on the site */
+    draft?: boolean;
   }
 
-  let { title, date, dateTime, readingMinutes, project, html }: Props = $props();
+  let { title, date, dateTime, readingMinutes, project, html, draft = false }: Props = $props();
 </script>
 
 <article>
   <header>
     <h1>{title}</h1>
     <p class="meta">
+      {#if draft}
+        <strong>Draft</strong>
+      {/if}
       <time datetime={dateTime}>{date}</time>
       <span>{readingMinutes} minute read</span>
       {#if project}
@@ -55,6 +60,11 @@
     }
 
     a {
+      font-weight: 500;
+    }
+
+    strong {
+      color: var(--colour-foreground);
       font-weight: 500;
     }
   }

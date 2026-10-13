@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, isNotNull, isNull, ne, or } from "drizzle-orm";
 import { db } from "$lib/server/db";
-import { articles, projects } from "$lib/server/db/schema";
+import { articleSlugRedirects, articles, projects } from "$lib/server/db/schema";
 import type { ArticleInput, NewArticleInput } from "$lib/schemas/article";
 
 const homeArticleCount = 3;
@@ -32,36 +32,33 @@ interface PublishedArticleRow {
   projectTitle: string | null;
 }
 
+function articleProject(row: Pick<PublishedArticleRow, "projectID" | "projectTitle">): ArticleProject | null {
+  return row.projectID === null || row.projectTitle === null ? null : { id: row.projectID, title: row.projectTitle };
+}
+
 function toPublishedArticle(row: PublishedArticleRow): PublishedArticle {
   // The database refuses a published article without a date, so this only fails if that check is removed
   if (row.publishedAt === null) throw new Error(`The article "${row.slug}" is published but has no publish date`);
 
-  const project = row.projectID === null || row.projectTitle === null ? null : { id: row.projectID, title: row.projectTitle };
-  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt, project };
+  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt, project: articleProject(row) };
 }
 
-interface ArticleFilter {
-  slug?: string;
-  limit?: number;
-}
+const articleWithProjectColumns = {
+  slug: articles.slug,
+  title: articles.title,
+  summary: articles.summary,
+  body: articles.body,
+  publishedAt: articles.publishedAt,
+  projectID: projects.id,
+  projectTitle: projects.title,
+};
 
-/** Published articles, newest first. A slug picks one article, and a limit keeps only the newest few */
-async function findPublishedArticles({ slug, limit }: ArticleFilter = {}): Promise<PublishedArticle[]> {
-  const query = db
-    .select({
-      slug: articles.slug,
-      title: articles.title,
-      summary: articles.summary,
-      body: articles.body,
-      publishedAt: articles.publishedAt,
-      projectID: projects.id,
-      projectTitle: projects.title,
-    })
-    .from(articles)
-    .leftJoin(projects, and(eq(articles.projectID, projects.id), eq(projects.published, true)))
-    .where(and(eq(articles.published, true), slug === undefined ? undefined : eq(articles.slug, slug)))
-    .orderBy(desc(articles.publishedAt))
-    .$dynamic();
+// Joins an article's project only when that project is published, so the article never links to a hidden one
+const publishedProjectJoin = and(eq(articles.projectID, projects.id), eq(projects.published, true));
+
+/** Published articles, newest first. A limit keeps only the newest few */
+async function findPublishedArticles(limit?: number): Promise<PublishedArticle[]> {
+  const query = db.select(articleWithProjectColumns).from(articles).leftJoin(projects, publishedProjectJoin).where(eq(articles.published, true)).orderBy(desc(articles.publishedAt)).$dynamic();
   const rows = limit === undefined ? await query : await query.limit(limit);
 
   return rows.map(toPublishedArticle);
@@ -73,13 +70,25 @@ export async function getPublishedArticles(): Promise<PublishedArticle[]> {
 
 /** The three newest published articles, for the home page */
 export async function getHomeArticles(): Promise<PublishedArticle[]> {
-  return findPublishedArticles({ limit: homeArticleCount });
+  return findPublishedArticles(homeArticleCount);
 }
 
-/** The published article with this slug, or null for a draft or a slug that doesn't exist */
-export async function getPublishedArticle(slug: string): Promise<PublishedArticle | null> {
-  const [article] = await findPublishedArticles({ slug });
-  return article ?? null;
+export interface ShownArticle extends Omit<PublishedArticle, "publishedAt"> {
+  published: boolean;
+  /** Null when the article has never been published */
+  publishedAt: Date | null;
+}
+
+/** Any article by its slug, published or not, for the signed-in admin's view of the site */
+export async function getArticleBySlug(slug: string): Promise<ShownArticle | null> {
+  const [row] = await db
+    .select({ ...articleWithProjectColumns, published: articles.published })
+    .from(articles)
+    .leftJoin(projects, publishedProjectJoin)
+    .where(eq(articles.slug, slug));
+  if (!row) return null;
+
+  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, published: row.published, publishedAt: row.publishedAt, project: articleProject(row) };
 }
 
 export interface ArticleLink {
@@ -122,11 +131,18 @@ export async function getArticle(id: number): Promise<Article | null> {
   return article ?? null;
 }
 
-/** Whether another article already uses this slug. Pass the article being edited, so its own slug doesn't count */
+/**
+ * Whether another article uses this slug now, or used it before a rename, since its old address still redirects
+ * there. Pass the article being edited, so its own slugs, old and current, don't count.
+ */
 export async function isSlugTaken(slug: string, editedArticleID: number | null = null): Promise<boolean> {
   const sameSlug = eq(articles.slug, slug);
-  const count = await db.$count(articles, editedArticleID === null ? sameSlug : and(sameSlug, ne(articles.id, editedArticleID)));
-  return count > 0;
+  const sameOldSlug = eq(articleSlugRedirects.oldSlug, slug);
+  const [currentCount, oldCount] = await Promise.all([
+    db.$count(articles, editedArticleID === null ? sameSlug : and(sameSlug, ne(articles.id, editedArticleID))),
+    db.$count(articleSlugRedirects, editedArticleID === null ? sameOldSlug : and(sameOldSlug, ne(articleSlugRedirects.articleID, editedArticleID))),
+  ]);
+  return currentCount + oldCount > 0;
 }
 
 /** Adds a draft article with an empty body and returns it */
@@ -141,19 +157,45 @@ export async function createArticle(input: NewArticleInput): Promise<Article> {
 }
 
 /**
- * Saves an article.
+ * Saves an article. The publish date is set the first time it's published and kept after that. Renaming an article
+ * that was already published keeps its old slug as a redirect, and taking back one of its own old slugs removes
+ * that redirect. Returns null when there's no article with the id.
  */
 export async function updateArticle(id: number, input: ArticleInput): Promise<Article | null> {
-  const existing = await getArticle(id);
-  if (!existing) return null;
+  return db.transaction(async transaction => {
+    const [existing] = await transaction.select().from(articles).where(eq(articles.id, id));
+    if (!existing) return null;
 
-  const publishedAt = input.published && existing.publishedAt === null ? new Date() : existing.publishedAt;
-  const [updated] = await db
-    .update(articles)
-    .set({ ...input, publishedAt })
-    .where(eq(articles.id, id))
-    .returning();
-  return updated ?? null;
+    if (input.slug !== existing.slug) {
+      await transaction.delete(articleSlugRedirects).where(and(eq(articleSlugRedirects.oldSlug, input.slug), eq(articleSlugRedirects.articleID, id)));
+      // A slug only needs a redirect if it was public, so a draft's rename or a rename in the same save as the first publish leaves none
+      if (existing.publishedAt !== null) await transaction.insert(articleSlugRedirects).values({ oldSlug: existing.slug, articleID: id });
+    }
+
+    const publishedAt = input.published && existing.publishedAt === null ? new Date() : existing.publishedAt;
+    const [updated] = await transaction
+      .update(articles)
+      .set({ ...input, publishedAt })
+      .where(eq(articles.id, id))
+      .returning();
+    return updated ?? null;
+  });
+}
+
+export interface SlugRedirect {
+  /** The article's current slug */
+  slug: string;
+  published: boolean;
+}
+
+/** Where an old slug points now: the article's current slug, and whether it's published. Null when the slug was never renamed away */
+export async function getSlugRedirect(oldSlug: string): Promise<SlugRedirect | null> {
+  const [redirect] = await db
+    .select({ slug: articles.slug, published: articles.published })
+    .from(articleSlugRedirects)
+    .innerJoin(articles, eq(articleSlugRedirects.articleID, articles.id))
+    .where(eq(articleSlugRedirects.oldSlug, oldSlug));
+  return redirect ?? null;
 }
 
 /** The projects an article can belong to: those without an article, plus the edited article's own project */

@@ -1,5 +1,6 @@
 <script lang="ts">
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+  import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
   import SlidersHorizontal from "@lucide/svelte/icons/sliders-horizontal";
   import X from "@lucide/svelte/icons/x";
   import type { SubmitFunction } from "@sveltejs/kit";
@@ -197,12 +198,18 @@
       <button type="button" aria-pressed={shownPane === "preview"} onclick={() => (shownPane = "preview")}>Preview</button>
     </div>
 
+    <!-- The saved slug, since the address only changes once a new slug is saved -->
+    <a class="view" href={resolve("/(site)/articles/[slug]", { slug: data.article.slug })} target="_blank" rel="noopener">
+      <span class="bar-label">View</span><span class="visually-hidden"> (opens in a new tab)</span>
+      <ArrowUpRight size="1.125em" aria-hidden="true" />
+    </a>
+
     <div class="save">
       <Button type="submit" variant="primary">Save</Button>
     </div>
 
     <details class="details" bind:open={detailsOpen}>
-      <summary bind:this={detailsSummary}><SlidersHorizontal size="1.125em" aria-hidden="true" /> Details</summary>
+      <summary bind:this={detailsSummary}><SlidersHorizontal size="1.125em" aria-hidden="true" /> <span class="bar-label">Details</span></summary>
       <div class="panel">
         <div class="panel-heading">
           <h2>Details</h2>
@@ -332,6 +339,22 @@
         background: var(--colour-surface);
         color: var(--colour-foreground);
       }
+    }
+  }
+
+  .view {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    border-radius: var(--radius-medium);
+    color: var(--colour-foreground);
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--colour-surface);
     }
   }
 
@@ -552,6 +575,32 @@
     .state,
     .back-label {
       display: none;
+    }
+
+    /* Only the icon shows, and screen readers still hear the word */
+    .bar-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .tabs button {
+      padding-inline: var(--space-2);
+    }
+  }
+
+  @media (max-width: 22.5rem) {
+    .bar {
+      gap: var(--space-1);
+      padding-inline: var(--space-2);
+    }
+
+    .view,
+    .details summary {
+      padding-inline: var(--space-1);
     }
   }
 </style>

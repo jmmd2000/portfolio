@@ -6,6 +6,14 @@
   let { data }: PageProps = $props();
 </script>
 
-<PageHead title={data.article.title} description={data.article.summary} />
+<PageHead title={data.article.title} description={data.article.summary} noindex={data.article.draft} />
 
-<ArticleView title={data.article.title} date={data.article.date} dateTime={data.article.dateTime} readingMinutes={data.article.readingMinutes} project={data.article.project} html={data.html} />
+<ArticleView
+  title={data.article.title}
+  date={data.article.date}
+  dateTime={data.article.dateTime}
+  readingMinutes={data.article.readingMinutes}
+  project={data.article.project}
+  html={data.html}
+  draft={data.article.draft}
+/>

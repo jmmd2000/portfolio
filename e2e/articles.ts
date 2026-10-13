@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { articles, projects } from "$lib/server/db/schema";
+import { articleSlugRedirects, articles, projects } from "$lib/server/db/schema";
 import { e2eEnvironment } from "./environment";
 
 // sample article creation for testing
@@ -33,6 +33,20 @@ export async function findProjectID(title: string): Promise<number> {
     const [project] = await database.select({ id: projects.id }).from(projects).where(eq(projects.title, title));
     if (!project) throw new Error(`No seeded project called "${title}"`);
     return project.id;
+  } finally {
+    await client.end();
+  }
+}
+
+/** Points an old slug at the article that has the given slug now, as a rename would */
+export async function insertSlugRedirect(oldSlug: string, currentSlug: string): Promise<void> {
+  const client = postgres(e2eEnvironment.DATABASE_URL_TEST_E2E, { max: 1, onnotice: () => {} });
+  const database = drizzle(client, { casing: "snake_case" });
+
+  try {
+    const [article] = await database.select({ id: articles.id }).from(articles).where(eq(articles.slug, currentSlug));
+    if (!article) throw new Error(`No article with the slug "${currentSlug}"`);
+    await database.insert(articleSlugRedirects).values({ oldSlug, articleID: article.id });
   } finally {
     await client.end();
   }

@@ -4,7 +4,7 @@ import { requireAdmin } from "$lib/server/auth/requireAdmin";
 import { formatArticleDate } from "$lib/server/content/articleDetails";
 import { createArticle, getAllArticles, isSlugTaken } from "$lib/server/content/articles";
 import { formText } from "$lib/server/formText";
-import { newArticleSchema, slugTakenMessage, type NewArticleInput } from "$lib/schemas/article";
+import { articleSlugFrom, newArticleSchema, slugTakenMessage, type NewArticleInput } from "$lib/schemas/article";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -25,7 +25,9 @@ export const actions: Actions = {
   add: async ({ request, locals }) => {
     requireAdmin(locals);
 
-    const values = formText(await request.formData());
+    const typed = formText(await request.formData());
+    // Without JavaScript the slug doesn't fill in as the title is typed, so a blank one is made here
+    const values = (typed.slug ?? "").trim() === "" ? { ...typed, slug: articleSlugFrom(typed.title ?? "") } : typed;
     const result = newArticleSchema.safeParse(values);
     if (!result.success) {
       return fail(400, { values, errors: z.flattenError(result.error).fieldErrors });

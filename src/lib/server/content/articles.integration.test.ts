@@ -8,11 +8,13 @@ import { wipeDatabase } from "$lib/server/db/wipe";
 import {
   countPublishedArticles,
   createArticle,
+  deleteArticle,
+  getArticleBySlug,
   getProjectChoices,
-  getPublishedArticle,
   getPublishedArticleLinks,
   getPublishedArticles,
   getPublishedArticleSlugs,
+  getSlugRedirect,
   isSlugTaken,
   updateArticle,
 } from "./articles";
@@ -54,13 +56,13 @@ describe("drafts", () => {
     expect(await countPublishedArticles()).toBe(0);
   });
 
-  it("can't be fetched by their slug", async () => {
-    expect(await getPublishedArticle("draft")).toBeNull();
+  it("are marked unpublished when fetched by their slug, so the article page can hide them", async () => {
+    expect((await getArticleBySlug("draft"))?.published).toBe(false);
   });
 });
 
 it("returns null for a slug that doesn't exist", async () => {
-  expect(await getPublishedArticle("missing")).toBeNull();
+  expect(await getArticleBySlug("missing")).toBeNull();
 });
 
 it("lists published articles newest first", async () => {
@@ -78,13 +80,13 @@ describe("the project an article belongs to", () => {
     const projectID = await insertProject(true);
     await insertArticle({ projectID });
 
-    expect((await getPublishedArticle("sand"))?.project).toEqual({ id: projectID, title: "SandSim" });
+    expect((await getArticleBySlug("sand"))?.project).toEqual({ id: projectID, title: "SandSim" });
   });
 
   it("is left out when the project isn't published, so the article doesn't link to a missing project", async () => {
     await insertArticle({ projectID: await insertProject(false) });
 
-    expect((await getPublishedArticle("sand"))?.project).toBeNull();
+    expect((await getArticleBySlug("sand"))?.project).toBeNull();
   });
 
   it("is cleared when the project is deleted, and the article stays", async () => {
@@ -93,7 +95,7 @@ describe("the project an article belongs to", () => {
 
     await db.delete(projects).where(eq(projects.id, projectID));
 
-    expect((await getPublishedArticle("sand"))?.project).toBeNull();
+    expect((await getArticleBySlug("sand"))?.project).toBeNull();
   });
 
   it("gets a link to its article only once the article is published", async () => {
@@ -143,7 +145,7 @@ describe("admin editing", () => {
 
     expect(created.published).toBe(false);
     expect(created.publishedAt).toBeNull();
-    expect(await getPublishedArticle("new")).toBeNull();
+    expect(await getPublishedArticleSlugs()).not.toContain("new");
   });
 
   it("reports a slug as taken by another article, but not by the article being edited", async () => {
@@ -180,5 +182,78 @@ describe("admin editing", () => {
 
     expect(choiceIDs).toContain(ownID);
     expect(choiceIDs).not.toContain(takenID);
+  });
+});
+
+describe("renaming", () => {
+  const edit = { title: "How the sand falls", summary: "One rule per material.", body: "", projectID: null };
+
+  async function addArticle(slug: string): Promise<number> {
+    return (await createArticle({ title: "How the sand falls", slug, summary: "One rule per material." })).id;
+  }
+
+  it("keeps every old slug of a published article pointing at its current slug", async () => {
+    const id = await addArticle("first");
+    await updateArticle(id, { ...edit, slug: "first", published: true });
+
+    await updateArticle(id, { ...edit, slug: "second", published: true });
+    await updateArticle(id, { ...edit, slug: "third", published: true });
+
+    expect(await getSlugRedirect("first")).toEqual({ slug: "third", published: true });
+    expect(await getSlugRedirect("second")).toEqual({ slug: "third", published: true });
+    expect(await getSlugRedirect("third")).toBeNull();
+  });
+
+  it("keeps the old slug of an article that was published and then unpublished, but says it isn't published", async () => {
+    const id = await addArticle("first");
+    await updateArticle(id, { ...edit, slug: "first", published: true });
+    await updateArticle(id, { ...edit, slug: "first", published: false });
+
+    await updateArticle(id, { ...edit, slug: "second", published: false });
+
+    expect(await getSlugRedirect("first")).toEqual({ slug: "second", published: false });
+  });
+
+  it("keeps no old slug for a draft, or for a rename in the same save as the first publish", async () => {
+    const id = await addArticle("draft");
+
+    await updateArticle(id, { ...edit, slug: "renamed-draft", published: false });
+    await updateArticle(id, { ...edit, slug: "published", published: true });
+
+    expect(await getSlugRedirect("draft")).toBeNull();
+    expect(await getSlugRedirect("renamed-draft")).toBeNull();
+  });
+
+  it("lets an article take back one of its own old slugs, which then stops redirecting", async () => {
+    const id = await addArticle("first");
+    await updateArticle(id, { ...edit, slug: "first", published: true });
+    await updateArticle(id, { ...edit, slug: "second", published: true });
+
+    expect(await isSlugTaken("first", id)).toBe(false);
+    await updateArticle(id, { ...edit, slug: "first", published: true });
+
+    expect(await getSlugRedirect("first")).toBeNull();
+    expect(await getSlugRedirect("second")).toEqual({ slug: "first", published: true });
+  });
+
+  it("reports another article's old slug as taken", async () => {
+    const id = await addArticle("first");
+    await updateArticle(id, { ...edit, slug: "first", published: true });
+    await updateArticle(id, { ...edit, slug: "second", published: true });
+    const otherID = await addArticle("other");
+
+    expect(await isSlugTaken("first")).toBe(true);
+    expect(await isSlugTaken("first", otherID)).toBe(true);
+  });
+
+  it("frees an article's old slugs when the article is deleted", async () => {
+    const id = await addArticle("first");
+    await updateArticle(id, { ...edit, slug: "first", published: true });
+    await updateArticle(id, { ...edit, slug: "second", published: true });
+
+    await deleteArticle(id);
+
+    expect(await getSlugRedirect("first")).toBeNull();
+    expect(await isSlugTaken("first")).toBe(false);
   });
 });
