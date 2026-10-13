@@ -1,16 +1,19 @@
 <script lang="ts">
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
   import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
+  import BookOpenText from "@lucide/svelte/icons/book-open-text";
   import SlidersHorizontal from "@lucide/svelte/icons/sliders-horizontal";
-  import X from "@lucide/svelte/icons/x";
   import type { SubmitFunction } from "@sveltejs/kit";
-  import { untrack } from "svelte";
+  import { tick, untrack } from "svelte";
   import { enhance } from "$app/forms";
   import { resolve } from "$app/paths";
   import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import ArticleView from "$lib/components/articles/ArticleView.svelte";
   import { clearDraft, formatDraftTime, isWorthRestoring, readDraft, writeDraft, type ArticleDraft } from "$lib/components/editor/articleDraft";
+  import EditorPanel from "$lib/components/editor/EditorPanel.svelte";
   import { LivePreview } from "$lib/components/editor/livePreview.svelte";
+  import MarkdownReference from "$lib/components/editor/MarkdownReference.svelte";
+  import { applyMarkup, type Markup } from "$lib/components/editor/markdownInsert";
   import Button from "$lib/components/form/Button.svelte";
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
@@ -97,10 +100,29 @@
     if (draftTimer !== undefined) keepDraft();
   }
 
-  function handleFormInput(): void {
-    readDetails();
+  function scheduleDraft(): void {
     clearTimeout(draftTimer);
     draftTimer = setTimeout(keepDraft, draftDelay);
+  }
+
+  function handleFormInput(): void {
+    readDetails();
+    scheduleDraft();
+  }
+
+  /** Applies markup to the body at its selection, then puts the cursor back in the body with the new selection */
+  async function insertMarkup(markup: Markup): Promise<void> {
+    if (!bodyField) return;
+
+    const result = applyMarkup({ text: body, start: bodyField.selectionStart, end: bodyField.selectionEnd }, markup);
+    body = result.text;
+    preview.schedule(body);
+    scheduleDraft();
+    shownPane = "write";
+    // The body shows the new text once Svelte updates it, and only then can its selection be set
+    await tick();
+    bodyField.focus();
+    bodyField.setSelectionRange(result.start, result.end);
   }
 
   // The offered draft stays in memory, so new writing can replace the kept copy while the offer still shows
@@ -133,20 +155,10 @@
     previewPane.scrollTop = share * (previewPane.scrollHeight - previewPane.clientHeight);
   }
 
-  let detailsSummary = $state<HTMLElement>();
-
   function handleKeydown(event: KeyboardEvent): void {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
       event.preventDefault();
       formElement?.requestSubmit();
-      return;
-    }
-
-    // Escape in the delete dialog closes only the dialog
-    const inDialog = event.target instanceof Element && event.target.closest("dialog") !== null;
-    if (event.key === "Escape" && detailsOpen && !inDialog) {
-      detailsOpen = false;
-      detailsSummary?.focus();
     }
   }
 
@@ -207,21 +219,20 @@
       <Button type="submit" variant="primary">Save</Button>
     </div>
 
-    <details class="details" bind:open={detailsOpen}>
-      <summary bind:this={detailsSummary}><SlidersHorizontal size="1.125em" aria-hidden="true" /> <span class="bar-label">Details</span></summary>
-      <div class="panel">
-        <div class="panel-heading">
-          <h2>Details</h2>
-          <button class="close" type="button" aria-label="Close the details" onclick={() => (detailsOpen = false)}><X size="1.25em" aria-hidden="true" /></button>
-        </div>
-        <Field label="Slug" name="slug" hint="The end of its address, like my-first-article" value={values.slug} error={form?.errors?.slug?.[0]} />
-        <SelectField label="Write-up for" name="projectID" options={projectOptions} value={values.projectID} hint="Optional" error={form?.errors?.projectID?.[0]} />
-        <Checkbox label="Published" name="published" checked={values.published === "on"} />
-        <div class="delete">
-          <ConfirmDelete name={data.article.title} formaction="?/delete" />
-        </div>
+    <EditorPanel label="Markdown">
+      {#snippet icon()}<BookOpenText size="1.125em" aria-hidden="true" />{/snippet}
+      <MarkdownReference oninsert={insertMarkup} />
+    </EditorPanel>
+
+    <EditorPanel label="Details" bind:open={detailsOpen}>
+      {#snippet icon()}<SlidersHorizontal size="1.125em" aria-hidden="true" />{/snippet}
+      <Field label="Slug" name="slug" hint="The end of its address, like my-first-article" value={values.slug} error={form?.errors?.slug?.[0]} />
+      <SelectField label="Write-up for" name="projectID" options={projectOptions} value={values.projectID} hint="Optional" error={form?.errors?.projectID?.[0]} />
+      <Checkbox label="Published" name="published" checked={values.published === "on"} />
+      <div class="delete">
+        <ConfirmDelete name={data.article.title} formaction="?/delete" />
       </div>
-    </details>
+    </EditorPanel>
   </header>
 
   <div class="panes" data-shown={shownPane}>
@@ -362,72 +373,6 @@
     order: 1;
   }
 
-  .details summary {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2) var(--space-2);
-    border-radius: var(--radius-medium);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-label);
-    font-weight: 500;
-    list-style: none;
-    cursor: pointer;
-
-    &::-webkit-details-marker {
-      display: none;
-    }
-
-    &:hover {
-      background: var(--colour-surface);
-    }
-  }
-
-  .details[open] summary {
-    background: var(--colour-surface);
-  }
-
-  .panel {
-    position: fixed;
-    inset: var(--bar-height) 0 0 auto;
-    z-index: 10;
-    display: grid;
-    align-content: start;
-    gap: var(--space-4);
-    width: min(24rem, 100%);
-    padding: var(--space-5);
-    overflow-y: auto;
-    border-left: 1px solid var(--colour-divider);
-    background: var(--colour-background);
-    box-shadow: -24px 0 48px -32px var(--colour-shadow);
-  }
-
-  .panel-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    h2 {
-      font-size: var(--font-size-title);
-    }
-  }
-
-  .close {
-    display: grid;
-    place-items: center;
-    padding: var(--space-1);
-    border: 0;
-    border-radius: var(--radius-medium);
-    background: transparent;
-    color: var(--colour-text-muted);
-    cursor: pointer;
-
-    &:hover {
-      background: var(--colour-surface);
-      color: var(--colour-foreground);
-    }
-  }
-
   .delete {
     padding-top: var(--space-4);
     border-top: 1px solid var(--colour-divider);
@@ -566,9 +511,25 @@
   }
 
   @media (max-width: 40rem) {
+    /* The bar wraps onto two rows, with the Write and Preview tabs on the second */
+    .editor {
+      --bar-height: 6.25rem;
+    }
+
     .bar {
+      flex-wrap: wrap;
+      align-content: center;
       gap: var(--space-2);
       padding-inline: var(--space-3);
+    }
+
+    .tabs {
+      order: 2;
+      width: 100%;
+
+      button {
+        flex: 1;
+      }
     }
 
     .state,
@@ -584,22 +545,6 @@
       overflow: hidden;
       clip-path: inset(50%);
       white-space: nowrap;
-    }
-
-    .tabs button {
-      padding-inline: var(--space-2);
-    }
-  }
-
-  @media (max-width: 22.5rem) {
-    .bar {
-      gap: var(--space-1);
-      padding-inline: var(--space-2);
-    }
-
-    .view,
-    .details summary {
-      padding-inline: var(--space-1);
     }
   }
 </style>
