@@ -2,16 +2,17 @@
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
   import SlidersHorizontal from "@lucide/svelte/icons/sliders-horizontal";
   import X from "@lucide/svelte/icons/x";
+  import type { SubmitFunction } from "@sveltejs/kit";
   import { untrack } from "svelte";
   import { enhance } from "$app/forms";
   import { resolve } from "$app/paths";
   import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import ArticleView from "$lib/components/articles/ArticleView.svelte";
+  import { clearDraft, formatDraftTime, isWorthRestoring, readDraft, writeDraft, type ArticleDraft } from "$lib/components/editor/articleDraft";
   import { LivePreview } from "$lib/components/editor/livePreview.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
-  import { keepValues } from "$lib/components/form/keepValues";
   import SelectField from "$lib/components/form/SelectField.svelte";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import type { PageProps } from "./$types";
@@ -58,11 +59,15 @@
     untrack(() => data.preview.readingMinutes)
   );
 
+  const draftDelay = 1000;
+
   let formElement = $state<HTMLFormElement>();
   let bodyField = $state<HTMLTextAreaElement>();
   let previewPane = $state<HTMLDivElement>();
   let detailsOpen = $derived(hasDetailsError);
   let shownPane = $state<"write" | "preview">("write");
+  let offeredDraft = $state<ArticleDraft | null>(null);
+  let draftTimer: ReturnType<typeof setTimeout> | undefined;
 
   /** Reads the details from the form. The select and the checkbox can't bind to state, so the form holds their values */
   function readDetails(): void {
@@ -74,6 +79,45 @@
       return typeof value === "string" ? value : "";
     };
     details = { slug: text("slug"), projectID: text("projectID"), published: text("published") };
+  }
+
+  /** Keeps the writing in the browser, or clears it once it matches what's saved */
+  function keepDraft(): void {
+    clearTimeout(draftTimer);
+    draftTimer = undefined;
+
+    if (title === savedValues.title && summary === savedValues.summary && body === savedValues.body) {
+      clearDraft(data.article.id);
+      return;
+    }
+    writeDraft(data.article.id, { title, summary, body, savedAt: new Date() });
+  }
+
+  function keepPendingDraft(): void {
+    if (draftTimer !== undefined) keepDraft();
+  }
+
+  function handleFormInput(): void {
+    readDetails();
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(keepDraft, draftDelay);
+  }
+
+  // The offered draft stays in memory, so new writing can replace the kept copy while the offer still shows
+  function restoreDraft(): void {
+    if (!offeredDraft) return;
+
+    title = offeredDraft.title;
+    summary = offeredDraft.summary;
+    body = offeredDraft.body;
+    offeredDraft = null;
+    preview.schedule(body);
+    keepDraft();
+  }
+
+  function discardDraft(): void {
+    offeredDraft = null;
+    keepDraft();
   }
 
   function handleBodyInput(event: Event & { currentTarget: HTMLTextAreaElement }): void {
@@ -112,16 +156,37 @@
     followScroll();
   });
 
+  /** Keeps every field after a save, the way `keepValues` does, then clears the kept draft once it matches what's saved */
+  const saveArticle: SubmitFunction = ({ action }) => {
+    if (action.search === "?/delete") {
+      clearTimeout(draftTimer);
+      clearDraft(data.article.id);
+    }
+
+    return async ({ update }) => {
+      await update({ reset: false });
+      keepDraft();
+    };
+  };
+
   $effect(() => {
-    return () => preview.stop();
+    untrack(() => {
+      const draft = readDraft(data.article.id);
+      if (draft && isWorthRestoring(draft, savedValues, data.article.updatedAt)) offeredDraft = draft;
+    });
+
+    return () => {
+      preview.stop();
+      keepPendingDraft();
+    };
   });
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} onpagehide={keepPendingDraft} />
 
 <PageHead title="Editing {data.article.title}" description="Write an article." noindex />
 
-<form class="editor" method="POST" action="?/save" bind:this={formElement} use:enhance={keepValues} oninput={readDetails} onchange={readDetails}>
+<form class="editor" method="POST" action="?/save" bind:this={formElement} use:enhance={saveArticle} oninput={handleFormInput} onchange={readDetails}>
   <header class="bar">
     <a class="back" href={resolve("/admin/articles")}><ArrowLeft size="1.125em" aria-hidden="true" /> <span class="back-label">Articles</span></a>
     <p class="state">{data.article.published ? "Published" : "Draft"}</p>
@@ -155,6 +220,15 @@
 
   <div class="panes" data-shown={shownPane}>
     <div class="writing">
+      {#if offeredDraft}
+        <div class="restore">
+          <p>Unsaved text from {formatDraftTime(offeredDraft.savedAt)}.</p>
+          <div class="restore-actions">
+            <Button onclick={restoreDraft}>Restore</Button>
+            <Button onclick={discardDraft}>Discard</Button>
+          </div>
+        </div>
+      {/if}
       <input class="title" name="title" aria-label="Title" placeholder="Title" bind:value={title} aria-invalid={form?.errors?.title ? true : undefined} />
       {#if form?.errors?.title}
         <p class="field-error">{form.errors.title[0]}</p>
@@ -355,6 +429,25 @@
       max-width: var(--reading-width);
       margin-inline: auto;
     }
+  }
+
+  .restore {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    margin-bottom: var(--space-5);
+    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+    border-radius: var(--radius-medium);
+    background: var(--colour-surface);
+    color: var(--colour-foreground);
+    font-size: var(--font-size-label);
+  }
+
+  .restore-actions {
+    display: flex;
+    gap: var(--space-2);
   }
 
   .title,
