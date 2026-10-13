@@ -19,31 +19,46 @@ const languages: Record<string, CodeLanguage> = {
   shell: { shikiID: "bash", name: "Bash" },
   json: { shikiID: "json", name: "JSON" },
   sql: { shikiID: "sql", name: "SQL" },
+  rust: { shikiID: "rust", name: "Rust" },
+  rs: { shikiID: "rust", name: "Rust" },
+  python: { shikiID: "python", name: "Python" },
+  py: { shikiID: "python", name: "Python" },
 };
 
-// The colour values are labels for each kind of token, not real colours
-const keywordColour = "var(--code-keyword)";
-const commentColour = "var(--code-comment)";
+/** Each kind of token that gets its own class, and the TextMate scopes that make a token that kind */
+const tokenKinds = {
+  keyword: ["keyword.control", "keyword.operator.new", "keyword.operator.expression", "keyword.other", "storage.type", "storage.modifier", "entity.name.tag", "keyword.operator.logical.python"],
+  comment: ["comment", "punctuation.definition.comment"],
+  string: ["string", "punctuation.definition.string"],
+  constant: ["constant.numeric", "constant.language", "constant.character", "keyword.other.unit"],
+  function: ["entity.name.function", "support.function"],
+  type: ["entity.name.type", "entity.name.class", "entity.other.inherited-class", "support.type", "support.class"],
+} as const;
 
-const monochromeTheme: ThemeRegistrationRaw = {
-  name: "monochrome",
+type TokenKind = keyof typeof tokenKinds;
+
+// The theme's colour for a kind is only a label, so the transformer can tell the kinds apart
+function colourLabel(kind: TokenKind): string {
+  return `var(--code-${kind})`;
+}
+
+const kindByColourLabel = new Map(Object.keys(tokenKinds).map(kind => [colourLabel(kind as TokenKind), kind]));
+
+const labelTheme: ThemeRegistrationRaw = {
+  name: "token-labels",
   type: "light",
   colors: { "editor.foreground": "var(--code-text)", "editor.background": "transparent" },
   settings: [
     { settings: { foreground: "var(--code-text)" } },
-    {
-      scope: ["keyword.control", "keyword.operator.new", "keyword.operator.expression", "keyword.other", "storage.type", "storage.modifier"],
-      settings: { foreground: keywordColour },
-    },
-    { scope: ["comment", "punctuation.definition.comment"], settings: { foreground: commentColour } },
+    ...Object.entries(tokenKinds).map(([kind, scopes]) => ({ scope: [...scopes], settings: { foreground: colourLabel(kind as TokenKind) } })),
   ],
 };
 
-/** Gives keyword and comment tokens a class. The sanitiser removes Shiki's inline styles, so the classes carry the styling */
+/** Gives each token its kind as a class. The sanitiser removes Shiki's inline styles, so the classes carry the colours */
 const markTokens: ShikiTransformer = {
   span(element, _line, _column, _lineElement, token) {
-    if (token.color === keywordColour) this.addClassToHast(element, "keyword");
-    if (token.color === commentColour) this.addClassToHast(element, "comment");
+    const kind = token.color === undefined ? undefined : kindByColourLabel.get(token.color);
+    if (kind) this.addClassToHast(element, kind);
   },
 };
 
@@ -52,7 +67,7 @@ let highlighterLoading: Promise<Highlighter> | undefined;
 /** Loads Shiki and its languages once, the first time a code block is needed */
 function loadHighlighter(): Promise<Highlighter> {
   const shikiIDs = [...new Set(Object.values(languages).map(language => language.shikiID))];
-  highlighterLoading ??= createHighlighter({ themes: [monochromeTheme], langs: shikiIDs });
+  highlighterLoading ??= createHighlighter({ themes: [labelTheme], langs: shikiIDs });
   return highlighterLoading;
 }
 
@@ -74,7 +89,7 @@ export async function createCodeBlockRenderer(): Promise<(code: string, fence: s
     const caption = language?.name ?? (fenceWord || "Code");
 
     const highlighted = language
-      ? highlighter.codeToHtml(code, { lang: language.shikiID, theme: monochromeTheme.name ?? "monochrome", transformers: [markTokens] })
+      ? highlighter.codeToHtml(code, { lang: language.shikiID, theme: "token-labels", transformers: [markTokens] })
       : `<pre tabindex="0"><code>${escapeHTML(code)}</code></pre>`;
 
     return `<figure class="code-block"><figcaption>${escapeHTML(caption)}</figcaption>${highlighted}</figure>\n`;

@@ -1,4 +1,4 @@
-import { Marked, type Tokens } from "marked";
+import { Marked, type Token, type Tokens } from "marked";
 import sanitizeHtml from "sanitize-html";
 import { createCodeBlockRenderer } from "./highlightCode";
 
@@ -21,6 +21,25 @@ function slugFor(headingText: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
   return slug === "" ? "section" : slug;
+}
+
+/**
+ * The words in a heading's tokens, without markdown or link addresses. marked's own text renderer returns the raw
+ * markdown inside bold and italic text, which would put a link's address in the heading's id.
+ */
+function plainText(tokens: Token[]): string {
+  return tokens
+    .map(token => {
+      if (token.type === "html") return "";
+      if ("tokens" in token && token.tokens !== undefined) return plainText(token.tokens);
+      return "text" in token && typeof token.text === "string" ? token.text : "";
+    })
+    .join("");
+}
+
+/** Whether any of the tokens, or the tokens inside them, is a link */
+function containsLink(tokens: Token[]): boolean {
+  return tokens.some(token => token.type === "link" || ("tokens" in token && token.tokens !== undefined && containsLink(token.tokens)));
 }
 
 function isExternalLink(href: string): boolean {
@@ -47,7 +66,7 @@ function isAllowedImage(src: string | undefined): boolean {
 
 /**
  * Turns an article's markdown into HTML. marked does not sanitise, so sanitize-html runs
- * last over everything with a strict allowlist. Headings get ids from their text, links
+ * last over everything with a strict allowlist. Headings get ids from their text and link to themselves, links
  * keep only safe addresses, images only come from the site's asset host, and code blocks are highlighted.
  */
 export async function renderMarkdown(markdown: string): Promise<string> {
@@ -59,13 +78,16 @@ export async function renderMarkdown(markdown: string): Promise<string> {
     renderer: {
       heading({ tokens, depth }: Tokens.Heading): string {
         const level = Math.min(Math.max(depth, topHeadingLevel), bottomHeadingLevel);
-        const baseID = slugFor(this.parser.parseInline(tokens, this.parser.textRenderer));
+        const baseID = slugFor(plainText(tokens));
         let id = baseID;
         for (let repeat = 2; headingIDs.has(id); repeat++) {
           id = `${baseID}-${repeat}`;
         }
         headingIDs.add(id);
-        return `<h${level} id="${id}">${this.parser.parseInline(tokens)}</h${level}>\n`;
+        const content = this.parser.parseInline(tokens);
+        // The heading links to its own section, unless it holds a link already, since links can't nest
+        const linkedContent = containsLink(tokens) ? content : `<a class="heading-link" href="#${id}">${content}</a>`;
+        return `<h${level} id="${id}">${linkedContent}</h${level}>\n`;
       },
       code({ text, lang }: Tokens.Code): string {
         return renderCodeBlock(text, lang);
@@ -125,8 +147,9 @@ export async function renderMarkdown(markdown: string): Promise<string> {
       pre: [{ name: "tabindex", values: ["0"] }],
     },
     allowedClasses: {
+      a: ["heading-link"],
       figure: ["code-block"],
-      span: ["line", "keyword", "comment"],
+      span: ["line", "keyword", "comment", "string", "constant", "function", "type"],
     },
     allowedSchemes: ["http", "https", "mailto"],
     allowProtocolRelative: false,

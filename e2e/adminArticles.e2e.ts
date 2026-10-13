@@ -57,6 +57,7 @@ test("publishing an article puts it on the site as a write-up for its project", 
   await page.goto("/admin/articles");
   await page.getByRole("link", { name: "How the sand falls" }).click();
 
+  await page.locator("summary", { hasText: "Details" }).click();
   await page.getByLabel("Write-up for").selectOption({ label: "SandSim" });
   await page.getByLabel("Published").check();
   await page.getByRole("button", { name: "Save" }).click();
@@ -73,6 +74,7 @@ test("deleting an article asks first, then removes it from the admin and the sit
   await page.goto("/admin/articles");
   await page.getByRole("link", { name: "How the sand falls" }).click();
 
+  await page.locator("summary", { hasText: "Details" }).click();
   await page.getByRole("button", { name: "Delete", exact: true }).click();
   await page.getByRole("button", { name: "Keep" }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("How the sand falls");
@@ -84,3 +86,25 @@ test("deleting an article asks first, then removes it from the admin and the sit
   const response = await page.goto("/articles/how-the-sand-falls");
   expect(response?.status()).toBe(404);
 });
+
+for (const javaScript of [true, false]) {
+  test(`${javaScript ? "with" : "without"} JavaScript, a slug clash in the editor opens the details to show it and keeps the body`, async ({ page }) => {
+    await insertArticle({ slug: "taken", title: "Taken" });
+    await insertArticle({ slug: "how-the-sand-falls", published: false, publishedAt: null });
+    await createAdmin();
+    await logIn(page);
+    // Blocking the app's JavaScript makes the form submit as plain HTML
+    if (!javaScript) await page.route("**/_app/**/*.js", route => route.abort());
+    await page.goto("/admin/articles");
+    await page.getByRole("link", { name: "How the sand falls" }).click();
+
+    await page.locator("summary", { hasText: "Details" }).click();
+    await page.getByLabel("Slug").fill("taken");
+    await page.getByLabel("Body").fill("A body that should still be here.");
+    await page.locator("summary", { hasText: "Details" }).click();
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page.getByText("Another article already uses this slug.")).toBeVisible();
+    await expect(page.getByLabel("Body")).toHaveValue("A body that should still be here.");
+  });
+}

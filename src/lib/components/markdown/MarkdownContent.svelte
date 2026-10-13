@@ -1,9 +1,6 @@
 <script lang="ts">
   import "@fontsource/monaspace-neon/latin-400.css";
   import "@fontsource/monaspace-neon/latin-600.css";
-  import { mount, unmount } from "svelte";
-  import type { Attachment } from "svelte/attachments";
-  import CopyButton from "$lib/components/contact/CopyButton.svelte";
 
   interface Props {
     /** HTML from renderMarkdown, which has already sanitised it */
@@ -11,29 +8,9 @@
   }
 
   let { html }: Props = $props();
-
-  /** Puts a Copy button in each code block's caption. It takes the HTML so it runs again when {@html} replaces the blocks */
-  function addCopyButtons(currentHTML: string): Attachment<HTMLElement> {
-    return container => {
-      if (currentHTML === "") return;
-
-      const copyButtons: ReturnType<typeof mount>[] = [];
-      for (const figure of container.querySelectorAll("figure.code-block")) {
-        const caption = figure.querySelector("figcaption");
-        const code = figure.querySelector<HTMLElement>("pre code");
-        if (!caption || !code) continue;
-
-        copyButtons.push(mount(CopyButton, { target: caption, props: { text: code.textContent, selectTarget: code, tone: "light" } }));
-      }
-
-      return () => {
-        for (const copyButton of copyButtons) void unmount(copyButton);
-      };
-    };
-  }
 </script>
 
-<div class="markdown" {@attach addCopyButtons(html)}>
+<div class="markdown">
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown sanitises the HTML on the server -->
   {@html html}
 </div>
@@ -52,6 +29,24 @@
       h3,
       h4 {
         scroll-margin-top: var(--space-6);
+      }
+
+      .heading-link {
+        color: inherit;
+        text-decoration-color: transparent;
+        transition: text-decoration-color var(--duration-quick) var(--ease-out);
+
+        /* The empty alt text keeps the mark out of the heading's name for screen readers */
+        &::after {
+          content: "#" / "";
+          margin-inline-start: 0.35em;
+          color: var(--colour-accent);
+          font-weight: 500;
+        }
+
+        &:focus-visible {
+          text-decoration-color: var(--colour-accent);
+        }
       }
 
       h2 {
@@ -91,7 +86,8 @@
         margin-inline: 0;
         padding: var(--space-4) var(--space-5);
         border-radius: var(--radius-medium);
-        background: var(--colour-surface);
+        background: var(--colour-tint);
+        color: var(--colour-foreground);
       }
 
       a[rel~="external"]::after {
@@ -168,11 +164,7 @@
       }
 
       .code-block figcaption {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--space-3);
-        padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+        padding: var(--space-2) var(--space-4);
         border-bottom: 1px solid var(--colour-divider);
         color: var(--colour-text-muted);
         font-size: var(--font-size-label);
@@ -200,12 +192,32 @@
       .comment {
         color: var(--colour-text-muted);
       }
+
+      .string {
+        color: var(--colour-code-string);
+      }
+
+      .constant {
+        color: var(--colour-code-constant);
+      }
+
+      .function {
+        color: var(--colour-code-function);
+      }
+
+      .type {
+        color: var(--colour-code-type);
+      }
     }
   }
 
   @media (hover: hover) {
     .markdown :global(a[rel~="external"]:hover::after) {
       background: var(--colour-accent);
+    }
+
+    .markdown :global(.heading-link:hover) {
+      text-decoration-color: var(--colour-accent);
     }
   }
 

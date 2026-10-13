@@ -14,7 +14,7 @@
     <ol class="articles">
       {#each data.articles as article (article.id)}
         <li>
-          <a class="name" href={resolve("/admin/articles/[id]", { id: String(article.id) })}>{article.title}</a>
+          <a class="name" href={resolve("/(editor)/admin/articles/[id]", { id: String(article.id) })}>{article.title}</a>
           <p class="status" class:draft={!article.published}>{article.status}</p>
         </li>
       {/each}

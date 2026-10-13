@@ -88,12 +88,32 @@ describe("renderMarkdown", () => {
   });
 
   describe("headings", () => {
-    it("gives each heading an id from its text", async () => {
-      expect(await renderMarkdown("## Getting started")).toBe('<h2 id="getting-started">Getting started</h2>\n');
+    it("gives each heading an id from its text, and links the heading to it", async () => {
+      expect(await renderMarkdown("## Getting started")).toBe('<h2 id="getting-started"><a class="heading-link" href="#getting-started">Getting started</a></h2>\n');
+    });
+
+    it("doesn't link a heading that already holds a link, since links can't nest", async () => {
+      const html = await renderMarkdown("## Read **[the docs](https://svelte.dev)**");
+
+      expect(html).toContain('<strong><a href="https://svelte.dev" rel="external noopener">the docs</a></strong>');
+      expect(html).not.toContain("heading-link");
+    });
+
+    it("leaves an author's own link to a section looking like a normal link", async () => {
+      const html = await renderMarkdown("## See [setup](#setup)");
+
+      expect(html).toContain('<a href="#setup">setup</a>');
+      expect(html).not.toContain("heading-link");
     });
 
     it("makes the id from the heading's text without its markup or entities", async () => {
-      expect(await renderMarkdown("### Using `marked` & *Shiki*")).toBe('<h3 id="using-marked-shiki">Using <code>marked</code> &amp; <em>Shiki</em></h3>\n');
+      expect(await renderMarkdown("### Using `marked` & *Shiki*")).toBe(
+        '<h3 id="using-marked-shiki"><a class="heading-link" href="#using-marked-shiki">Using <code>marked</code> &amp; <em>Shiki</em></a></h3>\n'
+      );
+    });
+
+    it("leaves a link's address out of the id, even inside bold text", async () => {
+      expect(await renderMarkdown("## Read **[the docs](https://svelte.dev)**")).toContain('<h2 id="read-the-docs">');
     });
 
     it("numbers repeated headings so each id is unique", async () => {
@@ -133,7 +153,7 @@ describe("renderMarkdown", () => {
     });
 
     it("shows an unknown language as typed, and no language as Code", async () => {
-      expect(await renderMarkdown("```Rust\nfn main() {}\n```")).toContain('<figcaption>Rust</figcaption><pre tabindex="0"><code>fn main() {}</code></pre>');
+      expect(await renderMarkdown("```Zig\nconst x = 1;\n```")).toContain('<figcaption>Zig</figcaption><pre tabindex="0"><code>const x = 1;</code></pre>');
       expect(await renderMarkdown("```\nplain\n```")).toContain("<figcaption>Code</figcaption>");
     });
 
@@ -141,11 +161,15 @@ describe("renderMarkdown", () => {
       expect(await renderMarkdown("```ts title=example.ts\nconst a = 1;\n```")).toContain("<figcaption>TypeScript</figcaption>");
     });
 
-    it("marks keywords and comments with classes and keeps no inline styles", async () => {
-      const html = await renderMarkdown("```ts\n// note\nconst a = 1;\n```");
+    it("marks each kind of token with a class and keeps no inline styles", async () => {
+      const html = await renderMarkdown('```ts\n// note\nconst size: number = measure("sand", 2);\nfunction measure() {}\n```');
 
       expect(html).toContain('<span class="comment">// note</span>');
       expect(html).toContain('<span class="keyword">const</span>');
+      expect(html).toContain('<span class="type">number</span>');
+      expect(html).toContain('<span class="function">measure</span>');
+      expect(html).toMatch(/<span class="string">"?sand/);
+      expect(html).toContain('<span class="constant">2</span>');
       expect(html).not.toContain("style=");
     });
 
