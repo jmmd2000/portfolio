@@ -110,15 +110,10 @@
       }
 
       hr {
-        border: 0;
+        height: 1px;
         margin-block: var(--space-6);
-        color: var(--colour-text-muted);
-        text-align: center;
-
-        &::after {
-          content: "· · ·";
-          letter-spacing: 0.5em;
-        }
+        border: 0;
+        background: var(--colour-divider);
       }
 
       table {
