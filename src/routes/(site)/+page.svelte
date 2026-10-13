@@ -59,7 +59,7 @@
     <ul>
       {#each data.articles as article (article.slug)}
         <li>
-          <a class="article" href={resolve("/articles/[slug]", { slug: article.slug })}>
+          <a class="article" href={resolve("/(site)/articles/[slug]", { slug: article.slug })}>
             <strong><span class="words">{article.title}</span> <span class="arrow" aria-hidden="true"><ArrowRight size="1em" strokeWidth={2} /></span></strong>
             <time datetime={article.dateTime}>{article.date}</time>
           </a>

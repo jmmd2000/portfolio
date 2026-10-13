@@ -18,7 +18,7 @@
     <ul class="articles">
       {#each articleYear.articles as article (article.slug)}
         <li>
-          <a class="article" href={resolve("/articles/[slug]", { slug: article.slug })}>
+          <a class="article" href={resolve("/(site)/articles/[slug]", { slug: article.slug })}>
             <h3 class="title"><span class="words">{article.title}</span> <span class="arrow" aria-hidden="true"><ArrowRight size="1em" strokeWidth={2} /></span></h3>
             <span class="summary">{article.summary}</span>
             <span class="meta">

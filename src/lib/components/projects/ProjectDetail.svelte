@@ -52,7 +52,7 @@
         {/if}
         {#if writeUpSlug}
           <li>
-            <a href={resolve("/articles/[slug]", { slug: writeUpSlug })}>Read the write-up<span class="visually-hidden"> for {project.title}</span><LinkArrow kind="internal" /></a>
+            <a href={resolve("/(site)/articles/[slug]", { slug: writeUpSlug })}>Read the write-up<span class="visually-hidden"> for {project.title}</span><LinkArrow kind="internal" /></a>
           </li>
         {/if}
       </ul>
