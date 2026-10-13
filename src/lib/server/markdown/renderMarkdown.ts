@@ -1,5 +1,6 @@
 import { Marked, type Token, type Tokens } from "marked";
 import sanitizeHtml from "sanitize-html";
+import { slugify } from "$lib/slugify";
 import { createCodeBlockRenderer } from "./highlightCode";
 
 const imageHost = "assets.jamesmddoyle.com";
@@ -13,13 +14,7 @@ const bottomHeadingLevel = 4;
  * like "&amp;" are dropped first, so "Cats &amp; dogs" becomes "cats-dogs".
  */
 function slugFor(headingText: string): string {
-  const slug = headingText
-    .replace(/&[a-z0-9#]+;/gi, " ")
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+  const slug = slugify(headingText.replace(/&[a-z0-9#]+;/gi, " "));
   return slug === "" ? "section" : slug;
 }
 

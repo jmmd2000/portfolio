@@ -34,6 +34,36 @@ test("a new article is a draft that stays off the site", async ({ page }) => {
   await expect(page.getByText("Draft")).toBeVisible();
 });
 
+test("a new article's slug follows its title until the slug is typed by hand", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/articles");
+  const add = page.getByRole("group", { name: "Add an article" });
+
+  await add.getByLabel("Title").fill("How the Sand Falls!");
+  await expect(add.getByLabel("Slug")).toHaveValue("how-the-sand-falls");
+  await add.getByLabel("Slug").fill("sand");
+  await add.getByLabel("Title").fill("Falling sand");
+
+  await expect(add.getByLabel("Slug")).toHaveValue("sand");
+});
+
+test("without JavaScript, a new article with a blank slug gets one from its title", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  // Blocking the app's JavaScript makes the form submit as plain HTML
+  await page.route("**/_app/**/*.js", route => route.abort());
+  await page.goto("/admin/articles");
+  const add = page.getByRole("group", { name: "Add an article" });
+
+  await add.getByLabel("Title").fill("How the Sand Falls");
+  await add.getByLabel("Summary").fill("One rule per material.");
+  await add.getByRole("button", { name: "Add" }).click();
+
+  await page.locator("summary", { hasText: "Details" }).click();
+  await expect(page.getByLabel("Slug")).toHaveValue("how-the-sand-falls");
+});
+
 test("a slug another article uses is reported on the field", async ({ page }) => {
   await insertArticle({ slug: "taken" });
   await createAdmin();

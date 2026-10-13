@@ -12,7 +12,7 @@
       multiline?: boolean;
     };
 
-  let { label, error, hint, multiline = false, value, ...inputAttributes }: Props = $props();
+  let { label, error, hint, multiline = false, value, oninput, ...inputAttributes }: Props = $props();
 
   const id = $props.id();
   const errorID = `${id}-error`;
@@ -23,7 +23,7 @@
   let bounce: Animation | undefined;
 
   /** Bounces the field 1px as you type. Keystrokes during a bounce are skipped, so fast typing keeps a steady rhythm instead of vibrating */
-  function handleInput(): void {
+  function bounceField(): void {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (bounce?.playState === "running") return;
 
@@ -35,9 +35,29 @@
   <label for={id}>{label}</label>
   {#if multiline}
     <!-- Value set directly, not in the spread, so the server renders it as the textarea's text -->
-    <textarea {id} rows="6" {value} aria-invalid={error ? true : undefined} aria-describedby={describedBy} oninput={handleInput} {...inputAttributes}></textarea>
+    <textarea
+      {id}
+      rows="6"
+      {value}
+      aria-invalid={error ? true : undefined}
+      aria-describedby={describedBy}
+      {...inputAttributes}
+      oninput={event => {
+        bounceField();
+        oninput?.(event);
+      }}></textarea>
   {:else}
-    <input {id} {value} aria-invalid={error ? true : undefined} aria-describedby={describedBy} oninput={handleInput} {...inputAttributes} />
+    <input
+      {id}
+      {value}
+      aria-invalid={error ? true : undefined}
+      aria-describedby={describedBy}
+      {...inputAttributes}
+      oninput={event => {
+        bounceField();
+        oninput?.(event);
+      }}
+    />
   {/if}
   {#if error}
     <p class="error" id={errorID}>{error}</p>
