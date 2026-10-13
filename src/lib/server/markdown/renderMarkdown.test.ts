@@ -96,6 +96,10 @@ describe("renderMarkdown", () => {
       expect(await renderMarkdown("### Using `marked` & *Shiki*")).toBe('<h3 id="using-marked-shiki">Using <code>marked</code> &amp; <em>Shiki</em></h3>\n');
     });
 
+    it("leaves a link's address out of the id, even inside bold text", async () => {
+      expect(await renderMarkdown("## Read **[the docs](https://svelte.dev)**")).toContain('<h2 id="read-the-docs">');
+    });
+
     it("numbers repeated headings so each id is unique", async () => {
       const html = await renderMarkdown("## Setup\n\n## Setup\n\n## Setup");
 

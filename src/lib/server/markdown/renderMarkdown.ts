@@ -1,4 +1,4 @@
-import { Marked, type Tokens } from "marked";
+import { Marked, type Token, type Tokens } from "marked";
 import sanitizeHtml from "sanitize-html";
 import { createCodeBlockRenderer } from "./highlightCode";
 
@@ -21,6 +21,20 @@ function slugFor(headingText: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
   return slug === "" ? "section" : slug;
+}
+
+/**
+ * The words in a heading's tokens, without markdown or link addresses. marked's own text renderer returns the raw
+ * markdown inside bold and italic text, which would put a link's address in the heading's id.
+ */
+function plainText(tokens: Token[]): string {
+  return tokens
+    .map(token => {
+      if (token.type === "html") return "";
+      if ("tokens" in token && token.tokens !== undefined) return plainText(token.tokens);
+      return "text" in token && typeof token.text === "string" ? token.text : "";
+    })
+    .join("");
 }
 
 function isExternalLink(href: string): boolean {
@@ -59,7 +73,7 @@ export async function renderMarkdown(markdown: string): Promise<string> {
     renderer: {
       heading({ tokens, depth }: Tokens.Heading): string {
         const level = Math.min(Math.max(depth, topHeadingLevel), bottomHeadingLevel);
-        const baseID = slugFor(this.parser.parseInline(tokens, this.parser.textRenderer));
+        const baseID = slugFor(plainText(tokens));
         let id = baseID;
         for (let repeat = 2; headingIDs.has(id); repeat++) {
           id = `${baseID}-${repeat}`;
