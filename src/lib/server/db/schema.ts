@@ -94,6 +94,15 @@ export const articles = pgTable(
   table => [check("articles_published_date", sql`not ${table.published} or ${table.publishedAt} is not null`)]
 );
 
+/** Each slug an article had before it was renamed, so its old address can redirect to the current one */
+export const articleSlugRedirects = pgTable("article_slug_redirects", {
+  oldSlug: text().primaryKey(),
+  articleID: integer()
+    .notNull()
+    .references(() => articles.id, { onDelete: "cascade" }),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
 export const currently = pgTable("currently", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   label: text().notNull(),

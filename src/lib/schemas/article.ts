@@ -40,7 +40,7 @@ export function articleSlugFrom(title: string): string {
   return lastHyphen > 0 ? fitting.slice(0, lastHyphen) : slug.slice(0, slugMaxLength);
 }
 
-export const slugTakenMessage = "Another article already uses this slug.";
+export const slugTakenMessage = "Another article uses or used this slug.";
 
 export type NewArticleInput = z.infer<typeof newArticleSchema>;
 export type ArticleInput = z.infer<typeof articleSchema>;

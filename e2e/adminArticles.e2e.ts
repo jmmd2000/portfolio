@@ -76,7 +76,7 @@ test("a slug another article uses is reported on the field", async ({ page }) =>
   await add.getByLabel("Summary").fill("Clashes.");
   await add.getByRole("button", { name: "Add" }).click();
 
-  await expect(add.getByText("Another article already uses this slug.")).toBeVisible();
+  await expect(add.getByText("Another article uses or used this slug.")).toBeVisible();
   await expect(add.getByLabel("Title")).toHaveValue("Another");
 });
 
@@ -95,6 +95,24 @@ test("publishing an article puts it on the site as a write-up for its project", 
 
   await page.goto("/articles/how-the-sand-falls");
   await expect(page.getByText("Write-up for SandSim")).toBeVisible();
+});
+
+test("renaming a published article sends its old address to the new one", async ({ page }) => {
+  await insertArticle({ slug: "how-the-sand-falls" });
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/articles");
+  await page.getByRole("link", { name: "How the sand falls" }).click();
+
+  await page.locator("summary", { hasText: "Details" }).click();
+  await page.getByLabel("Slug").fill("falling-sand");
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByText("How the sand falls saved.")).toBeVisible();
+
+  const response = await page.request.get("/articles/how-the-sand-falls", { maxRedirects: 0 });
+  expect(response.status()).toBe(301);
+  expect(response.headers()["location"]).toBe("/articles/falling-sand");
+  expect(response.headers()["cache-control"]).toBe("max-age=86400");
 });
 
 test("deleting an article asks first, then removes it from the admin and the site", async ({ page }) => {
@@ -134,7 +152,7 @@ for (const javaScript of [true, false]) {
     await page.locator("summary", { hasText: "Details" }).click();
     await page.getByRole("button", { name: "Save" }).click();
 
-    await expect(page.getByText("Another article already uses this slug.")).toBeVisible();
+    await expect(page.getByText("Another article uses or used this slug.")).toBeVisible();
     await expect(page.getByLabel("Body")).toHaveValue("A body that should still be here.");
   });
 }

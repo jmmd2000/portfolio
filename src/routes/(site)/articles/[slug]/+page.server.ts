@@ -1,12 +1,22 @@
-import { error } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 import { articleDateTime, formatArticleDate, readingMinutes } from "$lib/server/content/articleDetails";
-import { getPublishedArticle } from "$lib/server/content/articles";
+import { getPublishedArticle, getSlugRedirect } from "$lib/server/content/articles";
 import { renderMarkdown } from "$lib/server/markdown/renderMarkdown";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ params }) => {
+// A day, so a browser that cached a redirect follows the article if it's renamed back
+const redirectCacheSeconds = 86_400;
+
+export const load: PageServerLoad = async ({ params, setHeaders }) => {
   const article = await getPublishedArticle(params.slug);
-  if (!article) error(404, "No article with that address");
+  if (!article) {
+    const slugRedirect = await getSlugRedirect(params.slug);
+    if (slugRedirect?.published) {
+      setHeaders({ "cache-control": `max-age=${redirectCacheSeconds}` });
+      redirect(301, `/articles/${slugRedirect.slug}`);
+    }
+    error(404, "No article with that address");
+  }
 
   return {
     article: {

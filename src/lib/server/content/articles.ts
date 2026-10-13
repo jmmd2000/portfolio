@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, isNotNull, isNull, ne, or } from "drizzle-orm";
 import { db } from "$lib/server/db";
-import { articles, projects } from "$lib/server/db/schema";
+import { articleSlugRedirects, articles, projects } from "$lib/server/db/schema";
 import type { ArticleInput, NewArticleInput } from "$lib/schemas/article";
 
 const homeArticleCount = 3;
@@ -122,11 +122,18 @@ export async function getArticle(id: number): Promise<Article | null> {
   return article ?? null;
 }
 
-/** Whether another article already uses this slug. Pass the article being edited, so its own slug doesn't count */
+/**
+ * Whether another article uses this slug now, or used it before a rename, since its old address still redirects
+ * there. Pass the article being edited, so its own slugs, old and current, don't count.
+ */
 export async function isSlugTaken(slug: string, editedArticleID: number | null = null): Promise<boolean> {
   const sameSlug = eq(articles.slug, slug);
-  const count = await db.$count(articles, editedArticleID === null ? sameSlug : and(sameSlug, ne(articles.id, editedArticleID)));
-  return count > 0;
+  const sameOldSlug = eq(articleSlugRedirects.oldSlug, slug);
+  const [currentCount, oldCount] = await Promise.all([
+    db.$count(articles, editedArticleID === null ? sameSlug : and(sameSlug, ne(articles.id, editedArticleID))),
+    db.$count(articleSlugRedirects, editedArticleID === null ? sameOldSlug : and(sameOldSlug, ne(articleSlugRedirects.articleID, editedArticleID))),
+  ]);
+  return currentCount + oldCount > 0;
 }
 
 /** Adds a draft article with an empty body and returns it */
@@ -141,19 +148,45 @@ export async function createArticle(input: NewArticleInput): Promise<Article> {
 }
 
 /**
- * Saves an article.
+ * Saves an article. The publish date is set the first time it's published and kept after that. Renaming an article
+ * that was already published keeps its old slug as a redirect, and taking back one of its own old slugs removes
+ * that redirect. Returns null when there's no article with the id.
  */
 export async function updateArticle(id: number, input: ArticleInput): Promise<Article | null> {
-  const existing = await getArticle(id);
-  if (!existing) return null;
+  return db.transaction(async transaction => {
+    const [existing] = await transaction.select().from(articles).where(eq(articles.id, id));
+    if (!existing) return null;
 
-  const publishedAt = input.published && existing.publishedAt === null ? new Date() : existing.publishedAt;
-  const [updated] = await db
-    .update(articles)
-    .set({ ...input, publishedAt })
-    .where(eq(articles.id, id))
-    .returning();
-  return updated ?? null;
+    if (input.slug !== existing.slug) {
+      await transaction.delete(articleSlugRedirects).where(and(eq(articleSlugRedirects.oldSlug, input.slug), eq(articleSlugRedirects.articleID, id)));
+      // A slug only needs a redirect if it was public, so a draft's rename or a rename in the same save as the first publish leaves none
+      if (existing.publishedAt !== null) await transaction.insert(articleSlugRedirects).values({ oldSlug: existing.slug, articleID: id });
+    }
+
+    const publishedAt = input.published && existing.publishedAt === null ? new Date() : existing.publishedAt;
+    const [updated] = await transaction
+      .update(articles)
+      .set({ ...input, publishedAt })
+      .where(eq(articles.id, id))
+      .returning();
+    return updated ?? null;
+  });
+}
+
+export interface SlugRedirect {
+  /** The article's current slug */
+  slug: string;
+  published: boolean;
+}
+
+/** Where an old slug points now: the article's current slug, and whether it's published. Null when the slug was never renamed away */
+export async function getSlugRedirect(oldSlug: string): Promise<SlugRedirect | null> {
+  const [redirect] = await db
+    .select({ slug: articles.slug, published: articles.published })
+    .from(articleSlugRedirects)
+    .innerJoin(articles, eq(articleSlugRedirects.articleID, articles.id))
+    .where(eq(articleSlugRedirects.oldSlug, oldSlug));
+  return redirect ?? null;
 }
 
 /** The projects an article can belong to: those without an article, plus the edited article's own project */
