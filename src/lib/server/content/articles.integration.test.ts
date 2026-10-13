@@ -80,13 +80,13 @@ describe("the project an article belongs to", () => {
     const projectID = await insertProject(true);
     await insertArticle({ projectID });
 
-    expect((await getArticleBySlug("sand"))?.project).toEqual({ id: projectID, title: "SandSim" });
+    expect((await getPublishedArticles())[0]?.project).toEqual({ id: projectID, title: "SandSim" });
   });
 
-  it("is left out when the project isn't published, so the article doesn't link to a missing project", async () => {
+  it("is left out when the project isn't published, so the article list doesn't name a missing project", async () => {
     await insertArticle({ projectID: await insertProject(false) });
 
-    expect((await getArticleBySlug("sand"))?.project).toBeNull();
+    expect((await getPublishedArticles())[0]?.project).toBeNull();
   });
 
   it("is cleared when the project is deleted, and the article stays", async () => {
@@ -95,7 +95,7 @@ describe("the project an article belongs to", () => {
 
     await db.delete(projects).where(eq(projects.id, projectID));
 
-    expect((await getArticleBySlug("sand"))?.project).toBeNull();
+    expect((await getPublishedArticles())[0]?.project).toBeNull();
   });
 
   it("gets a link to its article only once the article is published", async () => {

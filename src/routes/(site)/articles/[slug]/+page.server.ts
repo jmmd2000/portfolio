@@ -32,7 +32,6 @@ export const load: PageServerLoad = async ({ params, setHeaders, locals }) => {
       date: formatArticleDate(shownDate),
       dateTime: articleDateTime(shownDate),
       readingMinutes: readingMinutes(article.body),
-      project: article.project,
       draft: !article.published,
     },
     html: await renderMarkdown(article.body),

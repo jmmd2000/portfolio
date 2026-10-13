@@ -94,8 +94,8 @@ test("publishing an article puts it on the site as a write-up for its project", 
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("How the sand falls saved.")).toBeVisible();
 
-  await page.goto("/articles/how-the-sand-falls");
-  await expect(page.getByText("Write-up for SandSim")).toBeVisible();
+  await page.goto("/projects");
+  await expect(page.getByRole("link", { name: "Read the write-up for SandSim" })).toBeVisible();
 });
 
 test("renaming a published article sends its old address to the new one", async ({ page }) => {

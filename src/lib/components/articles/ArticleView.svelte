@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import MarkdownContent from "$lib/components/markdown/MarkdownContent.svelte";
-  import type { ArticleProject } from "$lib/server/content/articles";
 
   interface Props {
     title: string;
@@ -9,14 +7,13 @@
     /** The date as YYYY-MM-DD, for the time element */
     dateTime: string;
     readingMinutes: number;
-    project: ArticleProject | null;
     /** HTML from renderMarkdown, which has already sanitised it */
     html: string;
     /** Labels the article as a draft, for the signed-in admin viewing it on the site */
     draft?: boolean;
   }
 
-  let { title, date, dateTime, readingMinutes, project, html, draft = false }: Props = $props();
+  let { title, date, dateTime, readingMinutes, html, draft = false }: Props = $props();
 </script>
 
 <article>
@@ -28,9 +25,6 @@
       {/if}
       <time datetime={dateTime}>{date}</time>
       <span>{readingMinutes} minute read</span>
-      {#if project}
-        <span>Write-up for <a href="{resolve('/projects')}#project-{project.id}">{project.title}</a></span>
-      {/if}
     </p>
   </header>
   <MarkdownContent {html} />
@@ -57,10 +51,6 @@
 
     > * {
       white-space: nowrap;
-    }
-
-    a {
-      font-weight: 500;
     }
 
     strong {

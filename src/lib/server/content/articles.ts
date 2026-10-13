@@ -32,33 +32,31 @@ interface PublishedArticleRow {
   projectTitle: string | null;
 }
 
-function articleProject(row: Pick<PublishedArticleRow, "projectID" | "projectTitle">): ArticleProject | null {
-  return row.projectID === null || row.projectTitle === null ? null : { id: row.projectID, title: row.projectTitle };
-}
-
 function toPublishedArticle(row: PublishedArticleRow): PublishedArticle {
   // The database refuses a published article without a date, so this only fails if that check is removed
   if (row.publishedAt === null) throw new Error(`The article "${row.slug}" is published but has no publish date`);
 
-  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt, project: articleProject(row) };
+  const project = row.projectID === null || row.projectTitle === null ? null : { id: row.projectID, title: row.projectTitle };
+  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt, project };
 }
-
-const articleWithProjectColumns = {
-  slug: articles.slug,
-  title: articles.title,
-  summary: articles.summary,
-  body: articles.body,
-  publishedAt: articles.publishedAt,
-  projectID: projects.id,
-  projectTitle: projects.title,
-};
-
-// Joins an article's project only when that project is published, so the article never links to a hidden one
-const publishedProjectJoin = and(eq(articles.projectID, projects.id), eq(projects.published, true));
 
 /** Published articles, newest first. A limit keeps only the newest few */
 async function findPublishedArticles(limit?: number): Promise<PublishedArticle[]> {
-  const query = db.select(articleWithProjectColumns).from(articles).leftJoin(projects, publishedProjectJoin).where(eq(articles.published, true)).orderBy(desc(articles.publishedAt)).$dynamic();
+  const query = db
+    .select({
+      slug: articles.slug,
+      title: articles.title,
+      summary: articles.summary,
+      body: articles.body,
+      publishedAt: articles.publishedAt,
+      projectID: projects.id,
+      projectTitle: projects.title,
+    })
+    .from(articles)
+    .leftJoin(projects, and(eq(articles.projectID, projects.id), eq(projects.published, true)))
+    .where(eq(articles.published, true))
+    .orderBy(desc(articles.publishedAt))
+    .$dynamic();
   const rows = limit === undefined ? await query : await query.limit(limit);
 
   return rows.map(toPublishedArticle);
@@ -73,7 +71,7 @@ export async function getHomeArticles(): Promise<PublishedArticle[]> {
   return findPublishedArticles(homeArticleCount);
 }
 
-export interface ShownArticle extends Omit<PublishedArticle, "publishedAt"> {
+export interface ShownArticle extends Omit<PublishedArticle, "publishedAt" | "project"> {
   published: boolean;
   /** Null when the article has never been published */
   publishedAt: Date | null;
@@ -81,14 +79,11 @@ export interface ShownArticle extends Omit<PublishedArticle, "publishedAt"> {
 
 /** Any article by its slug, published or not, for the signed-in admin's view of the site */
 export async function getArticleBySlug(slug: string): Promise<ShownArticle | null> {
-  const [row] = await db
-    .select({ ...articleWithProjectColumns, published: articles.published })
+  const [article] = await db
+    .select({ slug: articles.slug, title: articles.title, summary: articles.summary, body: articles.body, published: articles.published, publishedAt: articles.publishedAt })
     .from(articles)
-    .leftJoin(projects, publishedProjectJoin)
     .where(eq(articles.slug, slug));
-  if (!row) return null;
-
-  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, published: row.published, publishedAt: row.publishedAt, project: articleProject(row) };
+  return article ?? null;
 }
 
 export interface ArticleLink {

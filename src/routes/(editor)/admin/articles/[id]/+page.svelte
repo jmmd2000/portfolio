@@ -53,7 +53,6 @@
   });
 
   const projectOptions = $derived([{ value: "", label: "None" }, ...data.projectChoices.map(project => ({ value: String(project.id), label: project.title }))]);
-  const previewProject = $derived(data.projectChoices.find(project => String(project.id) === currentValues.projectID) ?? null);
 
   const preview = new LivePreview(
     untrack(() => data.preview.html),
@@ -264,7 +263,7 @@
         <p class="preview-failed" role="status">Preview unavailable. It tries again when you next type.</p>
       {/if}
       <div class="page">
-        <ArticleView title={title || "Untitled"} date={data.preview.date} dateTime={data.preview.dateTime} readingMinutes={preview.readingMinutes} project={previewProject} html={preview.html} />
+        <ArticleView title={title || "Untitled"} date={data.preview.date} dateTime={data.preview.dateTime} readingMinutes={preview.readingMinutes} html={preview.html} />
       </div>
     </div>
   </div>
