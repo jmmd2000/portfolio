@@ -13,7 +13,7 @@
   import EditorPanel from "$lib/components/editor/EditorPanel.svelte";
   import { LivePreview } from "$lib/components/editor/livePreview.svelte";
   import MarkdownReference from "$lib/components/editor/MarkdownReference.svelte";
-  import { applyMarkup, type Markup } from "$lib/components/editor/markdownInsert";
+  import { applyMarkup, shortcutMarkup, type Markup } from "$lib/components/editor/markdownInsert";
   import Button from "$lib/components/form/Button.svelte";
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
@@ -142,6 +142,15 @@
     keepDraft();
   }
 
+  function handleBodyKeydown(event: KeyboardEvent): void {
+    if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey) return;
+
+    const markup = shortcutMarkup(event.key);
+    if (!markup) return;
+    event.preventDefault();
+    void insertMarkup(markup);
+  }
+
   function handleBodyInput(event: Event & { currentTarget: HTMLTextAreaElement }): void {
     preview.schedule(event.currentTarget.value);
   }
@@ -263,6 +272,7 @@
         aria-invalid={form?.errors?.body ? true : undefined}
         bind:this={bodyField}
         oninput={handleBodyInput}
+        onkeydown={handleBodyKeydown}
         onscroll={followScroll}></textarea>
       {#if form?.errors?.body}
         <p class="field-error">{form.errors.body[0]}</p>

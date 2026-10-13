@@ -36,6 +36,8 @@ export interface MarkdownEntry {
   /** The syntax as the reference shows it */
   syntax: string;
   markup: Markup;
+  /** The letter that applies it with Ctrl or Cmd */
+  shortcut?: string;
 }
 
 export interface MarkdownGroup {
@@ -48,10 +50,10 @@ export const markdownGroups: MarkdownGroup[] = [
   {
     name: "Text",
     entries: [
-      { name: "Bold", syntax: "**text**", markup: { kind: "wrap", before: "**", after: "**", placeholder: "bold text" } },
-      { name: "Italic", syntax: "*text*", markup: { kind: "wrap", before: "*", after: "*", placeholder: "italic text" } },
+      { name: "Bold", syntax: "**text**", markup: { kind: "wrap", before: "**", after: "**", placeholder: "bold text" }, shortcut: "B" },
+      { name: "Italic", syntax: "*text*", markup: { kind: "wrap", before: "*", after: "*", placeholder: "italic text" }, shortcut: "I" },
       { name: "Strikethrough", syntax: "~~text~~", markup: { kind: "wrap", before: "~~", after: "~~", placeholder: "struck text" } },
-      { name: "Link", syntax: "[text](https://…)", markup: { kind: "wrap", before: "[", after: "](https://)", placeholder: "link text", selectInAfter: "https://" } },
+      { name: "Link", syntax: "[text](https://…)", markup: { kind: "wrap", before: "[", after: "](https://)", placeholder: "link text", selectInAfter: "https://" }, shortcut: "K" },
       { name: "Inline code", syntax: "`code`", markup: { kind: "wrap", before: "`", after: "`", placeholder: "code" } },
     ],
   },
@@ -76,6 +78,12 @@ export const markdownGroups: MarkdownGroup[] = [
     ],
   },
 ];
+
+/** The markup a Ctrl or Cmd shortcut applies, or undefined when the key has none */
+export function shortcutMarkup(key: string): Markup | undefined {
+  const entries = markdownGroups.flatMap(group => group.entries);
+  return entries.find(entry => entry.shortcut === key.toUpperCase())?.markup;
+}
 
 function wrap({ text, start, end }: TextSelection, markup: WrapMarkup): TextSelection {
   const selected = text.slice(start, end);

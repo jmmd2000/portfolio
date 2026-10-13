@@ -15,7 +15,7 @@
     .join(", ");
 </script>
 
-<p class="note">Insert puts it at the cursor, or wraps the selected text.</p>
+<p class="note">Insert puts it at the cursor, or wraps the selected text. Ctrl or Cmd with the letter shown does the same.</p>
 
 {#each markdownGroups as group (group.name)}
   <section aria-label={group.name}>
@@ -23,7 +23,12 @@
     <ul>
       {#each group.entries as entry (entry.name)}
         <li>
-          <span class="name">{entry.name}</span>
+          <span class="name">
+            {entry.name}
+            {#if entry.shortcut}
+              <kbd>{entry.shortcut}</kbd>
+            {/if}
+          </span>
           <code>{entry.syntax}</code>
           <Button aria-label="Insert {entry.name.toLowerCase()}" onclick={() => oninsert(entry.markup)}>Insert</Button>
         </li>
@@ -64,6 +69,17 @@
   .name {
     color: var(--colour-foreground);
     font-size: var(--font-size-label);
+    font-weight: 500;
+  }
+
+  kbd {
+    margin-inline-start: var(--space-1);
+    padding: 0 0.3em;
+    border: 1px solid var(--colour-divider);
+    border-radius: var(--radius-small);
+    color: var(--colour-text-muted);
+    font: inherit;
+    font-size: 0.8125rem;
     font-weight: 500;
   }
 
