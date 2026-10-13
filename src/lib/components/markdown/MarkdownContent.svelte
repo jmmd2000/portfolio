@@ -1,9 +1,6 @@
 <script lang="ts">
   import "@fontsource/monaspace-neon/latin-400.css";
   import "@fontsource/monaspace-neon/latin-600.css";
-  import { mount, unmount } from "svelte";
-  import type { Attachment } from "svelte/attachments";
-  import CopyButton from "$lib/components/contact/CopyButton.svelte";
 
   interface Props {
     /** HTML from renderMarkdown, which has already sanitised it */
@@ -11,29 +8,9 @@
   }
 
   let { html }: Props = $props();
-
-  /** Puts a Copy button in each code block's caption. It takes the HTML so it runs again when {@html} replaces the blocks */
-  function addCopyButtons(currentHTML: string): Attachment<HTMLElement> {
-    return container => {
-      if (currentHTML === "") return;
-
-      const copyButtons: ReturnType<typeof mount>[] = [];
-      for (const figure of container.querySelectorAll("figure.code-block")) {
-        const caption = figure.querySelector("figcaption");
-        const code = figure.querySelector<HTMLElement>("pre code");
-        if (!caption || !code) continue;
-
-        copyButtons.push(mount(CopyButton, { target: caption, props: { text: code.textContent, selectTarget: code, tone: "light" } }));
-      }
-
-      return () => {
-        for (const copyButton of copyButtons) void unmount(copyButton);
-      };
-    };
-  }
 </script>
 
-<div class="markdown" {@attach addCopyButtons(html)}>
+<div class="markdown">
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown sanitises the HTML on the server -->
   {@html html}
 </div>
@@ -168,11 +145,7 @@
       }
 
       .code-block figcaption {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--space-3);
-        padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+        padding: var(--space-2) var(--space-4);
         border-bottom: 1px solid var(--colour-divider);
         color: var(--colour-text-muted);
         font-size: var(--font-size-label);

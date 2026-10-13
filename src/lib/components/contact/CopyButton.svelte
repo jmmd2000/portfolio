@@ -3,10 +3,9 @@
     text: string;
     /** Selected instead when the clipboard is blocked, so the visitor can copy it themselves */
     selectTarget?: HTMLElement;
-    tone?: "deep" | "light";
   }
 
-  let { text, selectTarget, tone = "deep" }: Props = $props();
+  let { text, selectTarget }: Props = $props();
 
   let label = $state("Copy");
   let status = $state("");
@@ -42,7 +41,7 @@
   }
 </script>
 
-<button type="button" class="copy {tone}" onclick={copy}>{label}</button>
+<button type="button" class="copy" onclick={copy}>{label}</button>
 <span class="visually-hidden" aria-live="polite">{status}</span>
 
 <style>
@@ -66,21 +65,9 @@
     }
   }
 
-  .light {
-    min-inline-size: 5rem;
-    padding: var(--space-1) var(--space-3);
-    border-color: var(--colour-divider);
-    color: var(--colour-foreground);
-  }
-
   @media (hover: hover) {
     .copy:hover {
       background: color-mix(in oklch, var(--colour-text-on-deep) 10%, transparent);
-    }
-
-    .light:hover {
-      border-color: var(--colour-text-muted);
-      background: var(--colour-background);
     }
   }
 </style>
