@@ -12,7 +12,7 @@ test("a signed-out visitor can't add an article", async ({ page, request, baseUR
   await expect(page.getByText("No articles yet.")).toBeVisible();
 });
 
-test("a new article is a draft that stays off the site", async ({ page }) => {
+test("a new article is a draft that stays off the site", async ({ page, request }) => {
   await createAdmin();
   await logIn(page);
   await page.getByRole("main").getByRole("link", { name: "Articles" }).click();
@@ -28,8 +28,9 @@ test("a new article is a draft that stays off the site", async ({ page }) => {
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("How the sand falls saved.")).toBeVisible();
 
-  const response = await page.goto("/articles/how-the-sand-falls");
-  expect(response?.status()).toBe(404);
+  // A signed-out visitor, since the signed-in admin can see drafts
+  const response = await request.get("/articles/how-the-sand-falls");
+  expect(response.status()).toBe(404);
   await page.goto("/admin/articles");
   await expect(page.getByText("Draft")).toBeVisible();
 });

@@ -1,4 +1,5 @@
-import { findProjectID, insertArticle } from "./articles";
+import { createAdmin, logIn } from "./adminSession";
+import { findProjectID, insertArticle, insertSlugRedirect } from "./articles";
 import { expect, test } from "./fixtures";
 
 test("a published article shows its rendered markdown", async ({ page }) => {
@@ -16,6 +17,32 @@ test("a draft's address returns a 404", async ({ page }) => {
   const response = await page.goto("/articles/draft");
 
   expect(response?.status()).toBe(404);
+});
+
+test("the signed-in admin sees a draft at its address, labelled and kept out of search engines", async ({ page }) => {
+  await insertArticle({ slug: "draft", published: false, publishedAt: null });
+  await createAdmin();
+  await logIn(page);
+
+  const response = await page.goto("/articles/draft");
+
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole("article").getByText("Draft", { exact: true })).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
+});
+
+test("an unpublished article's old address only redirects for the signed-in admin", async ({ page, request }) => {
+  await insertArticle({ slug: "falling-sand", published: false, publishedAt: new Date("2026-10-03T09:00:00Z") });
+  await insertSlugRedirect("how-the-sand-falls", "falling-sand");
+
+  expect((await request.get("/articles/how-the-sand-falls")).status()).toBe(404);
+
+  await createAdmin();
+  await logIn(page);
+  const response = await page.request.get("/articles/how-the-sand-falls", { maxRedirects: 0 });
+  expect(response.status()).toBe(301);
+  expect(response.headers()["location"]).toBe("/articles/falling-sand");
+  expect(response.headers()["cache-control"]).toBeUndefined();
 });
 
 test("the home page lists the three newest published articles", async ({ page }) => {

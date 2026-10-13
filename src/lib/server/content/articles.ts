@@ -32,36 +32,33 @@ interface PublishedArticleRow {
   projectTitle: string | null;
 }
 
+function articleProject(row: Pick<PublishedArticleRow, "projectID" | "projectTitle">): ArticleProject | null {
+  return row.projectID === null || row.projectTitle === null ? null : { id: row.projectID, title: row.projectTitle };
+}
+
 function toPublishedArticle(row: PublishedArticleRow): PublishedArticle {
   // The database refuses a published article without a date, so this only fails if that check is removed
   if (row.publishedAt === null) throw new Error(`The article "${row.slug}" is published but has no publish date`);
 
-  const project = row.projectID === null || row.projectTitle === null ? null : { id: row.projectID, title: row.projectTitle };
-  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt, project };
+  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt, project: articleProject(row) };
 }
 
-interface ArticleFilter {
-  slug?: string;
-  limit?: number;
-}
+const articleWithProjectColumns = {
+  slug: articles.slug,
+  title: articles.title,
+  summary: articles.summary,
+  body: articles.body,
+  publishedAt: articles.publishedAt,
+  projectID: projects.id,
+  projectTitle: projects.title,
+};
 
-/** Published articles, newest first. A slug picks one article, and a limit keeps only the newest few */
-async function findPublishedArticles({ slug, limit }: ArticleFilter = {}): Promise<PublishedArticle[]> {
-  const query = db
-    .select({
-      slug: articles.slug,
-      title: articles.title,
-      summary: articles.summary,
-      body: articles.body,
-      publishedAt: articles.publishedAt,
-      projectID: projects.id,
-      projectTitle: projects.title,
-    })
-    .from(articles)
-    .leftJoin(projects, and(eq(articles.projectID, projects.id), eq(projects.published, true)))
-    .where(and(eq(articles.published, true), slug === undefined ? undefined : eq(articles.slug, slug)))
-    .orderBy(desc(articles.publishedAt))
-    .$dynamic();
+// Joins an article's project only when that project is published, so the article never links to a hidden one
+const publishedProjectJoin = and(eq(articles.projectID, projects.id), eq(projects.published, true));
+
+/** Published articles, newest first. A limit keeps only the newest few */
+async function findPublishedArticles(limit?: number): Promise<PublishedArticle[]> {
+  const query = db.select(articleWithProjectColumns).from(articles).leftJoin(projects, publishedProjectJoin).where(eq(articles.published, true)).orderBy(desc(articles.publishedAt)).$dynamic();
   const rows = limit === undefined ? await query : await query.limit(limit);
 
   return rows.map(toPublishedArticle);
@@ -73,13 +70,25 @@ export async function getPublishedArticles(): Promise<PublishedArticle[]> {
 
 /** The three newest published articles, for the home page */
 export async function getHomeArticles(): Promise<PublishedArticle[]> {
-  return findPublishedArticles({ limit: homeArticleCount });
+  return findPublishedArticles(homeArticleCount);
 }
 
-/** The published article with this slug, or null for a draft or a slug that doesn't exist */
-export async function getPublishedArticle(slug: string): Promise<PublishedArticle | null> {
-  const [article] = await findPublishedArticles({ slug });
-  return article ?? null;
+export interface ShownArticle extends Omit<PublishedArticle, "publishedAt"> {
+  published: boolean;
+  /** Null when the article has never been published */
+  publishedAt: Date | null;
+}
+
+/** Any article by its slug, published or not, for the signed-in admin's view of the site */
+export async function getArticleBySlug(slug: string): Promise<ShownArticle | null> {
+  const [row] = await db
+    .select({ ...articleWithProjectColumns, published: articles.published })
+    .from(articles)
+    .leftJoin(projects, publishedProjectJoin)
+    .where(eq(articles.slug, slug));
+  if (!row) return null;
+
+  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, published: row.published, publishedAt: row.publishedAt, project: articleProject(row) };
 }
 
 export interface ArticleLink {

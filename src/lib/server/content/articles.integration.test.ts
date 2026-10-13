@@ -9,8 +9,8 @@ import {
   countPublishedArticles,
   createArticle,
   deleteArticle,
+  getArticleBySlug,
   getProjectChoices,
-  getPublishedArticle,
   getPublishedArticleLinks,
   getPublishedArticles,
   getPublishedArticleSlugs,
@@ -56,13 +56,13 @@ describe("drafts", () => {
     expect(await countPublishedArticles()).toBe(0);
   });
 
-  it("can't be fetched by their slug", async () => {
-    expect(await getPublishedArticle("draft")).toBeNull();
+  it("are marked unpublished when fetched by their slug, so the article page can hide them", async () => {
+    expect((await getArticleBySlug("draft"))?.published).toBe(false);
   });
 });
 
 it("returns null for a slug that doesn't exist", async () => {
-  expect(await getPublishedArticle("missing")).toBeNull();
+  expect(await getArticleBySlug("missing")).toBeNull();
 });
 
 it("lists published articles newest first", async () => {
@@ -80,13 +80,13 @@ describe("the project an article belongs to", () => {
     const projectID = await insertProject(true);
     await insertArticle({ projectID });
 
-    expect((await getPublishedArticle("sand"))?.project).toEqual({ id: projectID, title: "SandSim" });
+    expect((await getArticleBySlug("sand"))?.project).toEqual({ id: projectID, title: "SandSim" });
   });
 
   it("is left out when the project isn't published, so the article doesn't link to a missing project", async () => {
     await insertArticle({ projectID: await insertProject(false) });
 
-    expect((await getPublishedArticle("sand"))?.project).toBeNull();
+    expect((await getArticleBySlug("sand"))?.project).toBeNull();
   });
 
   it("is cleared when the project is deleted, and the article stays", async () => {
@@ -95,7 +95,7 @@ describe("the project an article belongs to", () => {
 
     await db.delete(projects).where(eq(projects.id, projectID));
 
-    expect((await getPublishedArticle("sand"))?.project).toBeNull();
+    expect((await getArticleBySlug("sand"))?.project).toBeNull();
   });
 
   it("gets a link to its article only once the article is published", async () => {
@@ -145,7 +145,7 @@ describe("admin editing", () => {
 
     expect(created.published).toBe(false);
     expect(created.publishedAt).toBeNull();
-    expect(await getPublishedArticle("new")).toBeNull();
+    expect(await getPublishedArticleSlugs()).not.toContain("new");
   });
 
   it("reports a slug as taken by another article, but not by the article being edited", async () => {
