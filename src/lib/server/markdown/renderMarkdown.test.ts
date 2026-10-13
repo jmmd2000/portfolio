@@ -141,11 +141,15 @@ describe("renderMarkdown", () => {
       expect(await renderMarkdown("```ts title=example.ts\nconst a = 1;\n```")).toContain("<figcaption>TypeScript</figcaption>");
     });
 
-    it("marks keywords and comments with classes and keeps no inline styles", async () => {
-      const html = await renderMarkdown("```ts\n// note\nconst a = 1;\n```");
+    it("marks each kind of token with a class and keeps no inline styles", async () => {
+      const html = await renderMarkdown('```ts\n// note\nconst size: number = measure("sand", 2);\nfunction measure() {}\n```');
 
       expect(html).toContain('<span class="comment">// note</span>');
       expect(html).toContain('<span class="keyword">const</span>');
+      expect(html).toContain('<span class="type">number</span>');
+      expect(html).toContain('<span class="function">measure</span>');
+      expect(html).toMatch(/<span class="string">"?sand/);
+      expect(html).toContain('<span class="constant">2</span>');
       expect(html).not.toContain("style=");
     });
 

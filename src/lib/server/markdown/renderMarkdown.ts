@@ -126,7 +126,7 @@ export async function renderMarkdown(markdown: string): Promise<string> {
     },
     allowedClasses: {
       figure: ["code-block"],
-      span: ["line", "keyword", "comment"],
+      span: ["line", "keyword", "comment", "string", "constant", "function", "type"],
     },
     allowedSchemes: ["http", "https", "mailto"],
     allowProtocolRelative: false,

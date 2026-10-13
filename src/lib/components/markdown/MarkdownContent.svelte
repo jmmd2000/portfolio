@@ -200,6 +200,22 @@
       .comment {
         color: var(--colour-text-muted);
       }
+
+      .string {
+        color: var(--colour-code-string);
+      }
+
+      .constant {
+        color: var(--colour-code-constant);
+      }
+
+      .function {
+        color: var(--colour-code-function);
+      }
+
+      .type {
+        color: var(--colour-code-type);
+      }
     }
   }
 
