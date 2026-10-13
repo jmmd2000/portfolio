@@ -86,7 +86,8 @@
         margin-inline: 0;
         padding: var(--space-4) var(--space-5);
         border-radius: var(--radius-medium);
-        background: var(--colour-surface);
+        background: var(--colour-tint);
+        color: var(--colour-foreground);
       }
 
       a[rel~="external"]::after {
