@@ -3,7 +3,6 @@ import sanitizeHtml from "sanitize-html";
 import { slugify } from "$lib/slugify";
 import { createCodeBlockRenderer } from "./highlightCode";
 
-const imageHost = "assets.jamesmddoyle.com";
 const siteHost = "jamesmddoyle.com";
 
 const topHeadingLevel = 2;
@@ -48,12 +47,11 @@ function isExternalLink(href: string): boolean {
   }
 }
 
-function isAllowedImage(src: string | undefined): boolean {
+function isHTTPSImage(src: string | undefined): boolean {
   if (!src) return false;
 
   try {
-    const url = new URL(src);
-    return url.protocol === "https:" && url.hostname === imageHost;
+    return new URL(src).protocol === "https:";
   } catch {
     return false;
   }
@@ -62,7 +60,7 @@ function isAllowedImage(src: string | undefined): boolean {
 /**
  * Turns an article's markdown into HTML. marked does not sanitise, so sanitize-html runs
  * last over everything with a strict allowlist. Headings get ids from their text and link to themselves, links
- * keep only safe addresses, images only come from the site's asset host, and code blocks are highlighted.
+ * keep only safe addresses, images only load over https, and code blocks are highlighted.
  */
 export async function renderMarkdown(markdown: string): Promise<string> {
   const renderCodeBlock = await createCodeBlockRenderer();
@@ -135,7 +133,7 @@ export async function renderMarkdown(markdown: string): Promise<string> {
       h2: ["id"],
       h3: ["id"],
       h4: ["id"],
-      img: ["src", "alt"],
+      img: ["src", "alt", { name: "loading", values: ["lazy"] }, { name: "referrerpolicy", values: ["no-referrer"] }],
       th: [{ name: "align", values: ["left", "center", "right"] }],
       td: [{ name: "align", values: ["left", "center", "right"] }],
       div: ["data-demo"],
@@ -152,6 +150,8 @@ export async function renderMarkdown(markdown: string): Promise<string> {
       h2: keepGeneratedID,
       h3: keepGeneratedID,
       h4: keepGeneratedID,
+      // An image can come from any site, so it waits until it's near the screen and doesn't tell that site which page it's on
+      img: (tagName, attribs) => ({ tagName, attribs: { ...attribs, loading: "lazy", referrerpolicy: "no-referrer" } }),
       a: (tagName, attribs) => {
         const linkAttribs = { ...attribs };
         delete linkAttribs.rel;
@@ -161,7 +161,7 @@ export async function renderMarkdown(markdown: string): Promise<string> {
       },
     },
     exclusiveFilter: frame => {
-      if (frame.tag === "img") return !isAllowedImage(frame.attribs.src);
+      if (frame.tag === "img") return !isHTTPSImage(frame.attribs.src);
       // A div is only kept as a demo placeholder. Any other div keeps its content but loses the tag
       if (frame.tag === "div" && frame.attribs["data-demo"] === undefined) return "excludeTag";
 

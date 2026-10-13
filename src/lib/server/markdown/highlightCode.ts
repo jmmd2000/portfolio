@@ -1,29 +1,5 @@
 import { createHighlighter, type Highlighter, type ShikiTransformer, type ThemeRegistrationRaw } from "shiki";
-
-interface CodeLanguage {
-  shikiID: string;
-  name: string;
-}
-
-/** The fence words that get highlighting. Any other fence word shows as plain code */
-const languages: Record<string, CodeLanguage> = {
-  ts: { shikiID: "typescript", name: "TypeScript" },
-  typescript: { shikiID: "typescript", name: "TypeScript" },
-  js: { shikiID: "javascript", name: "JavaScript" },
-  javascript: { shikiID: "javascript", name: "JavaScript" },
-  svelte: { shikiID: "svelte", name: "Svelte" },
-  html: { shikiID: "html", name: "HTML" },
-  css: { shikiID: "css", name: "CSS" },
-  bash: { shikiID: "bash", name: "Bash" },
-  sh: { shikiID: "bash", name: "Bash" },
-  shell: { shikiID: "bash", name: "Bash" },
-  json: { shikiID: "json", name: "JSON" },
-  sql: { shikiID: "sql", name: "SQL" },
-  rust: { shikiID: "rust", name: "Rust" },
-  rs: { shikiID: "rust", name: "Rust" },
-  python: { shikiID: "python", name: "Python" },
-  py: { shikiID: "python", name: "Python" },
-};
+import { codeLanguages } from "$lib/markdown/codeLanguages";
 
 /** Each kind of token that gets its own class, and the TextMate scopes that make a token that kind */
 const tokenKinds = {
@@ -66,7 +42,7 @@ let highlighterLoading: Promise<Highlighter> | undefined;
 
 /** Loads Shiki and its languages once, the first time a code block is needed */
 function loadHighlighter(): Promise<Highlighter> {
-  const shikiIDs = [...new Set(Object.values(languages).map(language => language.shikiID))];
+  const shikiIDs = [...new Set(Object.values(codeLanguages).map(language => language.shikiID))];
   highlighterLoading ??= createHighlighter({ themes: [labelTheme], langs: shikiIDs });
   return highlighterLoading;
 }
@@ -85,7 +61,7 @@ export async function createCodeBlockRenderer(): Promise<(code: string, fence: s
   return (code, fence) => {
     // The fence can say more than the language, like "ts title=example.ts", so only its first word counts
     const fenceWord = fence?.trim().split(/\s+/)[0] ?? "";
-    const language = languages[fenceWord.toLowerCase()];
+    const language = codeLanguages[fenceWord.toLowerCase()];
     const caption = language?.name ?? (fenceWord || "Code");
 
     const highlighted = language

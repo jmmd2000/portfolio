@@ -1,16 +1,19 @@
 <script lang="ts">
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
   import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
+  import BookOpenText from "@lucide/svelte/icons/book-open-text";
   import SlidersHorizontal from "@lucide/svelte/icons/sliders-horizontal";
-  import X from "@lucide/svelte/icons/x";
   import type { SubmitFunction } from "@sveltejs/kit";
-  import { untrack } from "svelte";
+  import { tick, untrack } from "svelte";
   import { enhance } from "$app/forms";
   import { resolve } from "$app/paths";
   import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import ArticleView from "$lib/components/articles/ArticleView.svelte";
   import { clearDraft, formatDraftTime, isWorthRestoring, readDraft, writeDraft, type ArticleDraft } from "$lib/components/editor/articleDraft";
+  import EditorPanel from "$lib/components/editor/EditorPanel.svelte";
   import { LivePreview } from "$lib/components/editor/livePreview.svelte";
+  import MarkdownReference from "$lib/components/editor/MarkdownReference.svelte";
+  import { applyMarkup, shortcutMarkup, type Markup } from "$lib/components/editor/markdownInsert";
   import Button from "$lib/components/form/Button.svelte";
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
@@ -46,11 +49,19 @@
   const changedFields = $derived(Object.keys(savedValues).filter(field => currentValues[field as keyof ArticleValues] !== savedValues[field as keyof ArticleValues]));
   const hasDetailsError = $derived(Boolean(form?.errors?.slug ?? form?.errors?.projectID));
 
+  // Set by a save: whether it turned a draft live, or found nothing to save. Typing clears both
+  let justPublished = $state(false);
+  let nothingToSave = $state(false);
+
   const status = $derived.by(() => {
     if (form?.errors) return "Not saved. Fix the fields marked in red.";
     if (changedFields.length > 0) return "Unsaved changes";
+    if (nothingToSave) return "Nothing to save.";
+    if (justPublished) return "Published.";
     return form?.message ?? "";
   });
+
+  const wordCount = $derived(body.split(/\s+/).filter(word => word !== "").length);
 
   const projectOptions = $derived([{ value: "", label: "None" }, ...data.projectChoices.map(project => ({ value: String(project.id), label: project.title }))]);
 
@@ -97,10 +108,30 @@
     if (draftTimer !== undefined) keepDraft();
   }
 
-  function handleFormInput(): void {
-    readDetails();
+  function scheduleDraft(): void {
     clearTimeout(draftTimer);
     draftTimer = setTimeout(keepDraft, draftDelay);
+  }
+
+  function handleFormInput(): void {
+    nothingToSave = false;
+    readDetails();
+    scheduleDraft();
+  }
+
+  /** Applies markup to the body at its selection, then puts the cursor back in the body with the new selection */
+  async function insertMarkup(markup: Markup): Promise<void> {
+    if (!bodyField) return;
+
+    const result = applyMarkup({ text: body, start: bodyField.selectionStart, end: bodyField.selectionEnd }, markup);
+    body = result.text;
+    preview.schedule(body);
+    scheduleDraft();
+    shownPane = "write";
+    // The body shows the new text once Svelte updates it, and only then can its selection be set
+    await tick();
+    bodyField.focus();
+    bodyField.setSelectionRange(result.start, result.end);
   }
 
   // The offered draft stays in memory, so new writing can replace the kept copy while the offer still shows
@@ -120,6 +151,15 @@
     keepDraft();
   }
 
+  function handleBodyKeydown(event: KeyboardEvent): void {
+    if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey) return;
+
+    const markup = shortcutMarkup(event.key);
+    if (!markup) return;
+    event.preventDefault();
+    void insertMarkup(markup);
+  }
+
   function handleBodyInput(event: Event & { currentTarget: HTMLTextAreaElement }): void {
     preview.schedule(event.currentTarget.value);
   }
@@ -133,20 +173,10 @@
     previewPane.scrollTop = share * (previewPane.scrollHeight - previewPane.clientHeight);
   }
 
-  let detailsSummary = $state<HTMLElement>();
-
   function handleKeydown(event: KeyboardEvent): void {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
       event.preventDefault();
       formElement?.requestSubmit();
-      return;
-    }
-
-    // Escape in the delete dialog closes only the dialog
-    const inDialog = event.target instanceof Element && event.target.closest("dialog") !== null;
-    if (event.key === "Escape" && detailsOpen && !inDialog) {
-      detailsOpen = false;
-      detailsSummary?.focus();
     }
   }
 
@@ -157,14 +187,20 @@
   });
 
   /** Keeps every field after a save, the way `keepValues` does, then clears the kept draft once it matches what's saved */
-  const saveArticle: SubmitFunction = ({ action }) => {
+  const saveArticle: SubmitFunction = ({ action, cancel }) => {
     if (action.search === "?/delete") {
       clearTimeout(draftTimer);
       clearDraft(data.article.id);
+    } else if (changedFields.length === 0 && !form?.errors) {
+      nothingToSave = true;
+      cancel();
+      return;
     }
 
+    const wasPublished = data.article.published;
     return async ({ update }) => {
       await update({ reset: false });
+      justPublished = !wasPublished && data.article.published;
       keepDraft();
     };
   };
@@ -189,7 +225,7 @@
 <form class="editor" method="POST" action="?/save" bind:this={formElement} use:enhance={saveArticle} oninput={handleFormInput} onchange={readDetails}>
   <header class="bar">
     <a class="back" href={resolve("/admin/articles")}><ArrowLeft size="1.125em" aria-hidden="true" /> <span class="back-label">Articles</span></a>
-    <p class="state">{data.article.published ? "Published" : "Draft"}</p>
+    <p class="state" class:live={data.article.published}>{data.article.published ? "Published" : "Draft"}</p>
     <p class="status" class:error={form?.errors} role="status">{status}</p>
 
     <div class="tabs">
@@ -207,21 +243,20 @@
       <Button type="submit" variant="primary">Save</Button>
     </div>
 
-    <details class="details" bind:open={detailsOpen}>
-      <summary bind:this={detailsSummary}><SlidersHorizontal size="1.125em" aria-hidden="true" /> <span class="bar-label">Details</span></summary>
-      <div class="panel">
-        <div class="panel-heading">
-          <h2>Details</h2>
-          <button class="close" type="button" aria-label="Close the details" onclick={() => (detailsOpen = false)}><X size="1.25em" aria-hidden="true" /></button>
-        </div>
-        <Field label="Slug" name="slug" hint="The end of its address, like my-first-article" value={values.slug} error={form?.errors?.slug?.[0]} />
-        <SelectField label="Write-up for" name="projectID" options={projectOptions} value={values.projectID} hint="Optional" error={form?.errors?.projectID?.[0]} />
-        <Checkbox label="Published" name="published" checked={values.published === "on"} />
-        <div class="delete">
-          <ConfirmDelete name={data.article.title} formaction="?/delete" />
-        </div>
+    <EditorPanel label="Markdown">
+      {#snippet icon()}<BookOpenText size="1.125em" aria-hidden="true" />{/snippet}
+      <MarkdownReference oninsert={insertMarkup} />
+    </EditorPanel>
+
+    <EditorPanel label="Details" bind:open={detailsOpen}>
+      {#snippet icon()}<SlidersHorizontal size="1.125em" aria-hidden="true" />{/snippet}
+      <Field label="Slug" name="slug" hint="The end of its address, like my-first-article" value={values.slug} error={form?.errors?.slug?.[0]} />
+      <SelectField label="Write-up for" name="projectID" options={projectOptions} value={values.projectID} hint="Optional" error={form?.errors?.projectID?.[0]} />
+      <Checkbox label="Published" name="published" checked={values.published === "on"} />
+      <div class="delete">
+        <ConfirmDelete name={data.article.title} formaction="?/delete" />
       </div>
-    </details>
+    </EditorPanel>
   </header>
 
   <div class="panes" data-shown={shownPane}>
@@ -252,10 +287,16 @@
         aria-invalid={form?.errors?.body ? true : undefined}
         bind:this={bodyField}
         oninput={handleBodyInput}
+        onkeydown={handleBodyKeydown}
         onscroll={followScroll}></textarea>
       {#if form?.errors?.body}
         <p class="field-error">{form.errors.body[0]}</p>
       {/if}
+      <p class="count">
+        {wordCount}
+        {wordCount === 1 ? "word" : "words"}
+        {#if wordCount > 0}· {preview.readingMinutes} minute read{/if}
+      </p>
     </div>
 
     <div class="preview" role="region" aria-label="Preview" bind:this={previewPane}>
@@ -264,6 +305,9 @@
       {/if}
       <div class="page">
         <ArticleView title={title || "Untitled"} date={data.preview.date} dateTime={data.preview.dateTime} readingMinutes={preview.readingMinutes} html={preview.html} />
+        {#if body.trim() === ""}
+          <p class="empty">The body shows here as you write.</p>
+        {/if}
       </div>
     </div>
   </div>
@@ -302,6 +346,12 @@
     background: var(--colour-surface);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
+
+    /* Green marks something live, and a published article is */
+    &.live {
+      color: var(--colour-accent);
+      font-weight: 500;
+    }
   }
 
   .status {
@@ -360,72 +410,6 @@
   /* Save comes first in the markup, so Enter in a field saves instead of opening the delete dialog */
   .save {
     order: 1;
-  }
-
-  .details summary {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2) var(--space-2);
-    border-radius: var(--radius-medium);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-label);
-    font-weight: 500;
-    list-style: none;
-    cursor: pointer;
-
-    &::-webkit-details-marker {
-      display: none;
-    }
-
-    &:hover {
-      background: var(--colour-surface);
-    }
-  }
-
-  .details[open] summary {
-    background: var(--colour-surface);
-  }
-
-  .panel {
-    position: fixed;
-    inset: var(--bar-height) 0 0 auto;
-    z-index: 10;
-    display: grid;
-    align-content: start;
-    gap: var(--space-4);
-    width: min(24rem, 100%);
-    padding: var(--space-5);
-    overflow-y: auto;
-    border-left: 1px solid var(--colour-divider);
-    background: var(--colour-background);
-    box-shadow: -24px 0 48px -32px var(--colour-shadow);
-  }
-
-  .panel-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    h2 {
-      font-size: var(--font-size-title);
-    }
-  }
-
-  .close {
-    display: grid;
-    place-items: center;
-    padding: var(--space-1);
-    border: 0;
-    border-radius: var(--radius-medium);
-    background: transparent;
-    color: var(--colour-text-muted);
-    cursor: pointer;
-
-    &:hover {
-      background: var(--colour-surface);
-      color: var(--colour-foreground);
-    }
   }
 
   .delete {
@@ -540,6 +524,17 @@
     font-size: var(--font-size-label);
   }
 
+  .count {
+    padding-block: var(--space-2) var(--space-3);
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-label);
+  }
+
+  .empty {
+    color: var(--colour-text-muted);
+    font-size: var(--font-size-summary);
+  }
+
   .page {
     max-width: var(--reading-width);
     margin-inline: auto;
@@ -566,9 +561,25 @@
   }
 
   @media (max-width: 40rem) {
+    /* The bar wraps onto two rows, with the Write and Preview tabs on the second */
+    .editor {
+      --bar-height: 6.25rem;
+    }
+
     .bar {
+      flex-wrap: wrap;
+      align-content: center;
       gap: var(--space-2);
       padding-inline: var(--space-3);
+    }
+
+    .tabs {
+      order: 2;
+      width: 100%;
+
+      button {
+        flex: 1;
+      }
     }
 
     .state,
@@ -584,22 +595,6 @@
       overflow: hidden;
       clip-path: inset(50%);
       white-space: nowrap;
-    }
-
-    .tabs button {
-      padding-inline: var(--space-2);
-    }
-  }
-
-  @media (max-width: 22.5rem) {
-    .bar {
-      gap: var(--space-1);
-      padding-inline: var(--space-2);
-    }
-
-    .view,
-    .details summary {
-      padding-inline: var(--space-1);
     }
   }
 </style>
