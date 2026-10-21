@@ -5,13 +5,13 @@ test("the server marks the current page, before any JavaScript runs", async ({ p
   // Block the app's JavaScript, so only the server's HTML is tested
   await page.route("**/_app/**/*.js", route => route.abort());
 
-  await page.goto("/");
+  await page.goto("/projects");
 
-  await expect(page.getByRole("navigation").getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Projects" })).toHaveAttribute("aria-current", "page");
 });
 
 test("the Articles link only shows once an article is published", async ({ page }) => {
-  const articlesLink = page.getByRole("navigation").getByRole("link", { name: "Articles" });
+  const articlesLink = page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Articles" });
   await insertArticle({ slug: "draft", published: false, publishedAt: null });
 
   await page.goto("/");

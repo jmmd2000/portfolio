@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import PageHead from "$lib/components/head/PageHead.svelte";
-  import SiteChrome from "$lib/components/navigation/SiteChrome.svelte";
+  import SiteLayout from "$lib/components/layout/SiteLayout.svelte";
 
   const notFound = $derived(page.status === 404);
 </script>
@@ -13,7 +13,7 @@
 {/if}
 
 <!-- An error page isn't any of the nav's pages, even when its address starts like one -->
-<SiteChrome currentPath={null} socials={page.data.socials ?? []} signedIn={page.data.signedIn ?? false} hasArticles={page.data.hasArticles ?? false}>
+<SiteLayout currentPath={null} socials={page.data.socials ?? []} signedIn={page.data.signedIn ?? false} hasArticles={page.data.hasArticles ?? false}>
   <section class="error" aria-labelledby="error-heading">
     <p class="code" aria-hidden="true">{page.status}</p>
     {#if notFound}
@@ -24,7 +24,7 @@
       <p class="detail">It's not you. Try again in a minute, or head somewhere else.</p>
     {/if}
   </section>
-</SiteChrome>
+</SiteLayout>
 
 <style>
   /* The code is set wide like the home page name, the only other place type is this big */

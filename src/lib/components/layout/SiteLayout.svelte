@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
+  import { resolve } from "$app/paths";
   import Footer from "$lib/components/navigation/Footer.svelte";
   import Nav from "$lib/components/navigation/Nav.svelte";
   import type { Social } from "$lib/server/content/socials";
+  import { siteName } from "$lib/site";
 
   interface Props {
     /** The page's path, so the nav marks it. Null marks none */
@@ -17,11 +19,12 @@
 </script>
 
 <div class="site">
-  <a class="skip-link" href="#main">Skip to content</a>
-  <div class="inner">
+  <a class="skip-link label" href="#main">Skip to content</a>
+  <header class="bar">
+    <a class="home label" href={resolve("/")}>{siteName}</a>
     <Nav {currentPath} {signedIn} {hasArticles} />
-  </div>
-  <main id="main" class="inner">
+  </header>
+  <main id="main">
     {@render children()}
   </main>
   <Footer {socials} {signedIn} />
@@ -34,11 +37,18 @@
     min-height: 100dvh;
   }
 
-  .inner {
-    width: 100%;
-    max-width: var(--page-width);
-    margin-inline: auto;
-    padding-inline: var(--page-gutter);
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--page-gutter);
+    border-bottom: var(--rule-section);
+  }
+
+  .home {
+    text-decoration: none;
   }
 
   main {
@@ -47,19 +57,23 @@
 
   .skip-link {
     position: absolute;
-    inset-inline-start: var(--old-space-4);
-    inset-block-start: var(--old-space-4);
+    inset-inline-start: var(--space-2);
+    inset-block-start: var(--space-2);
     z-index: 20;
-    padding: var(--old-space-2) var(--old-space-4);
-    border-radius: var(--radius-medium);
-    background: var(--colour-foreground);
-    color: var(--colour-background);
-    font-weight: 500;
+    padding: var(--space-1) var(--space-2);
+    background: var(--ink);
+    color: var(--paper);
     text-decoration: none;
     transform: translateY(-200%);
 
     &:focus-visible {
       transform: none;
+    }
+  }
+
+  @media print {
+    .bar {
+      display: none;
     }
   }
 </style>

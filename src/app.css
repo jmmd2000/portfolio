@@ -195,6 +195,14 @@ a {
   white-space: nowrap;
 }
 
+.label {
+  font-family: var(--font-display);
+  font-size: var(--type-label);
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
 /* The fitText attachment sets the font size. This one shows until it runs. */
 .fitted-line {
   display: flex;

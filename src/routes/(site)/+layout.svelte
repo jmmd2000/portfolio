@@ -1,11 +1,11 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import SiteChrome from "$lib/components/navigation/SiteChrome.svelte";
+  import SiteLayout from "$lib/components/layout/SiteLayout.svelte";
   import type { LayoutProps } from "./$types";
 
   let { data, children }: LayoutProps = $props();
 </script>
 
-<SiteChrome currentPath={page.url.pathname} socials={data.socials} signedIn={data.signedIn} hasArticles={data.hasArticles}>
+<SiteLayout currentPath={page.url.pathname} socials={data.socials} signedIn={data.signedIn} hasArticles={data.hasArticles}>
   {@render children()}
-</SiteChrome>
+</SiteLayout>
