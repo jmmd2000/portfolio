@@ -9,6 +9,7 @@
 
   let { data }: PageProps = $props();
 
+  const allProjectsText = $derived(data.projectCount === 1 ? "1 project" : `All ${data.projectCount} projects`);
   const allArticlesText = $derived(data.articleCount === 1 ? "1 article" : `All ${data.articleCount} articles`);
 </script>
 
@@ -23,7 +24,7 @@
         <li><ProjectRow {project} /></li>
       {/each}
     </ol>
-    <a class="more label" href={resolve("/projects")}>All projects</a>
+    <a class="more label" href={resolve("/projects")}>{allProjectsText}</a>
   </section>
 {/if}
 
