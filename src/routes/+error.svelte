@@ -13,7 +13,7 @@
 {/if}
 
 <!-- An error page isn't any of the nav's pages, even when its address starts like one -->
-<SiteLayout currentPath={null} socials={page.data.socials ?? []} signedIn={page.data.signedIn ?? false} hasArticles={page.data.hasArticles ?? false}>
+<SiteLayout currentPath={null} socials={page.data.socials ?? []} hasArticles={page.data.hasArticles ?? false}>
   <section class="error" aria-labelledby="error-heading">
     <p class="code" aria-hidden="true">{page.status}</p>
     {#if notFound}

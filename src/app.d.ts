@@ -12,7 +12,6 @@ declare global {
     /** The root layout's data. An error page can show before it loads, so each part may be missing there */
     interface PageData {
       socials?: Social[];
-      signedIn?: boolean;
       hasArticles?: boolean;
     }
     // interface PageState {}

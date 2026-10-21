@@ -10,24 +10,23 @@
     /** The page's path, so the nav marks it. Null marks none */
     currentPath: string | null;
     socials: Social[];
-    signedIn: boolean;
     hasArticles: boolean;
     children: Snippet;
   }
 
-  let { currentPath, socials, signedIn, hasArticles, children }: Props = $props();
+  let { currentPath, socials, hasArticles, children }: Props = $props();
 </script>
 
 <div class="site">
   <a class="skip-link label" href="#main">Skip to content</a>
   <header class="bar">
     <a class="home label" href={resolve("/")}>{siteName}</a>
-    <Nav {currentPath} {signedIn} {hasArticles} />
+    <Nav {currentPath} {hasArticles} />
   </header>
   <main id="main">
     {@render children()}
   </main>
-  <Footer {socials} {signedIn} />
+  <Footer {socials} />
 </div>
 
 <style>

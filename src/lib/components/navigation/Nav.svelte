@@ -6,11 +6,10 @@
   interface Props {
     /** The page's path, or null when no nav link should show as the current page */
     currentPath: string | null;
-    signedIn: boolean;
     hasArticles: boolean;
   }
 
-  let { currentPath, signedIn, hasArticles }: Props = $props();
+  let { currentPath, hasArticles }: Props = $props();
 
   function ariaCurrent(linkPath: string): "page" | undefined {
     if (currentPath === null) return undefined;
@@ -25,9 +24,6 @@
   {#each pageLinks as link (link.path)}
     <a href={resolve(link.path)} aria-current={ariaCurrent(link.path)}>{link.label}</a>
   {/each}
-  {#if signedIn}
-    <a href={resolve("/admin")} aria-current={ariaCurrent("/admin")}>Admin</a>
-  {/if}
   <ThemeToggle />
 </nav>
 
