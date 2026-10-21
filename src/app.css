@@ -57,65 +57,14 @@
   --duration-quick: 150ms;
   --duration-lift: 400ms;
 
-  /* Old names, kept as aliases for the components that don't use the new tokens yet */
-  --hue: 158;
-  --colour-background: var(--paper);
-  --colour-foreground: var(--ink);
-  --colour-text: var(--ink);
-  --colour-text-muted: var(--muted);
-  --colour-accent: var(--red);
-  --colour-red: var(--red);
-  --colour-text-on-red: oklch(0.16 0.01 40);
-  --colour-tint: var(--sunken);
-  --colour-surface: var(--sunken);
-  --colour-divider: var(--line);
-  --colour-deep: var(--ink);
-  --colour-text-on-deep: var(--paper);
-  --colour-text-on-deep-muted: light-dark(oklch(0.78 0.01 60), oklch(0.4 0.01 40));
-  --colour-shadow: light-dark(oklch(0.2 0.03 40 / 0.55), oklch(0.05 0.01 40 / 0.8));
-  --colour-edge: transparent;
-  --colour-code-string: light-dark(oklch(0.5 0.12 40), oklch(0.8 0.09 50));
-  --colour-code-constant: light-dark(oklch(0.5 0.13 250), oklch(0.8 0.08 245));
-  --colour-code-function: light-dark(oklch(0.5 0.1 85), oklch(0.84 0.09 90));
-  --colour-code-type: light-dark(oklch(0.5 0.13 350), oklch(0.8 0.09 355));
-
-  --shadow-picture: 0 0 0 2px var(--ink);
-  --shadow-picture-lifted: 6px 6px 0 var(--red), 0 0 0 2px var(--ink);
+  /* Dims screenshots in dark mode, so light apps don't glare. The dark theme blocks below set it */
   --filter-picture: none;
-
-  --font-size-code: 0.875rem;
-  --font-size-label: var(--type-small);
-  --font-size-body: var(--type-body);
-  --font-size-summary: 1.125rem;
-  --font-size-title: var(--type-label);
-  --font-size-lead: clamp(1.25rem, 2.2vw, 1.5rem);
-  --font-size-heading: var(--type-medium);
-  --font-size-page-title: var(--type-large);
-  --font-size-display: var(--type-section);
-  --font-stretch-heading: 100%;
-  --font-stretch-display: 100%;
-
-  --line-height-body: 1.6;
-  --line-height-heading: 1.2;
-
-  --old-space-1: 0.25rem;
-  --old-space-2: 0.5rem;
-  --old-space-3: 0.75rem;
-  --old-space-4: 1rem;
-  --old-space-5: 1.5rem;
-  --old-space-6: 2.5rem;
-  --old-space-7: 4rem;
-  --old-space-8: 6rem;
 
   --page-width: 80rem;
   --page-gutter: clamp(1rem, 4vw, 2.5rem);
   /* Side padding for a full-width block: its rules and background reach the edges, and its content stays in a centred column */
   --page-padding: max(var(--page-gutter), (100% - var(--page-width)) / 2);
   --reading-width: 44.5rem;
-
-  --radius-small: 0;
-  --radius-medium: 0;
-  --radius-large: 0;
 }
 
 :root[data-theme="light"] {
@@ -143,11 +92,11 @@
 
 body {
   margin: 0;
-  background: var(--colour-background);
-  color: var(--colour-text);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-body);
-  font-size: var(--font-size-body);
-  line-height: var(--line-height-body);
+  font-size: var(--type-body);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-wrap: pretty;
 }
@@ -170,11 +119,11 @@ h3 {
 }
 
 h2 {
-  font-size: var(--font-size-heading);
+  font-size: var(--type-medium);
 }
 
 h3 {
-  font-size: var(--font-size-title);
+  font-size: var(--type-label);
 }
 
 p {
