@@ -36,7 +36,7 @@
   <main id="main">
     {@render children()}
   </main>
-  <Footer {socials} />
+  <Footer {socials} {isHome} />
 </div>
 
 <style>
