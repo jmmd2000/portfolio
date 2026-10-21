@@ -3,7 +3,7 @@ import { groupByYear } from "./articleList";
 import type { PublishedArticle } from "./articles";
 
 function article(slug: string, publishedAt: string): PublishedArticle {
-  return { slug, title: slug, summary: "", body: "", publishedAt: new Date(publishedAt), project: null };
+  return { slug, title: slug, summary: "", body: "", publishedAt: new Date(publishedAt) };
 }
 
 describe("groupByYear", () => {

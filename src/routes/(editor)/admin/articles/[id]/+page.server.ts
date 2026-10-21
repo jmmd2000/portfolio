@@ -2,7 +2,7 @@ import { error, fail, redirect } from "@sveltejs/kit";
 import { z } from "zod";
 import { requireAdmin } from "$lib/server/auth/requireAdmin";
 import { articleDateTime, formatArticleDate, readingMinutes } from "$lib/server/content/articleDetails";
-import { deleteArticle, getArticle, getProjectChoices, isSlugTaken, updateArticle } from "$lib/server/content/articles";
+import { deleteArticle, getArticle, isSlugTaken, updateArticle } from "$lib/server/content/articles";
 import { formText } from "$lib/server/formText";
 import { renderMarkdown } from "$lib/server/markdown/renderMarkdown";
 import { articleSchema, slugTakenMessage, type ArticleInput } from "$lib/schemas/article";
@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   requireAdmin(locals);
 
   const id = articleID(params.id);
-  const [article, projectChoices] = await Promise.all([getArticle(id), getProjectChoices(id)]);
+  const article = await getArticle(id);
   if (!article) error(404, "No article with that id");
 
   // A draft shows the date it would get if it were published now
@@ -29,7 +29,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   return {
     article,
-    projectChoices,
     preview: {
       html: await renderMarkdown(article.body),
       readingMinutes: readingMinutes(article.body),
@@ -51,11 +50,6 @@ export const actions: Actions = {
     }
     if (await isSlugTaken(result.data.slug, id)) {
       const errors: Partial<Record<keyof ArticleInput, string[]>> = { slug: [slugTakenMessage] };
-      return fail(400, { values, errors });
-    }
-    const { projectID } = result.data;
-    if (projectID !== null && !(await getProjectChoices(id)).some(project => project.id === projectID)) {
-      const errors: Partial<Record<keyof ArticleInput, string[]>> = { projectID: ["That project already has an article."] };
       return fail(400, { values, errors });
     }
 

@@ -26,23 +26,14 @@ describe("newArticleSchema", () => {
 describe("articleSchema", () => {
   const typedEdit = { ...typedArticle, body: "Some text." };
 
-  it("reads no project as null and a chosen project as its id", () => {
-    expect(articleSchema.parse({ ...typedEdit, projectID: "" }).projectID).toBeNull();
-    expect(articleSchema.parse({ ...typedEdit, projectID: "7" }).projectID).toBe(7);
-  });
-
-  it("refuses a project that isn't an id", () => {
-    expect(articleSchema.safeParse({ ...typedEdit, projectID: "seven" }).success).toBe(false);
-  });
-
   it("refuses a body over 100,000 characters", () => {
-    expect(articleSchema.safeParse({ ...typedEdit, body: "a".repeat(100_000), projectID: "" }).success).toBe(true);
-    expect(articleSchema.safeParse({ ...typedEdit, body: "a".repeat(100_001), projectID: "" }).success).toBe(false);
+    expect(articleSchema.safeParse({ ...typedEdit, body: "a".repeat(100_000) }).success).toBe(true);
+    expect(articleSchema.safeParse({ ...typedEdit, body: "a".repeat(100_001) }).success).toBe(false);
   });
 
   it("reads a ticked Published box as true, and a missing one as false", () => {
-    expect(articleSchema.parse({ ...typedEdit, projectID: "", published: "on" }).published).toBe(true);
-    expect(articleSchema.parse({ ...typedEdit, projectID: "" }).published).toBe(false);
+    expect(articleSchema.parse({ ...typedEdit, published: "on" }).published).toBe(true);
+    expect(articleSchema.parse({ ...typedEdit }).published).toBe(false);
   });
 });
 

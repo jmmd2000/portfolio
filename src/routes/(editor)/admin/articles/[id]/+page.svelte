@@ -17,21 +17,19 @@
   import Button from "$lib/components/form/Button.svelte";
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
-  import SelectField from "$lib/components/form/SelectField.svelte";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import type { PageProps } from "./$types";
 
   let { data, form }: PageProps = $props();
 
-  type ArticleValues = Record<"title" | "slug" | "summary" | "body" | "projectID" | "published", string>;
-  type DetailValues = Pick<ArticleValues, "slug" | "projectID" | "published">;
+  type ArticleValues = Record<"title" | "slug" | "summary" | "body" | "published", string>;
+  type DetailValues = Pick<ArticleValues, "slug" | "published">;
 
   const savedValues: ArticleValues = $derived({
     title: data.article.title,
     slug: data.article.slug,
     summary: data.article.summary,
     body: data.article.body,
-    projectID: data.article.projectID === null ? "" : String(data.article.projectID),
     published: data.article.published ? "on" : "",
   });
 
@@ -42,12 +40,12 @@
   let title = $derived(values.title);
   let summary = $derived(values.summary);
   let body = $derived(values.body);
-  let details: DetailValues = $derived({ slug: values.slug, projectID: values.projectID, published: values.published });
+  let details: DetailValues = $derived({ slug: values.slug, published: values.published });
 
   const currentValues: ArticleValues = $derived({ ...details, title, summary, body });
 
   const changedFields = $derived(Object.keys(savedValues).filter(field => currentValues[field as keyof ArticleValues] !== savedValues[field as keyof ArticleValues]));
-  const hasDetailsError = $derived(Boolean(form?.errors?.slug ?? form?.errors?.projectID));
+  const hasDetailsError = $derived(Boolean(form?.errors?.slug));
 
   // Set by a save: whether it turned a draft live, or found nothing to save. Typing clears both
   let justPublished = $state(false);
@@ -62,8 +60,6 @@
   });
 
   const wordCount = $derived(body.split(/\s+/).filter(word => word !== "").length);
-
-  const projectOptions = $derived([{ value: "", label: "None" }, ...data.projectChoices.map(project => ({ value: String(project.id), label: project.title }))]);
 
   const preview = new LivePreview(
     untrack(() => data.preview.html),
@@ -89,7 +85,7 @@
       const value = formData.get(name);
       return typeof value === "string" ? value : "";
     };
-    details = { slug: text("slug"), projectID: text("projectID"), published: text("published") };
+    details = { slug: text("slug"), published: text("published") };
   }
 
   /** Keeps the writing in the browser, or clears it once it matches what's saved */
@@ -251,7 +247,6 @@
     <EditorPanel label="Details" bind:open={detailsOpen}>
       {#snippet icon()}<SlidersHorizontal size="1.125em" aria-hidden="true" />{/snippet}
       <Field label="Slug" name="slug" hint="The end of its address, like my-first-article" value={values.slug} error={form?.errors?.slug?.[0]} />
-      <SelectField label="Write-up for" name="projectID" options={projectOptions} value={values.projectID} hint="Optional" error={form?.errors?.projectID?.[0]} />
       <Checkbox label="Published" name="published" checked={values.published === "on"} />
       <div class="delete">
         <ConfirmDelete name={data.article.title} formaction="?/delete" />

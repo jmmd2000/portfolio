@@ -14,7 +14,7 @@
 <div class="projects">
   <ol class="project-list">
     {#each data.projects as project, index (project.id)}
-      <li><ProjectDetail {project} headingLevel="h2" imageLoading={index === 0 ? "eager" : "lazy"} writeUpSlug={project.writeUpSlug} /></li>
+      <li><ProjectDetail {project} headingLevel="h2" imageLoading={index === 0 ? "eager" : "lazy"} /></li>
     {/each}
   </ol>
 </div>
@@ -28,7 +28,6 @@
   .project-list {
     margin: 0;
     padding: 0;
-    border-top: var(--rule-row);
     list-style: none;
   }
 </style>

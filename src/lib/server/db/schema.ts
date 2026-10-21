@@ -86,9 +86,6 @@ export const articles = pgTable(
       .notNull()
       .defaultNow()
       .$onUpdate(() => new Date()),
-    projectID: integer()
-      .unique("articles_project_id_unique")
-      .references(() => projects.id, { onDelete: "set null" }),
   },
   table => [check("articles_published_date", sql`not ${table.published} or ${table.publishedAt} is not null`)]
 );

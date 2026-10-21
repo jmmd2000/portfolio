@@ -1,5 +1,4 @@
 <script lang="ts">
-  import ArrowRight from "@lucide/svelte/icons/arrow-right";
   import { resolve } from "$app/paths";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import PageHeader from "$lib/components/layout/PageHeader.svelte";
@@ -12,148 +11,156 @@
 
 <PageHeader title="Articles" lead="Some things I've written" />
 
-{#each data.articleYears as articleYear (articleYear.year)}
-  <section class="year-group" aria-labelledby="year-{articleYear.year}">
-    <h2 class="year" id="year-{articleYear.year}">{articleYear.year}</h2>
-    <ul class="articles">
-      {#each articleYear.articles as article (article.slug)}
-        <li>
-          <a class="article" href={resolve("/(site)/articles/[slug]", { slug: article.slug })}>
-            <h3 class="title"><span class="words">{article.title}</span> <span class="arrow" aria-hidden="true"><ArrowRight size="1em" strokeWidth={2} /></span></h3>
-            <span class="summary">{article.summary}</span>
-            <span class="meta">
-              <time datetime={article.dateTime}>{article.date}</time>
-              <span>{article.readingMinutes} minute read</span>
-              {#if article.hasDemo}
-                <span>Live demo</span>
-              {/if}
-              {#if article.projectTitle}
-                <span>Write-up for {article.projectTitle}</span>
-              {/if}
-            </span>
-          </a>
-        </li>
-      {/each}
-    </ul>
-  </section>
-{:else}
-  <p class="empty">Nothing here yet.</p>
-{/each}
+<div class="articles">
+  {#each data.articleYears as articleYear (articleYear.year)}
+    <section class="year" aria-labelledby="year-{articleYear.year}">
+      <h2 id="year-{articleYear.year}">{articleYear.year}</h2>
+      <ol>
+        {#each articleYear.articles as article (article.slug)}
+          <li>
+            <a class="article" href={resolve("/(site)/articles/[slug]", { slug: article.slug })}>
+              <h3>{article.title}</h3>
+              <p>{article.summary}</p>
+              <span class="meta">
+                <time datetime={article.dateTime}>{article.date}</time>
+                <span>{article.readingMinutes} minute read</span>
+                {#if article.hasDemo}
+                  <span class="demo">Live demo</span>
+                {/if}
+              </span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        {/each}
+      </ol>
+    </section>
+  {:else}
+    <p>Nothing here yet.</p>
+  {/each}
+</div>
 
 <style>
-  .year-group {
-    display: grid;
-    grid-template-columns: 8rem minmax(0, 1fr);
-    gap: var(--old-space-5);
-
-    & + & {
-      margin-top: var(--old-space-7);
-    }
+  .articles {
+    padding: var(--space-3) var(--page-gutter) var(--space-5);
+    border-bottom: var(--rule-section);
   }
 
   .year {
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-title);
-    font-weight: 600;
-    line-height: 1.35;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-bottom: var(--rule-row);
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      border-bottom: 0;
+    }
   }
 
-  .articles {
-    display: grid;
-    gap: var(--old-space-6);
-    max-width: var(--reading-width);
+  h2 {
+    position: sticky;
+    top: var(--space-2);
+    align-self: start;
+    font-size: var(--type-large);
+    font-weight: 900;
+  }
+
+  ol {
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .article {
-    display: block;
-    border-radius: var(--radius-medium);
-    color: var(--colour-text);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-3);
+    padding-block: var(--space-3);
+    border-bottom: var(--rule-row);
     text-decoration: none;
 
-    &:focus-visible {
-      outline-offset: 8px;
+    p,
+    .meta {
+      grid-column: 1;
+    }
+
+    p {
+      max-width: 52ch;
     }
   }
 
-  .title {
-    font-size: var(--font-size-title);
-    font-weight: 600;
-    line-height: 1.35;
+  li:first-child .article {
+    padding-top: 0;
   }
 
-  .words {
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 5px;
-    transition: text-decoration-color var(--duration-quick) var(--ease-out);
+  li:last-child .article {
+    padding-bottom: 0;
+    border-bottom: 0;
   }
 
-  .arrow {
-    display: inline-block;
-    color: var(--colour-text-muted);
-    vertical-align: -0.125em;
-    transition:
-      transform 250ms var(--ease-out),
-      color 250ms var(--ease-out);
-  }
-
-  .summary {
-    display: block;
-    max-width: 60ch;
-    margin-top: var(--old-space-1);
+  h3 {
+    font-size: var(--type-medium);
+    font-weight: 900;
+    transition: color var(--duration-quick) var(--ease-out);
   }
 
   .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 var(--old-space-3);
-    margin-top: var(--old-space-2);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    gap: var(--space-1) var(--space-3);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
+  }
 
-    > * {
-      white-space: nowrap;
-    }
+  .demo {
+    color: var(--ink);
+  }
+
+  .arrow {
+    grid-column: 2;
+    grid-row: 1;
+    font-family: var(--font-display);
+    font-size: var(--type-medium);
+    font-weight: 900;
+    line-height: 1;
+    transition:
+      transform 250ms var(--ease-out),
+      color var(--duration-quick) var(--ease-out);
   }
 
   .article:focus-visible {
-    .words {
-      text-decoration-color: var(--colour-accent);
-    }
-
+    h3,
     .arrow {
-      transform: translateX(3px);
-      color: var(--colour-accent);
+      color: var(--red);
     }
   }
 
   @media (hover: hover) {
     .article:hover {
-      .words {
-        text-decoration-color: var(--colour-accent);
+      h3,
+      .arrow {
+        color: var(--red);
       }
 
       .arrow {
-        transform: translateX(3px);
-        color: var(--colour-accent);
+        transform: translateX(0.25em);
       }
     }
   }
 
-  .empty {
-    max-width: 60ch;
-    color: var(--colour-foreground);
-    font-size: var(--font-size-summary);
-  }
-
-  @media (max-width: 52rem) {
-    .year-group {
+  @media (max-width: 47.5rem) {
+    .year {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--old-space-3);
+      gap: var(--space-2);
+    }
+
+    h2 {
+      position: static;
     }
   }
 </style>

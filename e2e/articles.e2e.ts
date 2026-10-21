@@ -1,5 +1,5 @@
 import { createAdmin, logIn } from "./adminSession";
-import { findProjectID, insertArticle, insertSlugRedirect } from "./articles";
+import { insertArticle, insertSlugRedirect } from "./articles";
 import { expect, test } from "./fixtures";
 
 test("a published article shows its rendered markdown", async ({ page }) => {
@@ -73,13 +73,4 @@ test("the home page lists the five newest published articles and links to all of
 
   await expect(writing.getByRole("listitem")).toHaveText([/Article 06/, /Article 05/, /Article 04/, /Article 03/, /Article 02/]);
   await expect(writing.getByRole("link", { name: "All 6 articles" })).toBeVisible();
-});
-
-test("a project links to its published write-up", async ({ page }) => {
-  await insertArticle({ projectID: await findProjectID("SandSim") });
-
-  await page.goto("/projects");
-  await page.getByRole("link", { name: "Read the write-up for SandSim" }).click();
-
-  await expect(page).toHaveURL(/\/articles\/how-the-sand-falls$/);
 });
