@@ -92,7 +92,7 @@ test("publishing an article puts it on the site as a write-up for its project", 
   await page.getByLabel("Write-up for").selectOption({ label: "SandSim" });
   await page.getByLabel("Published").check();
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Published. It's live now.")).toBeVisible();
+  await expect(page.getByText("Published.")).toBeVisible();
 
   await page.goto("/projects");
   await expect(page.getByRole("link", { name: "Read the write-up for SandSim" })).toBeVisible();

@@ -1,42 +1,38 @@
 <script lang="ts">
+  import { fitText } from "$lib/attachments/fitText";
+
   interface Props {
     title: string;
-    intro?: string;
+    lead?: string;
   }
 
-  let { title, intro }: Props = $props();
+  let { title, lead }: Props = $props();
 </script>
 
 <header class="page-header">
-  <h1>{title}</h1>
-  {#if intro}
-    <p class="intro">{intro}</p>
+  <h1 class="fitted-line" {@attach fitText(9)}><span class="part">{title}</span></h1>
+  {#if lead}
+    <p class="lead">{lead}</p>
   {/if}
 </header>
 
 <style>
   .page-header {
-    padding-block: var(--old-space-7);
+    padding: var(--space-3) var(--page-gutter) var(--space-4);
+    border-bottom: var(--rule-section);
   }
 
   h1 {
-    font-size: var(--font-size-page-title);
-    line-height: 1.05;
+    margin-bottom: var(--space-3);
+    color: var(--red);
+    /* Close to the fitted size, so the heading barely moves when fitText runs */
+    font-size: min(9rem, 24vw);
   }
 
-  .intro {
-    max-width: 46ch;
-    margin-top: var(--old-space-4);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-title);
-    font-weight: 450;
-    line-height: 1.45;
-    text-wrap: balance;
-  }
-
-  @media (max-width: 52rem) {
-    .page-header {
-      padding-block: var(--old-space-6);
-    }
+  .lead {
+    max-width: 36ch;
+    font-size: var(--type-label);
+    font-weight: 500;
+    line-height: 1.3;
   }
 </style>

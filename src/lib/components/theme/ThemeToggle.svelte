@@ -1,12 +1,9 @@
 <script lang="ts">
-  import Moon from "@lucide/svelte/icons/moon";
-  import Sun from "@lucide/svelte/icons/sun";
   import { onMount } from "svelte";
   import { getCurrentTheme, setTheme, watchOperatingSystemTheme, type Theme } from "./theme";
 
   let currentTheme = $state<Theme>("light");
   let otherTheme = $derived<Theme>(currentTheme === "dark" ? "light" : "dark");
-  let turned = $state(false);
 
   onMount(() => {
     currentTheme = getCurrentTheme();
@@ -19,58 +16,66 @@
   function switchTheme(): void {
     setTheme(otherTheme);
     currentTheme = otherTheme;
-    turned = !turned;
   }
 </script>
 
-<button type="button" class="theme-toggle" class:turned aria-label="Switch to {otherTheme} theme" onclick={switchTheme}>
-  {#if currentTheme === "dark"}
-    <Moon size={18} strokeWidth={1.75} aria-hidden="true" />
-  {:else}
-    <Sun size={18} strokeWidth={1.75} aria-hidden="true" />
-  {/if}
+<!-- Both words render and the CSS shows one, so the server's HTML already shows the right word for the theme -->
+<button type="button" class="theme-toggle" aria-label="Switch to {otherTheme} theme" onclick={switchTheme}>
+  <span class="to-dark">Dark</span>
+  <span class="to-light">Light</span>
 </button>
 
 <style>
   .theme-toggle {
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
     padding: 0;
     border: 0;
-    border-radius: var(--radius-medium);
     background: none;
-    color: var(--colour-text-muted);
+    color: inherit;
+    font: inherit;
+    text-transform: inherit;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 5px;
     cursor: pointer;
-    transition: color var(--duration-quick) var(--ease-out);
+    transition: text-decoration-color var(--duration-quick) var(--ease-out);
+  }
 
-    :global(svg) {
-      transition: transform 500ms var(--ease-out);
+  .to-light {
+    display: none;
+  }
+
+  :global(:root[data-theme="dark"]) {
+    .to-dark {
+      display: none;
     }
 
-    &.turned :global(svg) {
-      transform: rotate(90deg);
+    .to-light {
+      display: inline;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) {
+      .to-dark {
+        display: none;
+      }
+
+      .to-light {
+        display: inline;
+      }
     }
   }
 
   @media (hover: hover) {
     .theme-toggle:hover {
-      color: var(--colour-foreground);
+      text-decoration-color: var(--red);
     }
   }
 
   @media (hover: none) {
     .theme-toggle {
-      width: 2.75rem;
-      height: 2.75rem;
-      margin-inline-end: -0.8125rem;
-    }
-  }
-
-  @media (max-width: 52rem) {
-    .theme-toggle {
-      margin-inline-start: auto;
+      padding-block: var(--space-1);
     }
   }
 </style>

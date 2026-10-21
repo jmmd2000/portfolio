@@ -1,9 +1,12 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import { page } from "$app/state";
+  import { fitText } from "$lib/attachments/fitText";
   import PageHead from "$lib/components/head/PageHead.svelte";
-  import SiteChrome from "$lib/components/navigation/SiteChrome.svelte";
+  import SiteLayout from "$lib/components/layout/SiteLayout.svelte";
 
   const notFound = $derived(page.status === 404);
+  const hasArticles = $derived(page.data.hasArticles ?? false);
 </script>
 
 {#if notFound}
@@ -13,9 +16,9 @@
 {/if}
 
 <!-- An error page isn't any of the nav's pages, even when its address starts like one -->
-<SiteChrome currentPath={null} socials={page.data.socials ?? []} signedIn={page.data.signedIn ?? false} hasArticles={page.data.hasArticles ?? false}>
+<SiteLayout currentPath={null} socials={page.data.socials ?? []} {hasArticles}>
   <section class="error" aria-labelledby="error-heading">
-    <p class="code" aria-hidden="true">{page.status}</p>
+    <p class="status fitted-line" aria-hidden="true" {@attach fitText(14)}><span class="part">{page.status}</span></p>
     {#if notFound}
       <h1 id="error-heading">This page doesn't exist.</h1>
       <p class="detail">Nothing lives at <code>{page.url.pathname}</code>.</p>
@@ -23,50 +26,56 @@
       <h1 id="error-heading">Something went wrong on my end.</h1>
       <p class="detail">It's not you. Try again in a minute, or head somewhere else.</p>
     {/if}
+    <div class="ways label">
+      <a href={resolve("/")}>Home</a>
+      <a href={resolve("/projects")}>Projects</a>
+      {#if hasArticles}
+        <a href={resolve("/articles")}>Articles</a>
+      {/if}
+    </div>
   </section>
-</SiteChrome>
+</SiteLayout>
 
 <style>
-  /* The code is set wide like the home page name, the only other place type is this big */
   .error {
-    padding-block: var(--old-space-8) var(--old-space-7);
+    padding: var(--space-3) var(--page-gutter) var(--space-5);
+    border-bottom: var(--rule-section);
   }
 
-  .code {
-    color: var(--colour-foreground);
-    font-size: clamp(5rem, 16vw, 11rem);
-    font-weight: 620;
-    font-stretch: 125%;
-    line-height: 0.9;
-    letter-spacing: -0.01em;
+  .status {
+    margin-bottom: var(--space-4);
+    color: var(--red);
+    /* Close to the fitted size, so the status barely moves when fitText runs */
+    font-size: min(14rem, 55vw);
   }
 
   h1 {
-    max-width: 34ch;
-    margin-top: var(--old-space-5);
-    font-size: var(--font-size-lead);
-    font-weight: 450;
-    font-stretch: 100%;
-    line-height: 1.4;
+    font-size: var(--type-large);
   }
 
   .detail {
     max-width: 60ch;
-    margin-top: var(--old-space-3);
+    margin-top: var(--space-2);
   }
 
   code {
     padding: 0.1em 0.35em;
-    border-radius: var(--radius-small);
-    background: var(--colour-surface);
-    color: var(--colour-foreground);
-    font-family: inherit;
+    background: var(--sunken);
+    font-family: var(--font-code);
+    font-size: 0.9em;
     overflow-wrap: anywhere;
   }
 
-  @media (max-width: 52rem) {
-    .error {
-      padding-block: var(--old-space-7) var(--old-space-6);
+  .ways {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin-top: var(--space-3);
+  }
+
+  @media (hover: none) {
+    .ways a {
+      padding-block: var(--space-1);
     }
   }
 </style>

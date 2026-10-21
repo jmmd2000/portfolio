@@ -49,6 +49,6 @@ test("deleting a link takes a second click", async ({ page }) => {
   await expect(email).toBeHidden();
 
   await page.goto("/");
-  await expect(page.locator("footer").getByText("Say hello")).toBeHidden();
+  await expect(page.locator("footer a[href^='mailto:']")).toHaveCount(0);
   expect(await footerLinkNames(page)).toEqual(["GitHub", "LinkedIn"]);
 });

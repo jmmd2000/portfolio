@@ -9,7 +9,7 @@
 
 <PageHead title="Projects" description="Things James Doyle has built, from a music review site to a falling sand simulation." />
 
-<PageHeader title="Projects" intro="Things I've built in my own time." />
+<PageHeader title="Projects" lead="Things I've built in my own time." />
 
 <ul class="project-list">
   {#each data.projects as project, index (project.id)}
