@@ -1,6 +1,7 @@
-import { requireAdmin } from "$lib/server/auth/requireAdmin";
+import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = ({ locals }) => {
-  requireAdmin(locals);
+// The admin has no home page of its own, so /admin opens the first section
+export const load: PageServerLoad = () => {
+  redirect(307, "/admin/profile");
 };

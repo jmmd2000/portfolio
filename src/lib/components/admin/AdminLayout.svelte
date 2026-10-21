@@ -1,13 +1,12 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { resolve } from "$app/paths";
-  import Button from "$lib/components/form/Button.svelte";
   import ThemeToggle from "$lib/components/theme/ThemeToggle.svelte";
   import { siteName } from "$lib/site";
 
   interface Props {
     currentPath: string;
-    /** Signed out, on the log in page, the bar shows only the name and the theme toggle */
+    /** Signed out, on the log in page, there is no side nav */
     signedIn: boolean;
     children: Snippet;
   }
@@ -15,7 +14,6 @@
   let { currentPath, signedIn, children }: Props = $props();
 
   const sectionLinks = [
-    { label: "Overview", path: "/admin" },
     { label: "Profile", path: "/admin/profile" },
     { label: "Socials", path: "/admin/socials" },
     { label: "CV", path: "/admin/cv" },
@@ -24,9 +22,8 @@
     { label: "Currently", path: "/admin/currently" },
   ] as const;
 
-  // Overview only matches itself, since every admin page's path starts with /admin
   function ariaCurrent(path: string): "page" | undefined {
-    const isCurrent = path === "/admin" ? currentPath === path : currentPath === path || currentPath.startsWith(`${path}/`);
+    const isCurrent = currentPath === path || currentPath.startsWith(`${path}/`);
     return isCurrent ? "page" : undefined;
   }
 </script>
@@ -34,16 +31,8 @@
 <div class="admin">
   <a class="skip-link label" href="#main">Skip to content</a>
   <header class="bar">
-    <a class="home label" href={signedIn ? resolve("/admin") : resolve("/")}>{siteName} <span>Admin</span></a>
-    <div class="tools">
-      <ThemeToggle />
-      {#if signedIn}
-        <a href={resolve("/")}>View the site</a>
-        <form method="POST" action="/admin/logout">
-          <Button type="submit" small>Log out</Button>
-        </form>
-      {/if}
-    </div>
+    <p class="name label"><a href={resolve("/")}>{siteName}</a> <span>Admin</span></p>
+    <ThemeToggle />
   </header>
   {#if signedIn}
     <div class="shell">
@@ -55,6 +44,11 @@
         </ul>
         <ul class="account">
           <li><a href={resolve("/admin/password")} aria-current={ariaCurrent("/admin/password")}>Password</a></li>
+          <li>
+            <form method="POST" action="/admin/logout">
+              <button type="submit" class="label">Log out</button>
+            </form>
+          </li>
         </ul>
       </nav>
       <main id="main">
@@ -85,20 +79,15 @@
     border-bottom: var(--rule-section);
   }
 
-  .home {
-    text-decoration: none;
+  .name {
+    a {
+      text-decoration-color: transparent;
+      transition: text-decoration-color var(--duration-quick) var(--ease-out);
+    }
 
     span {
       color: var(--red);
     }
-  }
-
-  .tools {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2) var(--space-3);
-    font-weight: 700;
   }
 
   .shell {
@@ -119,7 +108,8 @@
       list-style: none;
     }
 
-    a {
+    a,
+    button {
       display: block;
       padding-block: 0.25rem;
       text-decoration-color: transparent;
@@ -129,6 +119,17 @@
         text-decoration-color: var(--red);
         text-decoration-thickness: 6px;
       }
+    }
+
+    button {
+      padding-inline: 0;
+      border: 0;
+      background: none;
+      color: var(--ink);
+      text-decoration-line: underline;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 5px;
+      cursor: pointer;
     }
   }
 
@@ -164,7 +165,9 @@
   }
 
   @media (hover: hover) {
-    nav a:hover {
+    .name a:hover,
+    nav a:hover,
+    nav button:hover {
       text-decoration-color: var(--red);
     }
   }

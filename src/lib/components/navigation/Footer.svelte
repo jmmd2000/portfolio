@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import { fitText } from "$lib/attachments/fitText";
   import CopyButton from "$lib/components/contact/CopyButton.svelte";
   import { linkText } from "$lib/components/contact/linkText";
@@ -33,7 +32,6 @@
         <li><a href={social.url} rel="external">{social.name}</a></li>
       {/each}
     </ul>
-    <a class="admin" href={resolve("/admin")}>Admin</a>
   </div>
 </footer>
 
@@ -78,12 +76,6 @@
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-
-  .admin {
-    color: var(--muted);
-    font-size: var(--type-small);
-    font-weight: 600;
   }
 
   @media (hover: none) {
