@@ -1,10 +1,17 @@
 @font-face {
-  font-family: "Mona Sans Variable";
+  font-family: "Big Shoulders Display Variable";
   font-style: normal;
   font-display: block;
-  font-weight: 200 900;
-  font-stretch: 75% 125%;
-  src: url("@fontsource-variable/mona-sans/files/mona-sans-latin-standard-normal.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  src: url("@fontsource-variable/big-shoulders-display/files/big-shoulders-display-latin-wght-normal.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Albert Sans Variable";
+  font-style: normal;
+  font-display: block;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/albert-sans/files/albert-sans-latin-wght-normal.woff2") format("woff2-variations");
 }
 
 :root {
@@ -36,7 +43,8 @@
   --filter-picture: none;
   --shadow-picture-lifted: 0 24px 36px -22px var(--colour-shadow), 0 0 0 1px var(--colour-edge);
 
-  --font-body: "Mona Sans Variable", system-ui, sans-serif;
+  --font-display: "Big Shoulders Display Variable", Impact, sans-serif;
+  --font-body: "Albert Sans Variable", system-ui, sans-serif;
   --font-code: "Monaspace Neon", ui-monospace, monospace;
 
   --font-size-code: 0.875rem;
