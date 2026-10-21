@@ -34,16 +34,14 @@
 </div>
 
 {#if data.featuredProjects.length > 0}
-  <section class="band" aria-labelledby="projects-heading">
-    <div class="title-row">
-      <h2 id="projects-heading">Projects</h2>
-      <a href={resolve("/projects")}>All projects</a>
-    </div>
-    <ul class="projects">
+  <section class="home-section" aria-labelledby="projects-heading">
+    <h2 class="section-title" id="projects-heading">Projects</h2>
+    <ol class="rows">
       {#each data.featuredProjects as project (project.id)}
-        <li><ProjectRow {project} headingLevel="h3" /></li>
+        <li><ProjectRow {project} /></li>
       {/each}
-    </ul>
+    </ol>
+    <a class="more label" href={resolve("/projects")}>All projects</a>
   </section>
 {/if}
 
@@ -74,6 +72,32 @@
 {/if}
 
 <style>
+  .home-section {
+    padding: var(--space-3) var(--page-gutter) var(--space-5);
+    border-bottom: var(--rule-section);
+  }
+
+  .section-title {
+    margin-bottom: var(--space-3);
+    color: var(--red);
+    font-size: var(--type-section);
+    font-weight: 900;
+    line-height: 0.85;
+  }
+
+  .rows {
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule-row);
+    list-style: none;
+  }
+
+  .more {
+    display: inline-block;
+    margin-top: var(--space-3);
+    padding-block: var(--space-1);
+  }
+
   h2 {
     margin-bottom: var(--old-space-5);
   }
@@ -100,14 +124,6 @@
     }
   }
 
-  /* The tint runs the full width of the window without making the page scroll sideways */
-  .band {
-    padding-block: var(--old-space-7);
-    background: var(--colour-tint);
-    box-shadow: 0 0 0 100vmax var(--colour-tint);
-    clip-path: inset(0 -100vmax);
-  }
-
   .title-row {
     display: flex;
     justify-content: space-between;
@@ -123,15 +139,6 @@
       font-size: var(--font-size-label);
       font-weight: 500;
     }
-  }
-
-  .projects {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--old-space-6);
-    margin: 0;
-    padding: 0;
-    list-style: none;
   }
 
   .currently {
@@ -218,15 +225,6 @@
       grid-template-columns: minmax(0, 1fr);
       gap: var(--old-space-6);
       padding-block: var(--old-space-6);
-    }
-
-    .band {
-      padding-block: var(--old-space-6);
-    }
-
-    .projects {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--old-space-5);
     }
 
     .articles {
