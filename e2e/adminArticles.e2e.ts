@@ -15,7 +15,7 @@ test("a signed-out visitor can't add an article", async ({ page, request, baseUR
 test("a new article is a draft that stays off the site", async ({ page, request }) => {
   await createAdmin();
   await logIn(page);
-  await page.getByRole("main").getByRole("link", { name: "Articles" }).click();
+  await page.getByRole("navigation", { name: "Admin" }).getByRole("link", { name: "Articles" }).click();
 
   const add = page.getByRole("group", { name: "Add an article" });
   await add.getByLabel("Title").fill("How the sand falls");

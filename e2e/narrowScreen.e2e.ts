@@ -21,7 +21,7 @@ for (const path of paths) {
   });
 }
 
-const adminPaths = ["/admin", "/admin/profile", "/admin/socials", "/admin/cv", "/admin/projects", "/admin/articles", "/admin/currently", "/admin/password"];
+const adminPaths = ["/admin/profile", "/admin/socials", "/admin/cv", "/admin/projects", "/admin/articles", "/admin/currently", "/admin/password"];
 
 for (const path of adminPaths) {
   test(`${path} doesn't scroll sideways at 320px for the admin`, async ({ page }) => {

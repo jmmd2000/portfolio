@@ -14,7 +14,6 @@
   let { currentPath, signedIn, children }: Props = $props();
 
   const sectionLinks = [
-    { label: "Overview", path: "/admin" },
     { label: "Profile", path: "/admin/profile" },
     { label: "Socials", path: "/admin/socials" },
     { label: "CV", path: "/admin/cv" },
@@ -23,9 +22,8 @@
     { label: "Currently", path: "/admin/currently" },
   ] as const;
 
-  // Overview only matches itself, since every admin page's path starts with /admin
   function ariaCurrent(path: string): "page" | undefined {
-    const isCurrent = path === "/admin" ? currentPath === path : currentPath === path || currentPath.startsWith(`${path}/`);
+    const isCurrent = currentPath === path || currentPath.startsWith(`${path}/`);
     return isCurrent ? "page" : undefined;
   }
 </script>
