@@ -39,7 +39,7 @@
     {/each}
   </ol>
 
-  <ItemForm action="?/add" legend="Add a project">
+  <ItemForm action="?/add" legend="Add a project" add>
     <Field label="Name" name="title" value={form?.values?.title ?? ""} error={form?.errors?.title?.[0]} />
     <Field label="One-liner" name="description" value={form?.values?.description ?? ""} error={form?.errors?.description?.[0]} />
     <div class="wide">

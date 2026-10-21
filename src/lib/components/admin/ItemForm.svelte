@@ -17,14 +17,16 @@
     row?: boolean;
     /** Keeps the legend for screen readers only, for a form whose name already shows above it */
     hideLegend?: boolean;
+    /** Marks the form that adds a new item, with a dashed box */
+    add?: boolean;
     children: Snippet;
     actions: Snippet;
   }
 
-  let { action, legend, id, resetOnSuccess = false, message, row = false, hideLegend = false, children, actions }: Props = $props();
+  let { action, legend, id, resetOnSuccess = false, message, row = false, hideLegend = false, add = false, children, actions }: Props = $props();
 </script>
 
-<form method="POST" {action} class:row class:hidden-legend={hideLegend} use:enhance={resetOnSuccess ? undefined : keepValues}>
+<form method="POST" {action} class:row class:hidden-legend={hideLegend} class:add use:enhance={resetOnSuccess ? undefined : keepValues}>
   <fieldset>
     <legend>{legend}</legend>
     {#if id !== undefined}
@@ -50,6 +52,11 @@
   form {
     width: 100%;
     max-width: 48rem;
+  }
+
+  .add {
+    padding: var(--space-3);
+    border: 2px dashed var(--ink);
   }
 
   fieldset {

@@ -30,7 +30,7 @@
     {/each}
   </ol>
 
-  <ItemForm action="?/add" legend="Add a link" resetOnSuccess message={form?.id === "new" ? form.message : undefined}>
+  <ItemForm action="?/add" legend="Add a link" add resetOnSuccess message={form?.id === "new" ? form.message : undefined}>
     <Field label="Name" name="name" value={form?.id === "new" ? form.values?.name : ""} error={form?.id === "new" ? form.errors?.name?.[0] : undefined} />
     <Field label="Address" name="url" placeholder="https:// or mailto:" value={form?.id === "new" ? form.values?.url : ""} error={form?.id === "new" ? form.errors?.url?.[0] : undefined} />
 

@@ -41,7 +41,7 @@
     <p class="empty">No articles yet.</p>
   {/if}
 
-  <ItemForm action="?/add" legend="Add an article">
+  <ItemForm action="?/add" legend="Add an article" add>
     <Field label="Title" name="title" value={title} oninput={handleTitleInput} error={form?.errors?.title?.[0]} />
     <Field label="Slug" name="slug" hint="The end of its address, like my-first-article" value={slug} oninput={handleSlugInput} error={form?.errors?.slug?.[0]} />
     <div class="wide">

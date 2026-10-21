@@ -85,7 +85,7 @@
       {/each}
     </ol>
 
-    <Fold name="Add a job" open={addJobResult !== undefined}>
+    <Fold name="Add a job" add open={addJobResult !== undefined}>
       <ItemForm action="?/addJob" legend="Add a job" resetOnSuccess message={addJobResult?.message} hideLegend>
         <JobFields values={addJobResult?.values ?? {}} errors={addJobResult?.errors} />
 
@@ -128,7 +128,7 @@
       {/each}
     </ol>
 
-    <Fold name="Add a skill category" open={addSkillResult !== undefined}>
+    <Fold name="Add a skill category" add open={addSkillResult !== undefined}>
       <ItemForm action="?/addSkillCategory" legend="Add a skill category" resetOnSuccess message={addSkillResult?.message} hideLegend>
         <SkillCategoryFields values={addSkillResult?.values ?? {}} errors={addSkillResult?.errors} />
 
@@ -164,7 +164,7 @@
       {/each}
     </ol>
 
-    <Fold name="Add a qualification" open={addQualificationResult !== undefined}>
+    <Fold name="Add a qualification" add open={addQualificationResult !== undefined}>
       <ItemForm action="?/addQualification" legend="Add a qualification" resetOnSuccess message={addQualificationResult?.message} hideLegend>
         <QualificationFields values={addQualificationResult?.values ?? {}} errors={addQualificationResult?.errors} />
 

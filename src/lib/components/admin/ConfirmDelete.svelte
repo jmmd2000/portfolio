@@ -1,55 +1,85 @@
 <script lang="ts">
-  import Trash from "@lucide/svelte/icons/trash";
   import Button from "$lib/components/form/Button.svelte";
 
   interface Props {
+    /** Named in the question and in the confirm button's label, like "Delete SandSim" */
     name: string;
     formaction: string;
   }
 
   let { name, formaction }: Props = $props();
 
-  const dialogID = $props.id();
+  let details = $state<HTMLDetailsElement>();
+  let summary = $state<HTMLElement>();
+
+  // Reads and sets the element's own open state, which changes at once, unlike the toggle event that follows it
+  function keep(): void {
+    if (details) details.open = false;
+    summary?.focus();
+  }
+
+  function handleKeydown(event: KeyboardEvent): void {
+    if (event.key !== "Escape" || !details?.open) return;
+
+    // Marks Escape as handled, so a panel this sits in stays open
+    event.preventDefault();
+    keep();
+  }
 </script>
 
-<Button commandfor={dialogID} command="show-modal" variant="destructive" icon aria-label="Delete"><Trash /></Button>
-<dialog id={dialogID} aria-labelledby="{dialogID}-title">
-  <h2 id="{dialogID}-title">Delete {name}?</h2>
-  <p>This can't be undone.</p>
-  <div class="actions">
-    <Button commandfor={dialogID} command="close" autofocus>Keep</Button>
-    <Button type="submit" {formaction} variant="destructive">Delete {name}</Button>
-  </div>
-</dialog>
+<!-- A details element asks the question in the row, and opens and closes without JavaScript -->
+<details class="confirm-delete" bind:this={details}>
+  <summary bind:this={summary} onkeydown={handleKeydown}>Delete</summary>
+  <span class="question">
+    <span>Delete {name}?</span>
+    <Button type="submit" {formaction} variant="destructive" small aria-label="Delete {name}" onkeydown={handleKeydown}>Delete</Button>
+    <Button small onclick={keep} onkeydown={handleKeydown}>Keep</Button>
+  </span>
+</details>
 
 <style>
-  dialog {
-    width: min(26rem, calc(100% - 2 * var(--page-gutter)));
-    padding: var(--old-space-5);
-    border: 1px solid var(--colour-divider);
-    border-radius: var(--radius-large);
-    background: var(--colour-background);
-    color: var(--colour-foreground);
-    box-shadow: 0 24px 48px -24px var(--colour-shadow);
+  details {
+    display: inline-block;
+    max-width: 100%;
+  }
 
-    &::backdrop {
-      background: oklch(0.2 0.02 var(--hue) / 45%);
-    }
+  summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.75rem;
+    border: var(--rule-row);
+    border-color: var(--red-text);
+    color: var(--red-text);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    list-style: none;
+    cursor: pointer;
+    transition:
+      transform var(--duration-quick) var(--ease-out),
+      box-shadow var(--duration-quick) var(--ease-out);
 
-    h2 {
-      font-size: var(--font-size-title);
-    }
-
-    p {
-      margin-block: var(--old-space-2) var(--old-space-5);
-      color: var(--colour-text);
+    &::-webkit-details-marker {
+      display: none;
     }
   }
 
-  .actions {
+  .question {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: var(--old-space-2);
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+    padding: var(--space-1);
+    background: var(--sunken);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  @media (hover: hover) {
+    summary:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 2px 2px 0 var(--red-text);
+    }
   }
 </style>
