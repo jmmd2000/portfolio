@@ -1,8 +1,7 @@
 <script lang="ts">
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
   import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
-  import BookOpenText from "@lucide/svelte/icons/book-open-text";
-  import SlidersHorizontal from "@lucide/svelte/icons/sliders-horizontal";
+  import Plus from "@lucide/svelte/icons/plus";
   import type { SubmitFunction } from "@sveltejs/kit";
   import { tick, untrack } from "svelte";
   import { enhance } from "$app/forms";
@@ -13,11 +12,12 @@
   import EditorPanel from "$lib/components/editor/EditorPanel.svelte";
   import { LivePreview } from "$lib/components/editor/livePreview.svelte";
   import MarkdownReference from "$lib/components/editor/MarkdownReference.svelte";
-  import { applyMarkup, shortcutMarkup, type Markup } from "$lib/components/editor/markdownInsert";
+  import { applyMarkup, shortcutEntries, shortcutMarkup, type Markup } from "$lib/components/editor/markdownInsert";
+  import { savedTimeLabel } from "$lib/components/editor/savedTime";
   import Button from "$lib/components/form/Button.svelte";
-  import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
   import PageHead from "$lib/components/head/PageHead.svelte";
+  import ThemeToggle from "$lib/components/theme/ThemeToggle.svelte";
   import type { PageProps } from "./$types";
 
   let { data, form }: PageProps = $props();
@@ -45,7 +45,6 @@
   const currentValues: ArticleValues = $derived({ ...details, title, summary, body });
 
   const changedFields = $derived(Object.keys(savedValues).filter(field => currentValues[field as keyof ArticleValues] !== savedValues[field as keyof ArticleValues]));
-  const hasDetailsError = $derived(Boolean(form?.errors?.slug));
 
   // Set by a save: whether it turned a draft live, or found nothing to save. Typing clears both
   let justPublished = $state(false);
@@ -56,7 +55,7 @@
     if (changedFields.length > 0) return "Unsaved changes";
     if (nothingToSave) return "Nothing to save.";
     if (justPublished) return "Published.";
-    return form?.message ?? "";
+    return form?.message ?? savedTimeLabel(data.article.updatedAt, new Date());
   });
 
   const wordCount = $derived(body.split(/\s+/).filter(word => word !== "").length);
@@ -71,12 +70,11 @@
   let formElement = $state<HTMLFormElement>();
   let bodyField = $state<HTMLTextAreaElement>();
   let previewPane = $state<HTMLDivElement>();
-  let detailsOpen = $derived(hasDetailsError);
   let shownPane = $state<"write" | "preview">("write");
   let offeredDraft = $state<ArticleDraft | null>(null);
   let draftTimer: ReturnType<typeof setTimeout> | undefined;
 
-  /** Reads the details from the form. The select and the checkbox can't bind to state, so the form holds their values */
+  /** Reads the details from the form. The slug field and the switch can't bind to state, so the form holds their values */
   function readDetails(): void {
     if (!formElement) return;
 
@@ -107,6 +105,10 @@
   function scheduleDraft(): void {
     clearTimeout(draftTimer);
     draftTimer = setTimeout(keepDraft, draftDelay);
+  }
+
+  function handleSummaryInput(event: Event & { currentTarget: HTMLInputElement | HTMLTextAreaElement }): void {
+    summary = event.currentTarget.value;
   }
 
   function handleFormInput(): void {
@@ -220,39 +222,46 @@
 
 <form class="editor" method="POST" action="?/save" bind:this={formElement} use:enhance={saveArticle} oninput={handleFormInput} onchange={readDetails}>
   <header class="bar">
-    <a class="back" href={resolve("/admin/articles")}><ArrowLeft size="1.125em" aria-hidden="true" /> <span class="back-label">Articles</span></a>
-    <p class="state" class:live={data.article.published}>{data.article.published ? "Published" : "Draft"}</p>
-    <p class="status" class:error={form?.errors} role="status">{status}</p>
+    <a class="back label" href={resolve("/admin/articles")}><ArrowLeft size="1.125em" aria-hidden="true" /> <span class="back-label">Articles</span></a>
 
-    <div class="tabs">
-      <button type="button" aria-pressed={shownPane === "write"} onclick={() => (shownPane = "write")}>Write</button>
-      <button type="button" aria-pressed={shownPane === "preview"} onclick={() => (shownPane = "preview")}>Preview</button>
+    <div class="title-field">
+      <input class="title" name="title" aria-label="Title" placeholder="Title" bind:value={title} aria-invalid={form?.errors?.title ? true : undefined} />
+      {#if form?.errors?.title}
+        <p class="field-error">{form.errors.title[0]}</p>
+      {/if}
     </div>
 
-    <!-- The saved slug, since the address only changes once a new slug is saved -->
-    <a class="view" href={resolve("/(site)/articles/[slug]", { slug: data.article.slug })} target="_blank" rel="noopener">
-      <span class="bar-label">View</span><span class="visually-hidden"> (opens in a new tab)</span>
-      <ArrowUpRight size="1.125em" aria-hidden="true" />
-    </a>
-
-    <div class="save">
-      <Button type="submit" variant="primary">Save</Button>
+    <div class="tools">
+      <p class="status" class:error={form?.errors} role="status">{status}</p>
+      <!-- A checkbox underneath, so it works without JavaScript. Either word toggles it -->
+      <label class="switch">
+        <span class="side" aria-hidden="true">Draft</span>
+        <input type="checkbox" role="switch" name="published" aria-label="Published" checked={values.published === "on"} />
+        <span class="track" aria-hidden="true"></span>
+        <span class="side" aria-hidden="true">Published</span>
+      </label>
+      <span class="theme"><ThemeToggle /></span>
+      <span class="save"><Button type="submit" variant="primary">Save</Button></span>
     </div>
-
-    <EditorPanel label="Markdown">
-      {#snippet icon()}<BookOpenText size="1.125em" aria-hidden="true" />{/snippet}
-      <MarkdownReference oninsert={insertMarkup} />
-    </EditorPanel>
-
-    <EditorPanel label="Details" bind:open={detailsOpen}>
-      {#snippet icon()}<SlidersHorizontal size="1.125em" aria-hidden="true" />{/snippet}
-      <Field label="Slug" name="slug" hint="The end of its address, like my-first-article" value={values.slug} error={form?.errors?.slug?.[0]} />
-      <Checkbox label="Published" name="published" checked={values.published === "on"} />
-      <div class="delete">
-        <ConfirmDelete name={data.article.title} formaction="?/delete" />
-      </div>
-    </EditorPanel>
   </header>
+
+  <div class="details">
+    <Field label="Slug" name="slug" value={values.slug} error={form?.errors?.slug?.[0]} />
+    <Field label="Summary" name="summary" value={summary} oninput={handleSummaryInput} error={form?.errors?.summary?.[0]} />
+    <div class="details-actions">
+      <!-- The saved slug, since the address only changes once a new slug is saved -->
+      <a class="view" href={resolve("/(site)/articles/[slug]", { slug: data.article.slug })} target="_blank" rel="noopener">
+        View<span class="visually-hidden"> (opens in a new tab)</span>
+        <ArrowUpRight size="1.125em" aria-hidden="true" />
+      </a>
+      <ConfirmDelete name={data.article.title} formaction="?/delete" large />
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button type="button" aria-pressed={shownPane === "write"} onclick={() => (shownPane = "write")}>Write</button>
+    <button type="button" aria-pressed={shownPane === "preview"} onclick={() => (shownPane = "preview")}>Preview</button>
+  </div>
 
   <div class="panes" data-shown={shownPane}>
     <div class="writing">
@@ -260,19 +269,22 @@
         <div class="restore">
           <p>Unsaved text from {formatDraftTime(offeredDraft.savedAt)}.</p>
           <div class="restore-actions">
-            <Button onclick={restoreDraft}>Restore</Button>
-            <Button onclick={discardDraft}>Discard</Button>
+            <Button small onclick={restoreDraft}>Restore</Button>
+            <Button small onclick={discardDraft}>Discard</Button>
           </div>
         </div>
       {/if}
-      <input class="title" name="title" aria-label="Title" placeholder="Title" bind:value={title} aria-invalid={form?.errors?.title ? true : undefined} />
-      {#if form?.errors?.title}
-        <p class="field-error">{form.errors.title[0]}</p>
-      {/if}
-      <input class="summary" name="summary" aria-label="Summary" placeholder="Summary" bind:value={summary} aria-invalid={form?.errors?.summary ? true : undefined} />
-      {#if form?.errors?.summary}
-        <p class="field-error">{form.errors.summary[0]}</p>
-      {/if}
+      <div class="toolbar">
+        {#each shortcutEntries as entry (entry.name)}
+          <Button small aria-keyshortcuts="Control+{entry.shortcut} Meta+{entry.shortcut}" onclick={() => insertMarkup(entry.markup)}>
+            {entry.name} <kbd aria-hidden="true">{entry.shortcut}</kbd>
+          </Button>
+        {/each}
+        <EditorPanel label="Insert">
+          {#snippet icon()}<Plus size="1.125em" aria-hidden="true" />{/snippet}
+          <MarkdownReference oninsert={insertMarkup} />
+        </EditorPanel>
+      </div>
       <textarea
         class="body"
         name="body"
@@ -287,11 +299,6 @@
       {#if form?.errors?.body}
         <p class="field-error">{form.errors.body[0]}</p>
       {/if}
-      <p class="count">
-        {wordCount}
-        {wordCount === 1 ? "word" : "words"}
-        {#if wordCount > 0}· {preview.readingMinutes} minute read{/if}
-      </p>
     </div>
 
     <div class="preview" role="region" aria-label="Preview" bind:this={previewPane}>
@@ -306,114 +313,208 @@
       </div>
     </div>
   </div>
+
+  <footer class="footer">
+    <p>
+      {wordCount}
+      {wordCount === 1 ? "word" : "words"}
+      {#if wordCount > 0}· {preview.readingMinutes} minute read{/if}
+    </p>
+  </footer>
 </form>
 
 <style>
   .editor {
-    --bar-height: 3.75rem;
-
     display: grid;
-    grid-template-rows: var(--bar-height) minmax(0, 1fr);
+    grid-template-areas: "bar" "details" "tabs" "panes" "footer";
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
     height: 100dvh;
   }
 
   .bar {
-    display: flex;
+    display: grid;
+    grid-area: bar;
+    grid-template-areas: "back title tools";
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: var(--old-space-3);
-    padding-inline: var(--old-space-4);
-    border-bottom: 1px solid var(--colour-divider);
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-1) var(--page-gutter);
+    border-bottom: var(--rule-section);
   }
 
   .back {
     display: inline-flex;
+    grid-area: back;
     align-items: center;
-    gap: var(--old-space-1);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-label);
-    font-weight: 500;
-    text-decoration: none;
+    gap: 0.4rem;
+    text-decoration-color: transparent;
+    transition: text-decoration-color var(--duration-quick) var(--ease-out);
   }
 
-  .state {
-    padding: 0.125rem var(--old-space-2);
-    border-radius: var(--radius-small);
-    background: var(--colour-surface);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+  .title-field {
+    grid-area: title;
+    min-width: 0;
+  }
 
-    /* Green marks something live, and a published article is */
-    &.live {
-      color: var(--colour-accent);
-      font-weight: 500;
+  .title {
+    width: 100%;
+    padding: 0.25rem 0;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: var(--type-medium);
+    font-weight: 900;
+    line-height: 1.1;
+    text-transform: uppercase;
+    caret-color: var(--red);
+
+    &::placeholder {
+      color: var(--muted);
+    }
+
+    &[aria-invalid="true"] {
+      border-bottom-color: var(--red);
     }
   }
 
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    grid-area: tools;
+    justify-content: end;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+  }
+
   .status {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
 
     &.error {
-      color: var(--colour-red);
-      font-weight: 500;
+      color: var(--red-text);
+      font-weight: 700;
     }
   }
 
   .tabs {
-    display: none;
-    gap: var(--old-space-1);
-
     button {
-      padding: var(--old-space-1) var(--old-space-3);
+      min-height: 2.25rem;
+      padding: 0.25rem 0.75rem;
       border: 0;
-      border-radius: var(--radius-medium);
       background: transparent;
-      color: var(--colour-text-muted);
+      color: var(--ink);
       font: inherit;
-      font-size: var(--font-size-label);
-      font-weight: 500;
+      font-size: 0.9375rem;
+      font-weight: 700;
       cursor: pointer;
 
       &[aria-pressed="true"] {
-        background: var(--colour-surface);
-        color: var(--colour-foreground);
+        background: var(--ink);
+        color: var(--paper);
       }
     }
+  }
+
+  .switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.25rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    /* Hidden but still focusable, so the keyboard reaches it */
+    input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+  }
+
+  .side {
+    color: var(--muted);
+    transition: color var(--duration-quick) var(--ease-out);
+  }
+
+  .switch:not(:has(:checked)) .side:first-child,
+  .switch:has(:checked) .side:last-child {
+    color: var(--ink);
+  }
+
+  .track {
+    position: relative;
+    width: 2.75rem;
+    height: 1.5rem;
+    border: var(--rule-row);
+    transition: background-color var(--duration-quick) var(--ease-out);
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 1rem;
+      height: 1rem;
+      background: var(--ink);
+      transition: transform var(--duration-quick) var(--ease-out);
+    }
+  }
+
+  .switch:has(:checked) .track {
+    background: var(--red);
+
+    &::after {
+      transform: translateX(1.25rem);
+    }
+  }
+
+  .switch:has(:focus-visible) .track {
+    outline: 3px solid var(--red);
+    outline-offset: 3px;
+  }
+
+  .details {
+    display: grid;
+    grid-area: details;
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--page-gutter);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .details-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    /* The height of a field's label and the gap under it, so the actions line up with the inputs */
+    padding-top: calc(var(--type-small) * 1.6 + 0.35rem);
   }
 
   .view {
     display: inline-flex;
     align-items: center;
-    gap: var(--old-space-1);
-    padding: var(--old-space-2);
-    border-radius: var(--radius-medium);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-label);
-    font-weight: 500;
-    text-decoration: none;
-
-    &:hover {
-      background: var(--colour-surface);
-    }
+    gap: 0.25rem;
+    min-height: 2.75rem;
+    font-weight: 700;
   }
 
-  /* Save comes first in the markup, so Enter in a field saves instead of opening the delete dialog */
-  .save {
-    order: 1;
-  }
-
-  .delete {
-    padding-top: var(--old-space-4);
-    border-top: 1px solid var(--colour-divider);
+  .tabs {
+    display: none;
+    grid-area: tabs;
+    padding: var(--space-1) var(--page-gutter);
+    border-bottom: 1px solid var(--line);
   }
 
   .panes {
     display: grid;
+    grid-area: panes;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     min-height: 0;
   }
@@ -422,14 +523,8 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding: var(--old-space-6) var(--page-gutter) 0;
-    border-right: 1px solid var(--colour-divider);
-
-    > * {
-      width: 100%;
-      max-width: var(--reading-width);
-      margin-inline: auto;
-    }
+    padding: var(--space-2) var(--page-gutter) 0;
+    border-right: var(--rule-row);
   }
 
   .restore {
@@ -437,65 +532,51 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: var(--old-space-2) var(--old-space-4);
-    margin-bottom: var(--old-space-5);
-    padding: var(--old-space-3) var(--old-space-3) var(--old-space-3) var(--old-space-4);
-    border-radius: var(--radius-medium);
-    background: var(--colour-surface);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-label);
+    gap: var(--space-1) var(--space-2);
+    margin-bottom: var(--space-2);
+    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+    background: var(--sunken);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 
   .restore-actions {
     display: flex;
-    gap: var(--old-space-2);
+    gap: var(--space-1);
   }
 
-  .title,
-  .summary,
-  .body {
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--colour-foreground);
-    caret-color: var(--colour-accent);
-
-    &::placeholder {
-      color: var(--colour-text-muted);
-    }
-  }
-
-  .title {
-    font: inherit;
-    font-size: var(--font-size-heading);
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .summary {
-    margin-top: var(--old-space-2);
-    font: inherit;
-    font-size: var(--font-size-summary);
-    color: var(--colour-text);
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--line);
   }
 
   .body {
     flex: 1;
-    margin-top: var(--old-space-5);
-    padding-block: var(--old-space-5) var(--old-space-7);
-    border-top: 1px solid var(--colour-divider);
+    padding: var(--space-2) 0 var(--space-4);
+    border: 0;
+    background: transparent;
+    color: var(--ink);
     font-family: var(--font-code);
-    font-size: var(--font-size-code);
+    font-size: 0.875rem;
     line-height: 1.75;
+    caret-color: var(--red);
     resize: none;
     tab-size: 2;
+
+    &::placeholder {
+      color: var(--muted);
+    }
   }
 
   .field-error {
-    margin-top: var(--old-space-1);
-    color: var(--colour-red);
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    margin-top: 0.25rem;
+    color: var(--red-text);
+    font-size: 0.875rem;
+    font-weight: 700;
   }
 
   .preview {
@@ -507,29 +588,43 @@
     position: sticky;
     top: 0;
     max-width: var(--reading-width);
-    margin: var(--old-space-3) auto 0;
-    padding: var(--old-space-2) var(--old-space-3);
-    border-radius: var(--radius-medium);
-    background: var(--colour-surface);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
-  }
-
-  .count {
-    padding-block: var(--old-space-2) var(--old-space-3);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
-  }
-
-  .empty {
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-summary);
+    margin: var(--space-2) auto 0;
+    padding: var(--space-1) var(--space-2);
+    background: var(--sunken);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 
   .page {
     max-width: var(--reading-width);
     margin-inline: auto;
-    padding-bottom: var(--old-space-8);
+    padding-bottom: var(--space-5);
+  }
+
+  .empty {
+    color: var(--muted);
+  }
+
+  .footer {
+    grid-area: footer;
+    padding: var(--space-1) var(--page-gutter);
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
+  }
+
+  kbd {
+    padding: 0 0.3em;
+    border: 1px solid var(--line);
+    font: inherit;
+    font-weight: 600;
+  }
+
+  @media (hover: hover) {
+    .back:hover {
+      text-decoration-color: var(--red);
+    }
   }
 
   @media (max-width: 64rem) {
@@ -551,41 +646,62 @@
     }
   }
 
-  @media (max-width: 40rem) {
-    /* The bar wraps onto two rows, with the Write and Preview tabs on the second */
-    .editor {
-      --bar-height: 6.25rem;
-    }
-
+  @media (max-width: 54rem) {
     .bar {
-      flex-wrap: wrap;
-      align-content: center;
-      gap: var(--old-space-2);
-      padding-inline: var(--old-space-3);
+      grid-template-areas: "back tools" "title title";
+      grid-template-columns: auto minmax(0, 1fr);
     }
 
-    .tabs {
-      order: 2;
-      width: 100%;
-
-      button {
-        flex: 1;
-      }
+    .details {
+      grid-template-columns: minmax(0, 1fr);
     }
 
-    .state,
+    .details-actions {
+      padding-top: 0;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    /* The tools join the bar's grid, so Save stays beside the back link and the status gets a row of its own */
+    .bar {
+      grid-template-areas: "back theme save" "title title title" "switch status status";
+      grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
+    .tools {
+      display: contents;
+    }
+
+    .theme {
+      grid-area: theme;
+    }
+
+    .save {
+      grid-area: save;
+    }
+
+    .switch {
+      grid-area: switch;
+      justify-self: start;
+    }
+
+    .status {
+      grid-area: status;
+      justify-self: end;
+      text-align: end;
+    }
+
     .back-label {
-      display: none;
-    }
-
-    /* Only the icon shows, and screen readers still hear the word */
-    .bar-label {
       position: absolute;
       width: 1px;
       height: 1px;
       overflow: hidden;
       clip-path: inset(50%);
       white-space: nowrap;
+    }
+
+    .tabs button {
+      flex: 1;
     }
   }
 </style>

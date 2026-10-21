@@ -1,5 +1,5 @@
 import { createAdmin, logIn } from "./adminSession";
-import { insertArticle } from "./articles";
+import { insertArticle, openEditor } from "./articles";
 import { expect, test } from "./fixtures";
 
 test("a signed-out visitor can't add an article", async ({ page, request, baseURL }) => {
@@ -35,6 +35,22 @@ test("a new article is a draft that stays off the site", async ({ page, request 
   await expect(page.getByText("Draft")).toBeVisible();
 });
 
+test("the Published switch puts a draft on the site when it's saved", async ({ page, request }) => {
+  await insertArticle({ slug: "how-the-sand-falls", published: false, publishedAt: null });
+  await createAdmin();
+  await logIn(page);
+  await openEditor(page);
+
+  await page.getByRole("switch", { name: "Published" }).check();
+  await expect(page.getByRole("status")).toHaveText("Unsaved changes");
+  // A signed-out visitor, since the signed-in admin can see drafts
+  expect((await request.get("/articles/how-the-sand-falls")).status()).toBe(404);
+
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByRole("status")).toHaveText("Published.");
+  expect((await request.get("/articles/how-the-sand-falls")).status()).toBe(200);
+});
+
 test("a new article's slug follows its title until the slug is typed by hand", async ({ page }) => {
   await createAdmin();
   await logIn(page);
@@ -61,7 +77,6 @@ test("without JavaScript, a new article with a blank slug gets one from its titl
   await add.getByLabel("Summary").fill("One rule per material.");
   await add.getByRole("button", { name: "Add" }).click();
 
-  await page.locator("summary", { hasText: "Details" }).click();
   await expect(page.getByLabel("Slug")).toHaveValue("how-the-sand-falls");
 });
 
@@ -85,10 +100,8 @@ test("renaming a published article sends its old address to the new one", async 
   await insertArticle({ slug: "how-the-sand-falls" });
   await createAdmin();
   await logIn(page);
-  await page.goto("/admin/articles");
-  await page.getByRole("link", { name: "How the sand falls" }).click();
+  await openEditor(page);
 
-  await page.locator("summary", { hasText: "Details" }).click();
   await page.getByLabel("Slug").fill("falling-sand");
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("How the sand falls saved.")).toBeVisible();
@@ -103,10 +116,8 @@ test("deleting an article asks first, then removes it from the admin and the sit
   await insertArticle({ slug: "how-the-sand-falls" });
   await createAdmin();
   await logIn(page);
-  await page.goto("/admin/articles");
-  await page.getByRole("link", { name: "How the sand falls" }).click();
+  await openEditor(page);
 
-  await page.locator("summary", { hasText: "Details" }).click();
   await page.locator("summary", { hasText: "Delete" }).click();
   await page.getByRole("button", { name: "Keep" }).click();
   await expect(page.getByRole("button", { name: "Delete How the sand falls" })).toBeHidden();
@@ -120,39 +131,34 @@ test("deleting an article asks first, then removes it from the admin and the sit
   expect(response?.status()).toBe(404);
 });
 
-test("Escape closes the delete question first, then the details panel", async ({ page }) => {
+test("Escape closes the delete question, and the Insert panel", async ({ page }) => {
   await insertArticle({ slug: "how-the-sand-falls" });
   await createAdmin();
   await logIn(page);
-  await page.goto("/admin/articles");
-  await page.getByRole("link", { name: "How the sand falls" }).click();
+  await openEditor(page);
 
-  await page.locator("summary", { hasText: "Details" }).click();
   await page.locator("summary", { hasText: "Delete" }).click();
   await page.keyboard.press("Escape");
-
   await expect(page.getByRole("button", { name: "Delete How the sand falls" })).toBeHidden();
-  await expect(page.getByLabel("Slug")).toBeVisible();
 
+  await page.locator("summary", { hasText: "Insert" }).click();
+  await expect(page.getByRole("heading", { name: "Insert" })).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByLabel("Slug")).toBeHidden();
+  await expect(page.getByRole("heading", { name: "Insert" })).toBeHidden();
 });
 
 for (const javaScript of [true, false]) {
-  test(`${javaScript ? "with" : "without"} JavaScript, a slug clash in the editor opens the details to show it and keeps the body`, async ({ page }) => {
+  test(`${javaScript ? "with" : "without"} JavaScript, a slug clash in the editor shows on the slug and keeps the body`, async ({ page }) => {
     await insertArticle({ slug: "taken", title: "Taken" });
     await insertArticle({ slug: "how-the-sand-falls", published: false, publishedAt: null });
     await createAdmin();
     await logIn(page);
     // Blocking the app's JavaScript makes the form submit as plain HTML
     if (!javaScript) await page.route("**/_app/**/*.js", route => route.abort());
-    await page.goto("/admin/articles");
-    await page.getByRole("link", { name: "How the sand falls" }).click();
+    await openEditor(page);
 
-    await page.locator("summary", { hasText: "Details" }).click();
     await page.getByLabel("Slug").fill("taken");
     await page.getByLabel("Body").fill("A body that should still be here.");
-    await page.locator("summary", { hasText: "Details" }).click();
     await page.getByRole("button", { name: "Save" }).click();
 
     await expect(page.getByText("Another article uses or used this slug.")).toBeVisible();

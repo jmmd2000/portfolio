@@ -4,34 +4,38 @@
 
   interface Props {
     label: string;
-    open?: boolean;
-    /** The icon before the label in the top bar */
+    /** The icon before the label on the button that opens the panel */
     icon: Snippet;
     children: Snippet;
   }
 
-  let { label, open = $bindable(false), icon, children }: Props = $props();
+  let { label, icon, children }: Props = $props();
 
+  let details = $state<HTMLDetailsElement>();
   let summary = $state<HTMLElement>();
 
-  function handleKeydown(event: KeyboardEvent): void {
-    // Escape that something inside the panel already handled, like the delete question, leaves the panel open
-    if (event.key !== "Escape" || !open || event.defaultPrevented) return;
-
-    open = false;
+  // Reads and sets the element's own open state, which changes at once, unlike the toggle event that follows it
+  function close(): void {
+    if (details) details.open = false;
     summary?.focus();
+  }
+
+  function handleKeydown(event: KeyboardEvent): void {
+    // Escape that something inside the panel already handled leaves the panel open
+    if (event.key !== "Escape" || !details?.open || event.defaultPrevented) return;
+
+    close();
   }
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
-<!-- Every panel shares a name, so the browser closes the open one when another opens -->
-<details name="editor-panel" bind:open>
-  <summary bind:this={summary}>{@render icon()} <span class="label">{label}</span></summary>
+<details bind:this={details}>
+  <summary bind:this={summary}>{@render icon()} {label}</summary>
   <div class="panel">
     <div class="heading">
       <h2>{label}</h2>
-      <button class="close" type="button" aria-label="Close the {label.toLowerCase()} panel" onclick={() => (open = false)}><X size="1.25em" aria-hidden="true" /></button>
+      <button class="close" type="button" aria-label="Close the {label.toLowerCase()} panel" onclick={close}><X size="1.25em" aria-hidden="true" /></button>
     </div>
     {@render children()}
   </div>
@@ -41,84 +45,76 @@
   summary {
     display: inline-flex;
     align-items: center;
-    gap: var(--old-space-1);
-    padding: var(--old-space-2);
-    border-radius: var(--radius-medium);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    gap: 0.4rem;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.75rem;
+    border: var(--rule-row);
+    font-size: 0.9375rem;
+    font-weight: 700;
     list-style: none;
     cursor: pointer;
+    transition:
+      transform var(--duration-quick) var(--ease-out),
+      box-shadow var(--duration-quick) var(--ease-out);
 
     &::-webkit-details-marker {
       display: none;
     }
-
-    &:hover {
-      background: var(--colour-surface);
-    }
   }
 
   details[open] summary {
-    background: var(--colour-surface);
+    background: var(--ink);
+    color: var(--paper);
   }
 
   .panel {
     position: fixed;
-    inset: var(--bar-height) 0 0 auto;
+    inset: 0 0 0 auto;
     z-index: 10;
     display: grid;
     align-content: start;
-    gap: var(--old-space-4);
-    width: min(24rem, 100%);
-    padding: var(--old-space-5);
+    gap: var(--space-2);
+    width: min(26rem, 100%);
+    padding: var(--space-2) var(--space-3) var(--space-4);
     overflow-y: auto;
-    border-left: 1px solid var(--colour-divider);
-    background: var(--colour-background);
-    box-shadow: -24px 0 48px -32px var(--colour-shadow);
+    border-left: var(--rule-section);
+    background: var(--paper);
   }
 
   .heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: var(--space-1);
+    border-bottom: var(--rule-row);
 
     h2 {
-      font-size: var(--font-size-title);
+      font-size: var(--type-medium);
+      font-weight: 900;
     }
   }
 
   .close {
     display: grid;
     place-items: center;
-    padding: var(--old-space-1);
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
     border: 0;
-    border-radius: var(--radius-medium);
     background: transparent;
-    color: var(--colour-text-muted);
+    color: var(--ink);
     cursor: pointer;
-
-    &:hover {
-      background: var(--colour-surface);
-      color: var(--colour-foreground);
-    }
+    transition: color var(--duration-quick) var(--ease-out);
   }
 
-  @media (max-width: 40rem) {
-    /* Only the icon shows, and screen readers still hear the word */
-    .label {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
+  @media (hover: hover) {
+    details:not([open]) summary:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 2px 2px 0 var(--ink);
     }
-  }
 
-  @media (max-width: 22.5rem) {
-    summary {
-      padding-inline: var(--old-space-1);
+    .close:hover {
+      color: var(--red);
     }
   }
 </style>

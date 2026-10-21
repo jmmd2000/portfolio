@@ -5,9 +5,11 @@
     /** Named in the question and in the confirm button's label, like "Delete SandSim" */
     name: string;
     formaction: string;
+    /** As tall as a text field, for a delete button that sits beside one */
+    large?: boolean;
   }
 
-  let { name, formaction }: Props = $props();
+  let { name, formaction, large = false }: Props = $props();
 
   let details = $state<HTMLDetailsElement>();
   let summary = $state<HTMLElement>();
@@ -28,7 +30,7 @@
 </script>
 
 <!-- A details element asks the question in the row, and opens and closes without JavaScript -->
-<details class="confirm-delete" bind:this={details}>
+<details class="confirm-delete" class:large bind:this={details}>
   <summary bind:this={summary} onkeydown={handleKeydown}>Delete</summary>
   <span class="question">
     <span>Delete {name}?</span>
@@ -62,6 +64,13 @@
     &::-webkit-details-marker {
       display: none;
     }
+  }
+
+  /* The same padding and line height as a text field, so it's exactly as tall as one */
+  .large summary {
+    padding: 0.625rem 1.125rem;
+    font-size: 1rem;
+    line-height: 1.6;
   }
 
   .question {
