@@ -17,48 +17,83 @@
 :root {
   color-scheme: light dark;
 
-  --hue: 158;
+  --paper: light-dark(oklch(0.965 0.004 80), oklch(0.17 0.008 40));
+  --ink: light-dark(oklch(0.16 0.01 40), oklch(0.94 0.006 80));
+  --muted: light-dark(oklch(0.45 0.01 40), oklch(0.72 0.01 60));
+  --red: light-dark(oklch(0.6 0.21 32), oklch(0.66 0.2 33));
+  --red-text: light-dark(oklch(0.55 0.2 32), oklch(0.66 0.2 33));
+  --red-deep: oklch(0.72 0.12 32);
+  --line: light-dark(oklch(0.82 0.006 80), oklch(0.34 0.008 40));
+  --sunken: light-dark(oklch(0.92 0.006 80), oklch(0.22 0.008 40));
 
-  --colour-background: light-dark(oklch(0.99 0.004 var(--hue)), oklch(0.165 0.008 var(--hue)));
-  --colour-foreground: light-dark(oklch(0.2 0.012 var(--hue)), oklch(0.95 0.006 var(--hue)));
-  --colour-text: light-dark(oklch(0.36 0.012 var(--hue)), oklch(0.82 0.008 var(--hue)));
-  --colour-text-muted: light-dark(oklch(0.52 0.012 var(--hue)), oklch(0.66 0.01 var(--hue)));
-  --colour-accent: light-dark(oklch(0.52 0.13 var(--hue)), oklch(0.76 0.13 var(--hue)));
-  --colour-tint: light-dark(oklch(0.94 0.03 var(--hue)), oklch(0.22 0.022 var(--hue)));
-  --colour-deep: light-dark(oklch(0.31 0.07 var(--hue)), oklch(0.33 0.075 var(--hue)));
-  --colour-text-on-deep: oklch(0.97 0.012 var(--hue));
-  --colour-text-on-deep-muted: oklch(0.84 0.04 var(--hue));
-  --colour-surface: color-mix(in oklch, var(--colour-foreground) 5%, var(--colour-background));
-  --colour-shadow: light-dark(oklch(0.2 0.03 var(--hue) / 0.55), oklch(0.05 0.01 var(--hue) / 0.8));
-  --colour-divider: color-mix(in oklch, var(--colour-text-muted) 30%, transparent);
-  --colour-edge: light-dark(transparent, color-mix(in oklch, oklch(0.95 0.006 var(--hue)) 12%, transparent));
-  --colour-red: light-dark(oklch(0.55 0.19 27), oklch(0.68 0.17 27));
-  --colour-text-on-red: light-dark(oklch(0.98 0.01 27), oklch(0.17 0.03 27));
-  --colour-code-string: light-dark(oklch(0.5 0.12 40), oklch(0.8 0.09 50));
-  --colour-code-constant: light-dark(oklch(0.5 0.13 250), oklch(0.8 0.08 245));
-  --colour-code-function: light-dark(oklch(0.5 0.1 85), oklch(0.84 0.09 90));
-  --colour-code-type: light-dark(oklch(0.5 0.13 350), oklch(0.8 0.09 355));
+  --code-background: light-dark(oklch(0.16 0.01 40), oklch(0.11 0.006 40));
+  --code-foreground: oklch(0.95 0.005 80);
+  --code-keyword: oklch(0.74 0.16 35);
+  --code-string: oklch(0.86 0.12 95);
+  --code-constant: oklch(0.8 0.09 220);
+  --code-comment: oklch(0.66 0.01 40);
 
-  --shadow-picture: 0 18px 30px -22px var(--colour-shadow), 0 0 0 1px var(--colour-edge);
-  --filter-picture: none;
-  --shadow-picture-lifted: 0 24px 36px -22px var(--colour-shadow), 0 0 0 1px var(--colour-edge);
+  --type-section: clamp(2.5rem, 5.5vw, 5.5rem);
+  --type-large: clamp(2rem, 3.6vw, 3.5rem);
+  --type-medium: clamp(1.5rem, 2.4vw, 2.125rem);
+  --type-label: 1.25rem;
+  --type-body: 1.0625rem;
+  --type-small: 0.9375rem;
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 2rem;
+  --space-4: 3rem;
+  --space-5: 4rem;
+
+  --rule-section: 6px solid var(--ink);
+  --rule-row: 2px solid var(--ink);
 
   --font-display: "Big Shoulders Display Variable", Impact, sans-serif;
   --font-body: "Albert Sans Variable", system-ui, sans-serif;
   --font-code: "Monaspace Neon", ui-monospace, monospace;
 
-  --font-size-code: 0.875rem;
-  --font-size-label: 0.9375rem;
-  --font-size-body: 1.0625rem;
-  --font-size-summary: 1.125rem;
-  --font-size-title: 1.25rem;
-  --font-size-lead: clamp(1.25rem, 2.2vw, 1.5rem);
-  --font-size-heading: 1.75rem;
-  --font-size-page-title: clamp(2.5rem, 5vw, 3.5rem);
-  --font-size-display: clamp(3.25rem, 10vw, 7.5rem);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-quick: 150ms;
+  --duration-lift: 400ms;
 
-  --font-stretch-heading: 112%;
-  --font-stretch-display: 118%;
+  /* Old names, kept as aliases for the components that don't use the new tokens yet */
+  --hue: 158;
+  --colour-background: var(--paper);
+  --colour-foreground: var(--ink);
+  --colour-text: var(--ink);
+  --colour-text-muted: var(--muted);
+  --colour-accent: var(--red);
+  --colour-red: var(--red);
+  --colour-text-on-red: oklch(0.16 0.01 40);
+  --colour-tint: var(--sunken);
+  --colour-surface: var(--sunken);
+  --colour-divider: var(--line);
+  --colour-deep: var(--ink);
+  --colour-text-on-deep: var(--paper);
+  --colour-text-on-deep-muted: light-dark(oklch(0.78 0.01 60), oklch(0.4 0.01 40));
+  --colour-shadow: light-dark(oklch(0.2 0.03 40 / 0.55), oklch(0.05 0.01 40 / 0.8));
+  --colour-edge: transparent;
+  --colour-code-string: light-dark(oklch(0.5 0.12 40), oklch(0.8 0.09 50));
+  --colour-code-constant: light-dark(oklch(0.5 0.13 250), oklch(0.8 0.08 245));
+  --colour-code-function: light-dark(oklch(0.5 0.1 85), oklch(0.84 0.09 90));
+  --colour-code-type: light-dark(oklch(0.5 0.13 350), oklch(0.8 0.09 355));
+
+  --shadow-picture: 0 0 0 2px var(--ink);
+  --shadow-picture-lifted: 6px 6px 0 var(--red), 0 0 0 2px var(--ink);
+  --filter-picture: none;
+
+  --font-size-code: 0.875rem;
+  --font-size-label: var(--type-small);
+  --font-size-body: var(--type-body);
+  --font-size-summary: 1.125rem;
+  --font-size-title: var(--type-label);
+  --font-size-lead: clamp(1.25rem, 2.2vw, 1.5rem);
+  --font-size-heading: var(--type-medium);
+  --font-size-page-title: var(--type-large);
+  --font-size-display: var(--type-section);
+  --font-stretch-heading: 100%;
+  --font-stretch-display: 100%;
 
   --line-height-body: 1.6;
   --line-height-heading: 1.2;
@@ -76,13 +111,9 @@
   --page-gutter: clamp(1rem, 4vw, 2.5rem);
   --reading-width: 44.5rem;
 
-  --radius-small: 3px;
-  --radius-medium: 6px;
-  --radius-large: 8px;
-
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --duration-quick: 150ms;
-  --duration-lift: 400ms;
+  --radius-small: 0;
+  --radius-medium: 0;
+  --radius-large: 0;
 }
 
 :root[data-theme="light"] {
@@ -128,11 +159,11 @@ h1,
 h2,
 h3 {
   margin: 0;
-  color: var(--colour-foreground);
-  font-family: var(--font-body);
-  font-weight: 620;
-  font-stretch: var(--font-stretch-heading);
-  line-height: var(--line-height-heading);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.95;
+  text-transform: uppercase;
   text-wrap: balance;
 }
 
@@ -142,7 +173,6 @@ h2 {
 
 h3 {
   font-size: var(--font-size-title);
-  font-weight: 600;
 }
 
 p {
@@ -150,10 +180,10 @@ p {
 }
 
 a {
-  color: var(--colour-foreground);
-  text-decoration-color: color-mix(in oklch, var(--colour-accent) 80%, transparent);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
+  color: var(--ink);
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 5px;
 }
 
 .visually-hidden {
@@ -166,8 +196,8 @@ a {
 }
 
 ::selection {
-  background: var(--colour-accent);
-  color: var(--colour-background);
+  background: var(--red);
+  color: var(--paper);
 }
 
 :where(a, button, input, textarea, select, [tabindex]):focus-visible {
