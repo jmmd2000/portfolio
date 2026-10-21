@@ -40,7 +40,7 @@
       {#if signedIn}
         <a href={resolve("/")}>View the site</a>
         <form method="POST" action="/admin/logout">
-          <Button type="submit">Log out</Button>
+          <Button type="submit" small>Log out</Button>
         </form>
       {/if}
     </div>

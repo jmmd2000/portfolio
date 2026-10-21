@@ -93,10 +93,6 @@
     color: var(--colour-text-muted);
   }
 
-  .wide {
-    grid-column: 1 / -1;
-  }
-
   @media (hover: hover) {
     .name:hover {
       text-decoration-color: var(--colour-accent);

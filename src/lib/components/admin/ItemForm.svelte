@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { enhance } from "$app/forms";
+  import FieldGrid from "$lib/components/form/FieldGrid.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
 
@@ -30,7 +31,9 @@
       <input type="hidden" name="id" value={id} />
     {/if}
     <div class="fields">
-      {@render children()}
+      <FieldGrid>
+        {@render children()}
+      </FieldGrid>
     </div>
     <div class="actions">
       {@render actions()}
@@ -51,32 +54,27 @@
 
   fieldset {
     display: grid;
-    gap: var(--old-space-3);
+    gap: var(--space-2);
+    min-width: 0;
     margin: 0;
     padding: 0;
     border: none;
   }
 
   legend {
-    margin-bottom: var(--old-space-3);
+    margin-bottom: var(--space-2);
     padding: 0;
-    color: var(--colour-foreground);
-    font-size: var(--font-size-title);
-    font-weight: 600;
-  }
-
-  .fields {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    align-items: start;
-    gap: var(--old-space-3);
+    font-family: var(--font-display);
+    font-size: var(--type-label);
+    font-weight: 800;
+    text-transform: uppercase;
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--old-space-2);
+    gap: var(--space-1) var(--space-2);
   }
 
   .message {
@@ -110,7 +108,7 @@
         grid-column: 1 / -1;
       }
 
-      .fields {
+      .fields > :global(.field-grid) {
         grid-template-columns: none;
         grid-auto-columns: 1fr;
         grid-auto-flow: column;

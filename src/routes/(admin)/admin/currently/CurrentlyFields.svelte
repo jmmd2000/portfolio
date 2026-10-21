@@ -23,10 +23,6 @@
 </div>
 
 <style>
-  .wide {
-    grid-column: 1 / -1;
-  }
-
   .hint {
     margin-top: var(--old-space-1);
     color: var(--colour-text-muted);

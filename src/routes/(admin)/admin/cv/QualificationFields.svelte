@@ -19,9 +19,3 @@
 </div>
 <Field label="Started" name="startYear" placeholder="2019" inputmode="numeric" value={values.startYear ?? ""} error={errors?.startYear?.[0]} />
 <Field label="Finished" name="endYear" placeholder="2023" inputmode="numeric" value={values.endYear ?? ""} error={errors?.endYear?.[0]} />
-
-<style>
-  .wide {
-    grid-column: 1 / -1;
-  }
-</style>
