@@ -8,14 +8,19 @@
     place?: string | null;
     /** Turns the place into a link */
     placeURL?: string | null;
+    /** Shown above the period, like a company's logo */
+    logo?: Snippet;
     children: Snippet;
   }
 
-  let { period, place = null, placeURL = null, children }: Props = $props();
+  let { period, place = null, placeURL = null, logo, children }: Props = $props();
 </script>
 
 <article class="entry">
   <div class="when">
+    {#if logo}
+      {@render logo()}
+    {/if}
     {#if period}
       <strong>{period}</strong>
     {/if}
