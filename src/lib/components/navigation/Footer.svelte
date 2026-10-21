@@ -44,10 +44,6 @@
     padding-block: var(--old-space-7) var(--old-space-6);
     background: var(--colour-deep);
     color: var(--colour-text-on-deep-muted);
-
-    :global(:focus-visible) {
-      outline-color: var(--colour-text-on-deep);
-    }
   }
 
   .inner {

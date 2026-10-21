@@ -468,10 +468,6 @@
     &::placeholder {
       color: var(--colour-text-muted);
     }
-
-    &:focus-visible {
-      outline: none;
-    }
   }
 
   .title {

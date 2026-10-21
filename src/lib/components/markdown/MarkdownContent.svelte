@@ -178,11 +178,6 @@
         color: var(--colour-text);
         line-height: 1.65;
         tab-size: 2;
-
-        &:focus-visible {
-          outline: 2px solid var(--colour-accent);
-          outline-offset: -2px;
-        }
       }
 
       .keyword {

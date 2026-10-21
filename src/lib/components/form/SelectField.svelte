@@ -64,8 +64,6 @@
 
     &:focus-visible {
       border-color: var(--colour-accent);
-      outline: 2px solid color-mix(in oklch, var(--colour-accent) 35%, transparent);
-      outline-offset: 0;
     }
   }
 
