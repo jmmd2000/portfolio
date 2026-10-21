@@ -31,7 +31,7 @@
     a {
       display: grid;
       gap: var(--space-1);
-      padding: var(--space-3) var(--page-gutter);
+      padding: var(--space-3) var(--page-padding);
       text-decoration: none;
     }
 

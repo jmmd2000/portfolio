@@ -40,7 +40,7 @@
 
 <style>
   header {
-    padding: var(--space-4) var(--page-gutter);
+    padding: var(--space-4) var(--page-padding);
     border-bottom: var(--rule-section);
   }
 
@@ -67,7 +67,7 @@
   }
 
   .body {
-    padding: var(--space-4) var(--page-gutter) var(--space-5);
+    padding: var(--space-4) var(--page-padding) var(--space-5);
 
     > :global(*) {
       margin-inline: auto;

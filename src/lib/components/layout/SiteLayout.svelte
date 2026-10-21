@@ -52,7 +52,7 @@
     justify-content: space-between;
     align-items: baseline;
     gap: var(--space-2) var(--space-3);
-    padding: var(--space-2) var(--page-gutter);
+    padding: var(--space-2) var(--page-padding);
     border-bottom: var(--rule-section);
   }
 

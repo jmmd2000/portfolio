@@ -9,8 +9,8 @@
 
   let { data }: PageProps = $props();
 
-  const allProjectsText = $derived(data.projectCount === 1 ? "1 project" : `All ${data.projectCount} projects`);
-  const allArticlesText = $derived(data.articleCount === 1 ? "1 article" : `All ${data.articleCount} articles`);
+  const allProjectsText = $derived(data.projectCount === 1 ? "All projects" : `All ${data.projectCount} projects`);
+  const allArticlesText = $derived(data.articleCount === 1 ? "All articles" : `All ${data.articleCount} articles`);
 </script>
 
 <PageHead description="James Doyle, a software engineer from Dublin." />
@@ -48,7 +48,7 @@
 
 <style>
   .home-section {
-    padding: var(--space-3) var(--page-gutter) var(--space-5);
+    padding: var(--space-3) var(--page-padding) var(--space-5);
     border-bottom: var(--rule-section);
   }
 
@@ -71,5 +71,10 @@
     display: inline-block;
     margin-top: var(--space-3);
     padding-block: var(--space-1);
+  }
+
+  .currently-section {
+    padding: var(--space-3) var(--page-padding);
+    border-bottom: var(--rule-section);
   }
 </style>

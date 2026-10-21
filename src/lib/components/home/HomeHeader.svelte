@@ -30,7 +30,7 @@
 
 <style>
   .home-header {
-    padding: var(--space-3) var(--page-gutter) var(--space-5);
+    padding: var(--space-3) var(--page-padding) var(--space-5);
     border-bottom: var(--rule-section);
   }
 

@@ -18,7 +18,7 @@
 
 <style>
   .page-header {
-    padding: var(--space-3) var(--page-gutter) var(--space-4);
+    padding: var(--space-3) var(--page-padding) var(--space-4);
     border-bottom: var(--rule-section);
   }
 

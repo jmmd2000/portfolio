@@ -39,7 +39,7 @@
 
 <style>
   footer {
-    padding: var(--space-3) var(--page-gutter) var(--space-4);
+    padding: var(--space-3) var(--page-padding) var(--space-4);
   }
 
   .fitted-email {
