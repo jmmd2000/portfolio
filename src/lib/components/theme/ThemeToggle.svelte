@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Moon from "@lucide/svelte/icons/moon";
+  import Sun from "@lucide/svelte/icons/sun";
   import { onMount } from "svelte";
   import { getCurrentTheme, setTheme, watchOperatingSystemTheme, type Theme } from "./theme";
 
@@ -19,26 +21,28 @@
   }
 </script>
 
-<!-- Both words render and the CSS shows one, so the server's HTML already shows the right word for the theme -->
+<!-- Both icons render and the CSS shows one, so the server's HTML already shows the right icon for the theme -->
 <button type="button" class="theme-toggle" aria-label="Switch to {otherTheme} theme" onclick={switchTheme}>
-  <span class="to-dark">Dark</span>
-  <span class="to-light">Light</span>
+  <span class="to-dark"><Moon size="1.25rem" strokeWidth={2.25} aria-hidden="true" /></span>
+  <span class="to-light"><Sun size="1.25rem" strokeWidth={2.25} aria-hidden="true" /></span>
 </button>
 
 <style>
   .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
     padding: 0;
     border: 0;
     background: none;
     color: inherit;
-    font: inherit;
-    text-transform: inherit;
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-decoration-thickness: 3px;
-    text-underline-offset: 5px;
     cursor: pointer;
-    transition: text-decoration-color var(--duration-quick) var(--ease-out);
+    transition: color var(--duration-quick) var(--ease-out);
+  }
+
+  .to-dark {
+    display: grid;
   }
 
   .to-light {
@@ -51,7 +55,7 @@
     }
 
     .to-light {
-      display: inline;
+      display: grid;
     }
   }
 
@@ -62,20 +66,21 @@
       }
 
       .to-light {
-        display: inline;
+        display: grid;
       }
     }
   }
 
   @media (hover: hover) {
     .theme-toggle:hover {
-      text-decoration-color: var(--red);
+      color: var(--red);
     }
   }
 
   @media (hover: none) {
     .theme-toggle {
-      padding-block: var(--space-1);
+      width: 2.75rem;
+      height: 2.75rem;
     }
   }
 </style>

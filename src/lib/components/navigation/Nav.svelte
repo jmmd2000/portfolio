@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LockKeyhole from "@lucide/svelte/icons/lock-keyhole";
   import { resolve } from "$app/paths";
   import ThemeToggle from "$lib/components/theme/ThemeToggle.svelte";
   import { isCurrentPage, shownNavigationLinks } from "./navigation";
@@ -24,14 +25,17 @@
   {#each pageLinks as link (link.path)}
     <a href={resolve(link.path)} aria-current={ariaCurrent(link.path)}>{link.label}</a>
   {/each}
-  <ThemeToggle />
+  <span class="icons">
+    <ThemeToggle />
+    <a class="admin" href={resolve("/admin")} aria-label="Admin"><LockKeyhole size="1.25rem" strokeWidth={2.25} aria-hidden="true" /></a>
+  </span>
 </nav>
 
 <style>
   nav {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
     gap: var(--space-1) var(--space-3);
   }
 
@@ -45,15 +49,37 @@
     }
   }
 
+  .icons {
+    display: inline-flex;
+    gap: var(--space-1);
+  }
+
+  .admin {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    transition: color var(--duration-quick) var(--ease-out);
+  }
+
   @media (hover: hover) {
     a:hover {
       text-decoration-color: var(--red);
+    }
+
+    .admin:hover {
+      color: var(--red);
     }
   }
 
   @media (hover: none) {
     a {
       padding-block: var(--space-1);
+    }
+
+    .admin {
+      width: 2.75rem;
+      height: 2.75rem;
     }
   }
 
