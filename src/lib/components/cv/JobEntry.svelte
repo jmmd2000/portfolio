@@ -41,14 +41,14 @@
   .job {
     max-width: 52rem;
     break-inside: avoid;
-    scroll-margin-top: var(--space-6);
+    scroll-margin-top: var(--old-space-6);
   }
 
   .heading {
     display: grid;
     grid-template-columns: 3rem minmax(0, 1fr);
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--old-space-4);
   }
 
   /* Logos are made for white, so they sit on a light tile in both themes */
@@ -57,7 +57,7 @@
     place-items: center;
     width: 3rem;
     height: 3rem;
-    padding: var(--space-1);
+    padding: var(--old-space-1);
     border-radius: var(--radius-medium);
     background: oklch(0.99 0.004 var(--hue));
     box-shadow: 0 0 0 1px color-mix(in oklch, var(--colour-text) 10%, transparent);
@@ -78,7 +78,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: baseline;
-    gap: 0 var(--space-4);
+    gap: 0 var(--old-space-4);
   }
 
   .title {
@@ -103,7 +103,7 @@
   }
 
   .tags {
-    margin-top: var(--space-3);
+    margin-top: var(--old-space-3);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
   }
@@ -116,7 +116,7 @@
 
   @media print {
     .tags {
-      margin-top: var(--space-2);
+      margin-top: var(--old-space-2);
     }
 
     .company {

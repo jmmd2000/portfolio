@@ -67,7 +67,7 @@
   }
 
   li {
-    padding-block: var(--space-3);
+    padding-block: var(--old-space-3);
     border-bottom: 1px solid var(--colour-divider);
   }
 

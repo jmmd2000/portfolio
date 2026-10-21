@@ -46,7 +46,7 @@
 <style>
   .socials {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--old-space-4);
     width: 100%;
     margin: 0;
     padding: 0;

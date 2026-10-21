@@ -35,7 +35,7 @@
 
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-5);
+    gap: var(--old-space-5);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -70,7 +70,7 @@
 
   .fallback {
     max-width: 9rem;
-    padding: var(--space-3);
+    padding: var(--old-space-3);
     color: var(--colour-foreground);
     font-weight: 600;
     text-align: center;
@@ -79,7 +79,7 @@
   .title {
     display: block;
     max-width: 12rem;
-    margin-top: var(--space-3);
+    margin-top: var(--old-space-3);
     color: var(--colour-foreground);
     font-weight: 560;
     line-height: 1.3;
@@ -109,7 +109,7 @@
     .covers {
       --cover-height: 10rem;
 
-      gap: var(--space-4);
+      gap: var(--old-space-4);
     }
 
     .frame {

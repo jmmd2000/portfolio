@@ -46,7 +46,7 @@
   }
 
   h3 {
-    margin-bottom: var(--space-1);
+    margin-bottom: var(--old-space-1);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
     font-weight: 500;
@@ -62,8 +62,8 @@
     display: grid;
     grid-template-columns: 7.5rem minmax(0, 1fr) auto;
     align-items: center;
-    gap: var(--space-3);
-    padding-block: var(--space-1);
+    gap: var(--old-space-3);
+    padding-block: var(--old-space-1);
   }
 
   .name {
@@ -73,7 +73,7 @@
   }
 
   kbd {
-    margin-inline-start: var(--space-1);
+    margin-inline-start: var(--old-space-1);
     padding: 0 0.3em;
     border: 1px solid var(--colour-divider);
     border-radius: var(--radius-small);

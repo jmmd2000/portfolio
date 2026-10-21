@@ -22,7 +22,7 @@
 <style>
   .qualifications {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--old-space-5);
     margin: 0;
     padding: 0;
     list-style: none;

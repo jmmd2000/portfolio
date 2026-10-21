@@ -44,10 +44,10 @@
   .year-group {
     display: grid;
     grid-template-columns: 8rem minmax(0, 1fr);
-    gap: var(--space-5);
+    gap: var(--old-space-5);
 
     & + & {
-      margin-top: var(--space-7);
+      margin-top: var(--old-space-7);
     }
   }
 
@@ -60,7 +60,7 @@
 
   .articles {
     display: grid;
-    gap: var(--space-6);
+    gap: var(--old-space-6);
     max-width: var(--reading-width);
     margin: 0;
     padding: 0;
@@ -104,14 +104,14 @@
   .summary {
     display: block;
     max-width: 60ch;
-    margin-top: var(--space-1);
+    margin-top: var(--old-space-1);
   }
 
   .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 var(--space-3);
-    margin-top: var(--space-2);
+    gap: 0 var(--old-space-3);
+    margin-top: var(--old-space-2);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
 
@@ -153,7 +153,7 @@
   @media (max-width: 52rem) {
     .year-group {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--space-3);
+      gap: var(--old-space-3);
     }
   }
 </style>

@@ -64,7 +64,7 @@
 
 <style>
   .header {
-    padding-block: var(--space-8) var(--space-7);
+    padding-block: var(--old-space-8) var(--old-space-7);
   }
 
   .name {
@@ -90,7 +90,7 @@
 
   .intro {
     max-width: 34ch;
-    margin-top: var(--space-6);
+    margin-top: var(--old-space-6);
     color: var(--colour-foreground);
     font-size: var(--font-size-lead);
     font-weight: 450;
@@ -99,7 +99,7 @@
 
   @media (max-width: 52rem) {
     .header {
-      padding-block: var(--space-6);
+      padding-block: var(--old-space-6);
     }
   }
 </style>

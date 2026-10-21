@@ -325,15 +325,15 @@
   .bar {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    padding-inline: var(--space-4);
+    gap: var(--old-space-3);
+    padding-inline: var(--old-space-4);
     border-bottom: 1px solid var(--colour-divider);
   }
 
   .back {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: var(--old-space-1);
     color: var(--colour-foreground);
     font-size: var(--font-size-label);
     font-weight: 500;
@@ -341,7 +341,7 @@
   }
 
   .state {
-    padding: 0.125rem var(--space-2);
+    padding: 0.125rem var(--old-space-2);
     border-radius: var(--radius-small);
     background: var(--colour-surface);
     color: var(--colour-text-muted);
@@ -371,10 +371,10 @@
 
   .tabs {
     display: none;
-    gap: var(--space-1);
+    gap: var(--old-space-1);
 
     button {
-      padding: var(--space-1) var(--space-3);
+      padding: var(--old-space-1) var(--old-space-3);
       border: 0;
       border-radius: var(--radius-medium);
       background: transparent;
@@ -394,8 +394,8 @@
   .view {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2);
+    gap: var(--old-space-1);
+    padding: var(--old-space-2);
     border-radius: var(--radius-medium);
     color: var(--colour-foreground);
     font-size: var(--font-size-label);
@@ -413,7 +413,7 @@
   }
 
   .delete {
-    padding-top: var(--space-4);
+    padding-top: var(--old-space-4);
     border-top: 1px solid var(--colour-divider);
   }
 
@@ -427,7 +427,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding: var(--space-6) var(--page-gutter) 0;
+    padding: var(--old-space-6) var(--page-gutter) 0;
     border-right: 1px solid var(--colour-divider);
 
     > * {
@@ -442,9 +442,9 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: var(--space-2) var(--space-4);
-    margin-bottom: var(--space-5);
-    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+    gap: var(--old-space-2) var(--old-space-4);
+    margin-bottom: var(--old-space-5);
+    padding: var(--old-space-3) var(--old-space-3) var(--old-space-3) var(--old-space-4);
     border-radius: var(--radius-medium);
     background: var(--colour-surface);
     color: var(--colour-foreground);
@@ -453,7 +453,7 @@
 
   .restore-actions {
     display: flex;
-    gap: var(--space-2);
+    gap: var(--old-space-2);
   }
 
   .title,
@@ -468,10 +468,6 @@
     &::placeholder {
       color: var(--colour-text-muted);
     }
-
-    &:focus-visible {
-      outline: none;
-    }
   }
 
   .title {
@@ -482,7 +478,7 @@
   }
 
   .summary {
-    margin-top: var(--space-2);
+    margin-top: var(--old-space-2);
     font: inherit;
     font-size: var(--font-size-summary);
     color: var(--colour-text);
@@ -490,8 +486,8 @@
 
   .body {
     flex: 1;
-    margin-top: var(--space-5);
-    padding-block: var(--space-5) var(--space-7);
+    margin-top: var(--old-space-5);
+    padding-block: var(--old-space-5) var(--old-space-7);
     border-top: 1px solid var(--colour-divider);
     font-family: var(--font-code);
     font-size: var(--font-size-code);
@@ -501,7 +497,7 @@
   }
 
   .field-error {
-    margin-top: var(--space-1);
+    margin-top: var(--old-space-1);
     color: var(--colour-red);
     font-size: var(--font-size-label);
     font-weight: 500;
@@ -516,8 +512,8 @@
     position: sticky;
     top: 0;
     max-width: var(--reading-width);
-    margin: var(--space-3) auto 0;
-    padding: var(--space-2) var(--space-3);
+    margin: var(--old-space-3) auto 0;
+    padding: var(--old-space-2) var(--old-space-3);
     border-radius: var(--radius-medium);
     background: var(--colour-surface);
     color: var(--colour-text-muted);
@@ -525,7 +521,7 @@
   }
 
   .count {
-    padding-block: var(--space-2) var(--space-3);
+    padding-block: var(--old-space-2) var(--old-space-3);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
   }
@@ -538,7 +534,7 @@
   .page {
     max-width: var(--reading-width);
     margin-inline: auto;
-    padding-bottom: var(--space-8);
+    padding-bottom: var(--old-space-8);
   }
 
   @media (max-width: 64rem) {
@@ -569,8 +565,8 @@
     .bar {
       flex-wrap: wrap;
       align-content: center;
-      gap: var(--space-2);
-      padding-inline: var(--space-3);
+      gap: var(--old-space-2);
+      padding-inline: var(--old-space-3);
     }
 
     .tabs {

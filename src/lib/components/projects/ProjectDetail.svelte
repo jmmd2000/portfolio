@@ -65,8 +65,8 @@
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     align-items: center;
-    gap: var(--space-7);
-    scroll-margin-top: var(--space-6);
+    gap: var(--old-space-7);
+    scroll-margin-top: var(--old-space-6);
   }
 
   .shot {
@@ -93,7 +93,7 @@
 
   .fallback {
     place-self: center;
-    padding: var(--space-4);
+    padding: var(--old-space-4);
     color: var(--colour-foreground);
     font-size: var(--font-size-title);
     font-weight: 600;
@@ -107,13 +107,13 @@
 
   .description {
     max-width: 60ch;
-    margin-top: var(--space-2);
+    margin-top: var(--old-space-2);
     font-size: var(--font-size-summary);
     line-height: 1.5;
   }
 
   .stack {
-    margin-top: var(--space-5);
+    margin-top: var(--old-space-5);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
   }
@@ -121,8 +121,8 @@
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
-    margin: var(--space-5) 0 0;
+    gap: var(--old-space-2) var(--old-space-5);
+    margin: var(--old-space-5) 0 0;
     padding: 0;
     font-size: var(--font-size-label);
     list-style: none;
@@ -152,7 +152,7 @@
   @media (hover: none) {
     .links a {
       display: inline-block;
-      padding-block: var(--space-2);
+      padding-block: var(--old-space-2);
     }
   }
 
@@ -160,7 +160,7 @@
     .project {
       grid-template-columns: minmax(0, 1fr);
       align-items: start;
-      gap: var(--space-5);
+      gap: var(--old-space-5);
     }
   }
 </style>

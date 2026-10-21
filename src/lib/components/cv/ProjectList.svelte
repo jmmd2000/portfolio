@@ -58,7 +58,7 @@
 <style>
   .projects {
     display: grid;
-    gap: var(--space-7);
+    gap: var(--old-space-7);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -74,7 +74,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
-    gap: var(--space-2) var(--space-5);
+    gap: var(--old-space-2) var(--old-space-5);
   }
 
   .title {
@@ -84,7 +84,7 @@
   }
 
   .year {
-    margin-inline-start: var(--space-2);
+    margin-inline-start: var(--old-space-2);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
     font-weight: 500;
@@ -94,7 +94,7 @@
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
+    gap: var(--old-space-2) var(--old-space-5);
     margin: 0;
     padding: 0;
     font-size: var(--font-size-label);
@@ -111,11 +111,11 @@
 
   .description {
     max-width: 64ch;
-    margin-top: var(--space-4);
+    margin-top: var(--old-space-4);
   }
 
   .tags {
-    margin-top: var(--space-3);
+    margin-top: var(--old-space-3);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
   }
@@ -123,14 +123,14 @@
   @media (hover: none) {
     .links a {
       display: inline-block;
-      margin-block: calc(-1 * var(--space-3));
-      padding-block: var(--space-3);
+      margin-block: calc(-1 * var(--old-space-3));
+      padding-block: var(--old-space-3);
     }
   }
 
   @media print {
     .projects {
-      gap: var(--space-4);
+      gap: var(--old-space-4);
     }
 
     .links a {

@@ -29,28 +29,28 @@
 
 <style>
   section {
-    padding-block: var(--space-7) 0;
+    padding-block: var(--old-space-7) 0;
   }
 
   h1 {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--old-space-6);
     font-size: var(--font-size-page-title);
     line-height: 1.05;
   }
 
   form {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--old-space-4);
     max-width: 26rem;
   }
 
   .actions {
-    margin-top: var(--space-1);
+    margin-top: var(--old-space-1);
   }
 
   @media (max-width: 52rem) {
     section {
-      padding-block-start: var(--space-6);
+      padding-block-start: var(--old-space-6);
     }
   }
 </style>

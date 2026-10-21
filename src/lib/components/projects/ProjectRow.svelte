@@ -37,7 +37,7 @@
   .shot {
     display: grid;
     overflow: hidden;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--old-space-4);
     aspect-ratio: 16 / 10;
     border-radius: var(--radius-medium);
     background: var(--colour-background);
@@ -59,14 +59,14 @@
 
   .fallback {
     place-self: center;
-    padding: var(--space-3);
+    padding: var(--old-space-3);
     color: var(--colour-foreground);
     font-weight: 600;
     text-align: center;
   }
 
   .name {
-    margin-bottom: var(--space-1);
+    margin-bottom: var(--old-space-1);
     font-size: var(--font-size-title);
     line-height: 1.3;
   }
@@ -109,7 +109,7 @@
 
   @media (max-width: 52rem) {
     .shot {
-      margin-bottom: var(--space-3);
+      margin-bottom: var(--old-space-3);
     }
 
     .name {

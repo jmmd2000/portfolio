@@ -39,7 +39,7 @@
 <style>
   header {
     max-width: var(--reading-width);
-    padding-block: var(--space-7) var(--space-6);
+    padding-block: var(--old-space-7) var(--old-space-6);
   }
 
   h1 {
@@ -50,8 +50,8 @@
   .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 var(--space-3);
-    margin-top: var(--space-4);
+    gap: 0 var(--old-space-3);
+    margin-top: var(--old-space-4);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
 
@@ -71,7 +71,7 @@
 
   @media (max-width: 52rem) {
     header {
-      padding-block: var(--space-6) var(--space-5);
+      padding-block: var(--old-space-6) var(--old-space-5);
     }
   }
 </style>

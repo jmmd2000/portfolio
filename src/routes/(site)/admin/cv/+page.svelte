@@ -183,21 +183,21 @@
   .jump {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-4);
-    margin-top: calc(-1 * var(--space-3));
+    gap: var(--old-space-4);
+    margin-top: calc(-1 * var(--old-space-3));
     font-size: var(--font-size-label);
     font-weight: 500;
   }
 
   section {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--old-space-5);
     width: 100%;
-    scroll-margin-top: var(--space-5);
+    scroll-margin-top: var(--old-space-5);
   }
 
   .order {
-    margin-top: calc(-1 * var(--space-4));
+    margin-top: calc(-1 * var(--old-space-4));
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
   }

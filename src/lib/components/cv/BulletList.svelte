@@ -15,16 +15,16 @@
 <style>
   .bullets {
     max-width: 64ch;
-    margin: var(--space-4) 0 0;
+    margin: var(--old-space-4) 0 0;
     padding-inline-start: 1.1rem;
     list-style: disc;
 
     li {
-      padding-inline-start: var(--space-1);
+      padding-inline-start: var(--old-space-1);
     }
 
     li + li {
-      margin-top: var(--space-2);
+      margin-top: var(--old-space-2);
     }
 
     li::marker {
@@ -35,11 +35,11 @@
   @media print {
     .bullets {
       max-width: none;
-      margin-top: var(--space-2);
+      margin-top: var(--old-space-2);
       line-height: 1.45;
 
       li + li {
-        margin-top: var(--space-1);
+        margin-top: var(--old-space-1);
       }
     }
   }

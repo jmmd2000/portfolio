@@ -29,9 +29,9 @@
 <style>
   section {
     display: grid;
-    gap: var(--space-6);
+    gap: var(--old-space-6);
     max-width: 30rem;
-    padding-block: var(--space-7) 0;
+    padding-block: var(--old-space-7) 0;
   }
 
   h1 {
@@ -50,7 +50,7 @@
 
     a {
       display: block;
-      padding-block: var(--space-3);
+      padding-block: var(--old-space-3);
       font-size: var(--font-size-title);
       font-weight: 600;
       text-decoration-color: transparent;
@@ -67,7 +67,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-3);
+    gap: var(--old-space-3);
   }
 
   @media (hover: hover) {
@@ -78,7 +78,7 @@
 
   @media (max-width: 52rem) {
     section {
-      padding-block-start: var(--space-6);
+      padding-block-start: var(--old-space-6);
     }
   }
 </style>

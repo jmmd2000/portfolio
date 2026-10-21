@@ -26,6 +26,6 @@
 <style>
   form {
     display: flex;
-    gap: var(--space-2);
+    gap: var(--old-space-2);
   }
 </style>

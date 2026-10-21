@@ -23,7 +23,7 @@
 <style>
   .work {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--old-space-4);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -32,7 +32,7 @@
   li {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-1) var(--space-4);
+    gap: var(--old-space-1) var(--old-space-4);
   }
 
   a {
@@ -63,8 +63,8 @@
   @media (hover: none) {
     a {
       justify-self: start;
-      margin-block: calc(-1 * var(--space-3));
-      padding-block: var(--space-3);
+      margin-block: calc(-1 * var(--old-space-3));
+      padding-block: var(--old-space-3);
     }
   }
 </style>

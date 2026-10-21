@@ -67,8 +67,8 @@
     display: grid;
     grid-template-columns: 4.5rem 1fr auto;
     align-items: center;
-    gap: var(--space-4);
-    padding-block: var(--space-3);
+    gap: var(--old-space-4);
+    padding-block: var(--old-space-3);
     border-bottom: 1px solid var(--colour-divider);
 
     @media (max-width: 40rem) {
@@ -113,7 +113,7 @@
 
   form {
     display: flex;
-    gap: var(--space-2);
+    gap: var(--old-space-2);
   }
 
   .wide {

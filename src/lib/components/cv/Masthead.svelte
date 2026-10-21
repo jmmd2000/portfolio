@@ -29,8 +29,8 @@
 <style>
   .masthead {
     display: grid;
-    gap: var(--space-5) var(--space-7);
-    padding-block: var(--space-7) 0;
+    gap: var(--old-space-5) var(--old-space-7);
+    padding-block: var(--old-space-7) 0;
 
     @media (min-width: 44rem) {
       grid-template-columns: minmax(0, 1fr) auto;
@@ -44,7 +44,7 @@
   }
 
   .role {
-    margin-top: var(--space-3);
+    margin-top: var(--old-space-3);
     color: var(--colour-text);
     font-size: var(--font-size-title);
     font-weight: 450;
@@ -57,7 +57,7 @@
     list-style: none;
 
     li + li {
-      margin-top: var(--space-1);
+      margin-top: var(--old-space-1);
     }
 
     a {
@@ -76,14 +76,14 @@
   @media (hover: none) {
     .contact a {
       display: inline-block;
-      margin-block: calc(-1 * var(--space-3));
-      padding-block: var(--space-3);
+      margin-block: calc(-1 * var(--old-space-3));
+      padding-block: var(--old-space-3);
     }
   }
 
   @media (max-width: 52rem) {
     .masthead {
-      padding-block-start: var(--space-6);
+      padding-block-start: var(--old-space-6);
     }
   }
 

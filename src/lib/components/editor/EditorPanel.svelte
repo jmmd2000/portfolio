@@ -42,8 +42,8 @@
   summary {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2);
+    gap: var(--old-space-1);
+    padding: var(--old-space-2);
     border-radius: var(--radius-medium);
     color: var(--colour-foreground);
     font-size: var(--font-size-label);
@@ -70,9 +70,9 @@
     z-index: 10;
     display: grid;
     align-content: start;
-    gap: var(--space-4);
+    gap: var(--old-space-4);
     width: min(24rem, 100%);
-    padding: var(--space-5);
+    padding: var(--old-space-5);
     overflow-y: auto;
     border-left: 1px solid var(--colour-divider);
     background: var(--colour-background);
@@ -92,7 +92,7 @@
   .close {
     display: grid;
     place-items: center;
-    padding: var(--space-1);
+    padding: var(--old-space-1);
     border: 0;
     border-radius: var(--radius-medium);
     background: transparent;
@@ -119,7 +119,7 @@
 
   @media (max-width: 22.5rem) {
     summary {
-      padding-inline: var(--space-1);
+      padding-inline: var(--old-space-1);
     }
   }
 </style>

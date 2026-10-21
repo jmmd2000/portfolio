@@ -46,23 +46,23 @@
 <style>
   section,
   .two-columns {
-    margin-top: var(--space-8);
+    margin-top: var(--old-space-8);
   }
 
   h2 {
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--old-space-5);
     break-after: avoid;
-    scroll-margin-top: var(--space-6);
+    scroll-margin-top: var(--old-space-6);
   }
 
   .jobs {
     display: grid;
-    gap: var(--space-7);
+    gap: var(--old-space-7);
   }
 
   .two-columns {
     display: grid;
-    gap: var(--space-8);
+    gap: var(--old-space-8);
     break-inside: avoid;
 
     section {
@@ -71,14 +71,14 @@
 
     @media (min-width: 44rem) {
       grid-template-columns: 1fr 1fr;
-      gap: var(--space-7);
+      gap: var(--old-space-7);
     }
   }
 
   @media (max-width: 52rem) {
     section,
     .two-columns {
-      margin-top: var(--space-7);
+      margin-top: var(--old-space-7);
     }
   }
 
@@ -86,21 +86,21 @@
   @media print {
     section,
     .two-columns {
-      margin-top: var(--space-5);
+      margin-top: var(--old-space-5);
     }
 
     h2 {
-      margin-bottom: var(--space-3);
+      margin-bottom: var(--old-space-3);
       font-size: var(--font-size-title);
     }
 
     .jobs {
-      gap: var(--space-4);
+      gap: var(--old-space-4);
     }
 
     .two-columns {
       grid-template-columns: 1fr 1fr;
-      gap: var(--space-5);
+      gap: var(--old-space-5);
     }
   }
 </style>
