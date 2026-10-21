@@ -10,7 +10,7 @@
 
 <PageHead title="Articles" description="Articles by James Doyle" />
 
-<PageHeader title="Articles" intro="Some things I've written" />
+<PageHeader title="Articles" lead="Some things I've written" />
 
 {#each data.articleYears as articleYear (articleYear.year)}
   <section class="year-group" aria-labelledby="year-{articleYear.year}">
