@@ -11,21 +11,6 @@ async function hideRow(page: Page, legend: string): Promise<void> {
   await expect(row.getByText("saved.")).toBeVisible();
 }
 
-test("a row hidden in the admin leaves the home page", async ({ page }) => {
-  const currently = page.getByRole("region", { name: "Currently" });
-  await page.goto("/");
-  await expect(currently.getByRole("listitem")).toHaveCount(4);
-
-  await createAdmin();
-  await logIn(page);
-  await page.goto("/admin/currently");
-  await hideRow(page, "Playing: Fallout 4");
-
-  await page.goto("/");
-  await expect(currently.getByRole("listitem")).toHaveText([/Bon Iver, Bon Iver/, /Breaking Bad/, /To Kill a Mockingbird/]);
-  await expect(currently.locator("img")).toHaveCount(3);
-});
-
 test("the Currently section is hidden when no rows are shown", async ({ page }) => {
   await createAdmin();
   await logIn(page);

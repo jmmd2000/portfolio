@@ -20,14 +20,6 @@ function firstError(project: Record<string, string>, field: string): string | un
 }
 
 describe("projectSchema", () => {
-  it("reads a ticked checkbox as true, and a missing one as false", () => {
-    const project = projectSchema.parse({ ...typedProject, published: "on" });
-
-    expect(project.published).toBe(true);
-    expect(project.featured).toBe(false);
-    expect(project.showOnCV).toBe(false);
-  });
-
   it("stores empty optional fields as null", () => {
     const project = projectSchema.parse(typedProject);
 

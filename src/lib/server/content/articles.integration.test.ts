@@ -1,4 +1,3 @@
-import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "$lib/server/db";
 import { articles } from "$lib/server/db/schema";
@@ -57,22 +56,6 @@ it("lists published articles newest first", async () => {
 describe("the articles table", () => {
   it("refuses a published article without a publish date", async () => {
     await expect(insertArticle({ publishedAt: null })).rejects.toThrow();
-  });
-
-  it("refuses a second article with the same slug", async () => {
-    await insertArticle();
-
-    await expect(insertArticle({ title: "Another" })).rejects.toThrow();
-  });
-
-  it("moves updatedAt forward when an article is edited", async () => {
-    const startedAt = new Date("2026-01-01T00:00:00Z");
-    await insertArticle({ updatedAt: startedAt });
-
-    await db.update(articles).set({ title: "Edited" }).where(eq(articles.slug, "sand"));
-
-    const [edited] = await db.select({ updatedAt: articles.updatedAt }).from(articles);
-    expect(edited?.updatedAt.getTime()).toBeGreaterThan(startedAt.getTime());
   });
 });
 

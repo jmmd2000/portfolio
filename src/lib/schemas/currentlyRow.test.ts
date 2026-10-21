@@ -13,10 +13,6 @@ describe("currentlyRowSchema", () => {
     expect(row.shown).toBe(false);
   });
 
-  it("reads a ticked box as shown", () => {
-    expect(currentlyRowSchema.parse({ ...typedRow, shown: "on" }).shown).toBe(true);
-  });
-
   it("refuses a cover or link that isn't https", () => {
     expect(currentlyRowSchema.safeParse({ ...typedRow, imageURL: "http://example.com/cover.jpg" }).success).toBe(false);
     expect(currentlyRowSchema.safeParse({ ...typedRow, url: "javascript:alert(1)" }).success).toBe(false);

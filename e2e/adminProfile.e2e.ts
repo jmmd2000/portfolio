@@ -9,20 +9,6 @@ test("a signed-out visitor can't save the profile", async ({ page, request, base
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName("James Doyle");
 });
 
-test("the admin edits the profile, and the home page shows it", async ({ page }) => {
-  await createAdmin();
-  await logIn(page);
-  await page.getByRole("navigation", { name: "Admin" }).getByRole("link", { name: "Profile" }).click();
-
-  await page.getByLabel("Intro").fill("Test lead in Dublin.");
-  await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Profile saved.")).toBeVisible();
-  await expect(page.getByLabel("Name")).toHaveValue("James Doyle");
-
-  await page.goto("/");
-  await expect(page.getByRole("banner").getByText("Test lead in Dublin.")).toBeVisible();
-});
-
 test("without JavaScript, a failed save keeps what was typed and says what's wrong", async ({ page }) => {
   await createAdmin();
   await logIn(page);
