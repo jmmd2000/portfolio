@@ -14,32 +14,38 @@
 
 <style>
   .bullets {
-    max-width: 64ch;
-    margin: var(--old-space-4) 0 0;
-    padding-inline-start: 1.1rem;
-    list-style: disc;
+    display: grid;
+    gap: var(--space-1);
+    max-width: 62ch;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    list-style: none;
 
     li {
-      padding-inline-start: var(--old-space-1);
-    }
+      position: relative;
+      padding-left: 1.25em;
+      line-height: 1.55;
 
-    li + li {
-      margin-top: var(--old-space-2);
-    }
-
-    li::marker {
-      color: var(--colour-text-muted);
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0.6em;
+        left: 0;
+        width: 0.45em;
+        height: 0.45em;
+        background: var(--red);
+      }
     }
   }
 
   @media print {
     .bullets {
+      gap: 0.25rem;
       max-width: none;
-      margin-top: var(--old-space-2);
-      line-height: 1.45;
+      margin-top: var(--space-1);
 
-      li + li {
-        margin-top: var(--old-space-1);
+      li {
+        line-height: 1.4;
       }
     }
   }

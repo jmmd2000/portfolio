@@ -52,14 +52,6 @@
     border-bottom: var(--rule-section);
   }
 
-  .section-title {
-    margin-bottom: var(--space-3);
-    color: var(--red);
-    font-size: var(--type-section);
-    font-weight: 900;
-    line-height: 0.85;
-  }
-
   .rows {
     margin: 0;
     padding: 0;

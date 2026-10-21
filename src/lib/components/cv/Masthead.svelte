@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fitText } from "$lib/attachments/fitText";
   import { linkText } from "$lib/components/contact/linkText";
   import type { Profile } from "$lib/server/content/profile";
   import type { Social } from "$lib/server/content/socials";
@@ -10,63 +11,67 @@
   }
 
   let { profile, socials }: Props = $props();
+
+  const words = $derived(profile.name.split(" ").filter(word => word !== ""));
 </script>
 
 <header class="masthead">
-  <div>
-    <h1>{profile.name}</h1>
+  <!-- The spaces between the parts keep the name readable when copied or read from a PDF. The layout ignores them -->
+  <h1 class="fitted-line" {@attach fitText(10)}>
+    {#each words as word, index (index)}{index > 0 ? " " : ""}<span class="part">{word}</span>{/each}
+  </h1>
+  <div class="row">
     <p class="role">{profile.role}</p>
+    <ul class="contact">
+      <li>{profile.location}</li>
+      {#each socials as social (social.id)}
+        <li><a href={social.url} rel="external">{linkText(social.url)}</a></li>
+      {/each}
+      <li class="site">{linkText(siteURL)}</li>
+    </ul>
   </div>
-  <ul class="contact">
-    <li class="location">{profile.location}</li>
-    {#each socials as social (social.id)}
-      <li><a href={social.url} rel="external">{linkText(social.url)}</a></li>
-    {/each}
-    <li class="site">{linkText(siteURL)}</li>
-  </ul>
 </header>
 
 <style>
   .masthead {
-    display: grid;
-    gap: var(--old-space-5) var(--old-space-7);
-    padding-block: var(--old-space-7) 0;
+    padding: var(--space-3) var(--page-padding) var(--space-4);
+    border-bottom: var(--rule-section);
+  }
 
-    @media (min-width: 44rem) {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: end;
-    }
+  h1 {
+    margin-bottom: var(--space-3);
+    /* Close to the fitted size, so the name barely moves when fitText runs */
+    font-size: min(10rem, 26vw);
+  }
 
-    h1 {
-      font-size: var(--font-size-page-title);
-      line-height: 1.05;
-    }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-3);
   }
 
   .role {
-    margin-top: var(--old-space-3);
-    color: var(--colour-text);
-    font-size: var(--font-size-title);
-    font-weight: 450;
+    font-size: var(--type-label);
+    font-weight: 500;
+    line-height: 1.3;
   }
 
   .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
     margin: 0;
     padding: 0;
-    font-size: var(--font-size-label);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
     list-style: none;
 
-    li + li {
-      margin-top: var(--old-space-1);
-    }
-
     a {
-      font-weight: 500;
+      color: var(--ink);
     }
-  }
-
-  .location {
-    color: var(--colour-text-muted);
   }
 
   .site {
@@ -76,20 +81,18 @@
   @media (hover: none) {
     .contact a {
       display: inline-block;
-      margin-block: calc(-1 * var(--old-space-3));
-      padding-block: var(--old-space-3);
-    }
-  }
-
-  @media (max-width: 52rem) {
-    .masthead {
-      padding-block-start: var(--old-space-6);
+      padding-block: var(--space-1);
     }
   }
 
   @media print {
     .masthead {
-      padding: 0;
+      padding: 0 0 var(--space-2);
+      border-bottom-width: 2px;
+    }
+
+    h1 {
+      margin-bottom: var(--space-1);
     }
 
     .contact a {

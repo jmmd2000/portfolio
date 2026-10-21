@@ -21,36 +21,59 @@
 
 <style>
   .skills {
-    display: grid;
-    gap: var(--old-space-3);
     margin: 0;
 
     div {
       display: grid;
-      grid-template-columns: 10.5rem minmax(0, 1fr);
-      gap: var(--old-space-4);
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+      gap: var(--space-1) var(--space-4);
+      padding-block: var(--space-2);
+      break-inside: avoid;
+    }
+
+    div + div {
+      border-top: 1px solid var(--line);
     }
 
     dt {
-      color: var(--colour-text-muted);
+      font-family: var(--font-display);
+      font-size: var(--type-label);
+      font-weight: 800;
+      text-transform: uppercase;
     }
 
     dd {
+      align-self: center;
       margin: 0;
-      color: var(--colour-foreground);
     }
   }
 
   .note {
-    margin-top: var(--old-space-4);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    margin-top: var(--space-2);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 
-  @media (max-width: 36rem) {
+  @media (max-width: 47.5rem) {
     .skills div {
       grid-template-columns: minmax(0, 1fr);
-      gap: 0;
+    }
+  }
+
+  @media print {
+    .skills {
+      break-inside: avoid;
+    }
+
+    .skills div {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      gap: var(--space-2);
+      padding-block: 0.25rem;
+    }
+
+    .note {
+      margin-top: var(--space-1);
     }
   }
 </style>

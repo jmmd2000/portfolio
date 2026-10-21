@@ -16,91 +16,55 @@
 
 <Masthead profile={data.profile} socials={data.socials} />
 
-<section aria-labelledby="experience-heading">
-  <h2 id="experience-heading">Experience</h2>
-  <div class="jobs">
+<section class="cv-section" aria-labelledby="experience-heading">
+  <h2 class="section-title" id="experience-heading">Experience</h2>
+  <div class="entries">
     {#each data.jobs as job (job.id)}
       <JobEntry {job} />
     {/each}
   </div>
 </section>
 
-<div class="two-columns">
-  <section aria-labelledby="skills-heading">
-    <h2 id="skills-heading">Skills</h2>
-    <SkillList skillCategories={data.skillCategories} />
-  </section>
-  <section id="education" aria-labelledby="education-heading">
-    <h2 id="education-heading">Education</h2>
-    <QualificationList qualifications={data.qualifications} />
-  </section>
-</div>
+<section class="cv-section" aria-labelledby="skills-heading">
+  <h2 class="section-title" id="skills-heading">Skills</h2>
+  <SkillList skillCategories={data.skillCategories} />
+</section>
+
+<section class="cv-section" id="education" aria-labelledby="education-heading">
+  <h2 class="section-title" id="education-heading">Education</h2>
+  <QualificationList qualifications={data.qualifications} />
+</section>
 
 {#if data.projects.length > 0}
-  <section aria-labelledby="projects-heading">
-    <h2 id="projects-heading">Projects</h2>
+  <section class="cv-section" aria-labelledby="projects-heading">
+    <h2 class="section-title" id="projects-heading">Projects</h2>
     <ProjectList projects={data.projects} />
   </section>
 {/if}
 
 <style>
-  section,
-  .two-columns {
-    margin-top: var(--old-space-8);
+  .cv-section {
+    padding: var(--space-3) var(--page-padding) var(--space-5);
+    border-bottom: var(--rule-section);
+    scroll-margin-top: var(--space-3);
   }
 
   h2 {
-    margin-bottom: var(--old-space-5);
     break-after: avoid;
-    scroll-margin-top: var(--old-space-6);
   }
 
-  .jobs {
-    display: grid;
-    gap: var(--old-space-7);
+  .entries > :global(* + *) {
+    border-top: var(--rule-row);
   }
 
-  .two-columns {
-    display: grid;
-    gap: var(--old-space-8);
-    break-inside: avoid;
-
-    section {
-      margin-top: 0;
-    }
-
-    @media (min-width: 44rem) {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--old-space-7);
-    }
-  }
-
-  @media (max-width: 52rem) {
-    section,
-    .two-columns {
-      margin-top: var(--old-space-7);
-    }
-  }
-
-  /* Print uses tighter spacing, so the CV takes fewer pages */
   @media print {
-    section,
-    .two-columns {
-      margin-top: var(--old-space-5);
+    .cv-section {
+      padding: var(--space-2) 0;
+      border-bottom-width: 2px;
     }
 
-    h2 {
-      margin-bottom: var(--old-space-3);
-      font-size: var(--font-size-title);
-    }
-
-    .jobs {
-      gap: var(--old-space-4);
-    }
-
-    .two-columns {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--old-space-5);
+    .entries > :global(* + *) {
+      border-top-width: 1px;
     }
   }
 </style>

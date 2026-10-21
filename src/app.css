@@ -205,6 +205,14 @@ a {
   text-transform: uppercase;
 }
 
+.section-title {
+  margin-bottom: var(--space-3);
+  color: var(--red);
+  font-size: var(--type-section);
+  font-weight: 900;
+  line-height: 0.85;
+}
+
 /* The fitText attachment sets the font size. This one shows until it runs. */
 .fitted-line {
   display: flex;
@@ -264,5 +272,16 @@ a {
 
   body {
     background: none;
+  }
+
+  /* fitText sets an inline size for the screen's width, which is too wide for the page, so print sets its own */
+  .fitted-line,
+  .fitted-line > .part {
+    font-size: 3.5rem !important;
+  }
+
+  .section-title {
+    margin-bottom: var(--space-1);
+    font-size: 2rem;
   }
 }
