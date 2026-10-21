@@ -57,6 +57,13 @@
       "when": 1791890815378,
       "tag": "0007_flat_thunderbird",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792604481449,
+      "tag": "0008_empty_leader",
+      "breakpoints": true
     }
   ]
 }

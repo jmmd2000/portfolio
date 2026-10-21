@@ -4,36 +4,16 @@
   import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
   import ArticleRow from "$lib/components/home/ArticleRow.svelte";
   import CurrentlyCards from "$lib/components/home/CurrentlyCards.svelte";
-  import WorkList from "$lib/components/home/WorkList.svelte";
   import ProjectRow from "$lib/components/projects/ProjectRow.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
-
-  // A blank line in the bio starts a new paragraph
-  const bioParagraphs = $derived(data.profile.bio.split(/\n\s*\n/).filter(paragraph => paragraph.trim() !== ""));
 
   const allArticlesText = $derived(data.articleCount === 1 ? "1 article" : `All ${data.articleCount} articles`);
 </script>
 
 <PageHead description="James Doyle, a software engineer from Dublin." />
 <PersonStructuredData profile={data.profile} socials={data.socials} />
-
-<div class="two-columns">
-  <section aria-labelledby="about-heading">
-    <h2 id="about-heading">About</h2>
-    <div class="bio">
-      {#each bioParagraphs as paragraph, index (index)}
-        <p>{paragraph}</p>
-      {/each}
-    </div>
-  </section>
-  <section aria-labelledby="work-heading">
-    <h2 id="work-heading">Work</h2>
-    <WorkList jobs={data.jobs} />
-    <p class="after-list"><a href={resolve("/cv")}>Full CV</a></p>
-  </section>
-</div>
 
 {#if data.featuredProjects.length > 0}
   <section class="home-section" aria-labelledby="projects-heading">
@@ -90,44 +70,5 @@
     display: inline-block;
     margin-top: var(--space-3);
     padding-block: var(--space-1);
-  }
-
-  h2 {
-    margin-bottom: var(--old-space-5);
-  }
-
-  .two-columns {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: var(--old-space-7);
-    padding-block: var(--old-space-7);
-  }
-
-  .bio {
-    display: grid;
-    gap: var(--old-space-4);
-    max-width: 60ch;
-  }
-
-  .after-list {
-    margin-top: var(--old-space-5);
-    font-size: var(--font-size-label);
-
-    a {
-      font-weight: 500;
-    }
-  }
-
-  .currently-section {
-    padding: var(--space-3) var(--page-gutter);
-    border-bottom: var(--rule-section);
-  }
-
-  @media (max-width: 52rem) {
-    .two-columns {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--old-space-6);
-      padding-block: var(--old-space-6);
-    }
   }
 </style>

@@ -8,7 +8,6 @@ export const profile = pgTable(
     name: text().notNull(),
     role: text().notNull(),
     intro: text().notNull(),
-    bio: text().notNull(),
     location: text().notNull(),
   },
   table => [check("profile_singleton", sql`${table.id} = 1`)]
