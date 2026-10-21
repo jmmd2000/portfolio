@@ -59,19 +59,20 @@ test("an unpublished article's old address only redirects for the signed-in admi
   expect(response.headers()["cache-control"]).toBeUndefined();
 });
 
-test("the home page lists the three newest published articles", async ({ page }) => {
-  const articlesSection = page.getByRole("region", { name: "Articles" });
+test("the home page lists the five newest published articles and links to all of them", async ({ page }) => {
+  const writing = page.getByRole("region", { name: "Writing" });
   await page.goto("/");
-  await expect(articlesSection).toHaveCount(0);
+  await expect(writing).toHaveCount(0);
 
-  await insertArticle({ slug: "oldest", title: "Oldest", publishedAt: new Date("2026-01-01T09:00:00Z") });
-  await insertArticle({ slug: "older", title: "Older", publishedAt: new Date("2026-02-01T09:00:00Z") });
-  await insertArticle({ slug: "newer", title: "Newer", publishedAt: new Date("2026-03-01T09:00:00Z") });
-  await insertArticle({ slug: "newest", title: "Newest", publishedAt: new Date("2026-04-01T09:00:00Z") });
+  const months = ["01", "02", "03", "04", "05", "06"];
+  for (const month of months) {
+    await insertArticle({ slug: `article-${month}`, title: `Article ${month}`, publishedAt: new Date(`2026-${month}-01T09:00:00Z`) });
+  }
   await insertArticle({ slug: "draft", title: "Draft", published: false, publishedAt: null });
   await page.reload();
 
-  await expect(articlesSection.getByRole("listitem")).toHaveText([/Newest/, /Newer/, /Older/]);
+  await expect(writing.getByRole("listitem")).toHaveText([/Article 06/, /Article 05/, /Article 04/, /Article 03/, /Article 02/]);
+  await expect(writing.getByRole("link", { name: "All 6 articles" })).toBeVisible();
 });
 
 test("a project links to its published write-up", async ({ page }) => {

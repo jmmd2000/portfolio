@@ -4,6 +4,6 @@ import { getSocials } from "$lib/server/content/socials";
 import type { LayoutServerLoad } from "./$types";
 
 export const load: LayoutServerLoad = async () => {
-  const [profile, socials, publishedArticleCount] = await Promise.all([getProfile(), getSocials(), countPublishedArticles()]);
-  return { profile, socials, hasArticles: publishedArticleCount > 0 };
+  const [profile, socials, articleCount] = await Promise.all([getProfile(), getSocials(), countPublishedArticles()]);
+  return { profile, socials, articleCount, hasArticles: articleCount > 0 };
 };

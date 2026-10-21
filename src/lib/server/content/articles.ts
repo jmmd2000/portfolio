@@ -3,7 +3,7 @@ import { db } from "$lib/server/db";
 import { articleSlugRedirects, articles, projects } from "$lib/server/db/schema";
 import type { ArticleInput, NewArticleInput } from "$lib/schemas/article";
 
-const homeArticleCount = 3;
+const homeArticleCount = 5;
 
 export type Article = typeof articles.$inferSelect;
 
@@ -66,7 +66,7 @@ export async function getPublishedArticles(): Promise<PublishedArticle[]> {
   return findPublishedArticles();
 }
 
-/** The three newest published articles, for the home page */
+/** The five newest published articles, for the home page */
 export async function getHomeArticles(): Promise<PublishedArticle[]> {
   return findPublishedArticles(homeArticleCount);
 }
