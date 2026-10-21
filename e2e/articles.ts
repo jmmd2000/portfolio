@@ -1,3 +1,4 @@
+import type { Page } from "@playwright/test";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -36,4 +37,12 @@ export async function insertSlugRedirect(oldSlug: string, currentSlug: string): 
   } finally {
     await client.end();
   }
+}
+
+/** Opens an article in the editor from the admin list, then waits for the page's JavaScript, so typing reaches its handlers */
+export async function openEditor(page: Page, title = "How the sand falls"): Promise<void> {
+  await page.goto("/admin/articles");
+  await page.getByRole("link", { name: title }).click();
+  await page.waitForURL(/\/admin\/articles\/\d+$/);
+  await page.waitForLoadState("networkidle");
 }

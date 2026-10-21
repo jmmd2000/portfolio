@@ -30,7 +30,7 @@
             {/if}
           </span>
           <code>{entry.syntax}</code>
-          <Button aria-label="Insert {entry.name.toLowerCase()}" onclick={() => oninsert(entry.markup)}>Insert</Button>
+          <Button small aria-label="Insert {entry.name.toLowerCase()}" onclick={() => oninsert(entry.markup)}>Insert</Button>
         </li>
       {/each}
     </ul>
@@ -41,15 +41,16 @@
 
 <style>
   .note {
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 
   h3 {
-    margin-bottom: var(--old-space-1);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--red-text);
+    font-size: var(--type-label);
+    font-weight: 900;
   }
 
   ul {
@@ -62,32 +63,28 @@
     display: grid;
     grid-template-columns: 7.5rem minmax(0, 1fr) auto;
     align-items: center;
-    gap: var(--old-space-3);
-    padding-block: var(--old-space-1);
+    gap: var(--space-1);
+    padding-block: 0.25rem;
   }
 
   .name {
-    color: var(--colour-foreground);
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    font-size: var(--type-small);
+    font-weight: 700;
   }
 
   kbd {
-    margin-inline-start: var(--old-space-1);
+    margin-inline-start: 0.25rem;
     padding: 0 0.3em;
-    border: 1px solid var(--colour-divider);
-    border-radius: var(--radius-small);
-    color: var(--colour-text-muted);
+    border: 1px solid var(--line);
+    color: var(--muted);
     font: inherit;
     font-size: 0.8125rem;
-    font-weight: 500;
   }
 
   code {
     overflow: hidden;
-    color: var(--colour-text);
     font-family: var(--font-code);
-    font-size: var(--font-size-code);
+    font-size: 0.875rem;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
