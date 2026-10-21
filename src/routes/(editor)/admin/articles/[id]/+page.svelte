@@ -12,7 +12,7 @@
   import EditorPanel from "$lib/components/editor/EditorPanel.svelte";
   import { LivePreview } from "$lib/components/editor/livePreview.svelte";
   import MarkdownReference from "$lib/components/editor/MarkdownReference.svelte";
-  import { applyMarkup, shortcutMarkup, type Markup } from "$lib/components/editor/markdownInsert";
+  import { applyMarkup, shortcutEntries, shortcutMarkup, type Markup } from "$lib/components/editor/markdownInsert";
   import { savedTimeLabel } from "$lib/components/editor/savedTime";
   import Button from "$lib/components/form/Button.svelte";
   import Field from "$lib/components/form/Field.svelte";
@@ -275,6 +275,11 @@
         </div>
       {/if}
       <div class="toolbar">
+        {#each shortcutEntries as entry (entry.name)}
+          <Button small aria-keyshortcuts="Control+{entry.shortcut} Meta+{entry.shortcut}" onclick={() => insertMarkup(entry.markup)}>
+            {entry.name} <kbd aria-hidden="true">{entry.shortcut}</kbd>
+          </Button>
+        {/each}
         <EditorPanel label="Insert">
           {#snippet icon()}<Plus size="1.125em" aria-hidden="true" />{/snippet}
           <MarkdownReference oninsert={insertMarkup} />
@@ -613,6 +618,7 @@
     padding: 0 0.3em;
     border: 1px solid var(--line);
     font: inherit;
+    font-weight: 600;
   }
 
   @media (hover: hover) {

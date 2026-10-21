@@ -79,10 +79,12 @@ export const markdownGroups: MarkdownGroup[] = [
   },
 ];
 
+/** The entries that have a Ctrl or Cmd shortcut, which the editor's toolbar shows as buttons */
+export const shortcutEntries: MarkdownEntry[] = markdownGroups.flatMap(group => group.entries).filter(entry => entry.shortcut !== undefined);
+
 /** The markup a Ctrl or Cmd shortcut applies, or undefined when the key has none */
 export function shortcutMarkup(key: string): Markup | undefined {
-  const entries = markdownGroups.flatMap(group => group.entries);
-  return entries.find(entry => entry.shortcut === key.toUpperCase())?.markup;
+  return shortcutEntries.find(entry => entry.shortcut === key.toUpperCase())?.markup;
 }
 
 function wrap({ text, start, end }: TextSelection, markup: WrapMarkup): TextSelection {
