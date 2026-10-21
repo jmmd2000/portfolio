@@ -195,6 +195,24 @@ a {
   white-space: nowrap;
 }
 
+/* The fitText attachment sets the font size. This one shows until it runs. */
+.fitted-line {
+  display: flex;
+  gap: 0.22em;
+  font-family: var(--font-display);
+  font-size: var(--type-section);
+  font-weight: 900;
+  line-height: 0.8;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  @media (max-width: 47.5rem) {
+    flex-direction: column;
+    gap: 0.06em;
+    line-height: 0.86;
+  }
+}
+
 ::selection {
   background: var(--red);
   color: var(--paper);
