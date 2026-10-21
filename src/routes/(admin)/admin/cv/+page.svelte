@@ -180,23 +180,29 @@
   .jump {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--old-space-4);
-    margin-top: calc(-1 * var(--old-space-3));
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    gap: var(--space-2);
+    font-weight: 700;
   }
 
   section {
     display: grid;
-    gap: var(--old-space-5);
+    gap: var(--space-2);
     width: 100%;
-    scroll-margin-top: var(--old-space-5);
+    scroll-margin-top: var(--space-3);
+  }
+
+  section + section {
+    margin-top: var(--space-3);
+  }
+
+  h2 {
+    font-size: var(--type-medium);
+    font-weight: 900;
   }
 
   .order {
-    margin-top: calc(-1 * var(--old-space-4));
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    color: var(--muted);
+    font-size: var(--type-small);
   }
 
   .items {

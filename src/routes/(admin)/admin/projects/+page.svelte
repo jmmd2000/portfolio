@@ -56,6 +56,7 @@
   .projects {
     display: grid;
     width: 100%;
+    max-width: 48rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -63,14 +64,19 @@
 
   li {
     display: grid;
-    grid-template-columns: 4.5rem 1fr auto;
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
     align-items: center;
-    gap: var(--old-space-4);
-    padding-block: var(--old-space-3);
-    border-bottom: 1px solid var(--colour-divider);
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    border-bottom: 1px solid var(--line);
+
+    > div {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
 
     @media (max-width: 40rem) {
-      grid-template-columns: 4.5rem 1fr;
+      grid-template-columns: 5rem minmax(0, 1fr);
 
       form {
         grid-column: 1 / -1;
@@ -79,44 +85,45 @@
   }
 
   img {
-    width: 4.5rem;
+    width: 100%;
     height: auto;
     aspect-ratio: 16 / 10;
-    border-radius: var(--radius-small);
     object-fit: cover;
     object-position: top left;
-    box-shadow: 0 0 0 1px var(--colour-divider);
+    outline: 1px solid var(--ink);
     filter: var(--filter-picture);
   }
 
   .name {
-    font-size: var(--font-size-title);
-    font-weight: 600;
+    font-size: 1.125rem;
+    font-weight: 700;
     text-decoration-color: transparent;
     transition: text-decoration-color var(--duration-quick) var(--ease-out);
 
     &:focus-visible {
-      text-decoration-color: var(--colour-accent);
+      text-decoration-color: var(--red);
     }
   }
 
   .status {
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 
   .draft {
-    font-style: italic;
-  }
-
-  form {
-    display: flex;
-    gap: var(--old-space-2);
+    color: var(--red-text);
+    font-weight: 700;
   }
 
   @media (hover: hover) {
     .name:hover {
-      text-decoration-color: var(--colour-accent);
+      text-decoration-color: var(--red);
     }
+  }
+
+  form {
+    display: flex;
+    gap: var(--space-1);
   }
 </style>

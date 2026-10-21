@@ -121,7 +121,7 @@
 <style>
   form {
     display: grid;
-    gap: var(--old-space-5);
+    gap: var(--space-4);
     width: 100%;
   }
 
@@ -132,42 +132,47 @@
 
   fieldset {
     display: grid;
-    gap: var(--old-space-3);
+    gap: var(--space-2);
+    min-width: 0;
     margin: 0;
     padding: 0;
     border: none;
   }
 
   legend {
-    margin-bottom: var(--old-space-3);
+    margin-bottom: var(--space-2);
     padding: 0;
-    color: var(--colour-foreground);
-    font-size: var(--font-size-title);
-    font-weight: 600;
+    font-family: var(--font-display);
+    font-size: var(--type-label);
+    font-weight: 800;
+    text-transform: uppercase;
   }
 
   .checks {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--old-space-2) var(--old-space-5);
+    gap: var(--space-1) var(--space-3);
   }
 
   .preview {
     display: grid;
-    gap: var(--old-space-2);
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    border-block: var(--rule-row);
 
     h2 {
-      color: var(--colour-text-muted);
-      font-size: var(--font-size-label);
-      font-weight: 500;
-      font-stretch: 100%;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: var(--type-small);
+      font-weight: 700;
+      text-transform: none;
     }
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: var(--old-space-2);
+    align-items: start;
+    gap: var(--space-1) var(--space-2);
   }
 </style>

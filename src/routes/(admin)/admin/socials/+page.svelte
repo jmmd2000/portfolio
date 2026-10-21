@@ -43,10 +43,17 @@
 <style>
   .socials {
     display: grid;
-    gap: var(--old-space-4);
     width: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
+
+    li {
+      padding-block: var(--space-2);
+    }
+
+    li + li {
+      border-top: 1px solid var(--line);
+    }
   }
 </style>

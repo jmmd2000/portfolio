@@ -65,37 +65,39 @@
   }
 
   li {
-    padding-block: var(--old-space-3);
-    border-bottom: 1px solid var(--colour-divider);
+    padding-block: var(--space-2);
+    border-bottom: 1px solid var(--line);
   }
 
   .name {
-    font-size: var(--font-size-title);
-    font-weight: 600;
+    font-size: 1.125rem;
+    font-weight: 700;
     text-decoration-color: transparent;
     transition: text-decoration-color var(--duration-quick) var(--ease-out);
 
     &:focus-visible {
-      text-decoration-color: var(--colour-accent);
+      text-decoration-color: var(--red);
     }
   }
 
   .status {
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 
   .draft {
-    font-style: italic;
-  }
-
-  .empty {
-    color: var(--colour-text-muted);
+    color: var(--red-text);
+    font-weight: 700;
   }
 
   @media (hover: hover) {
     .name:hover {
-      text-decoration-color: var(--colour-accent);
+      text-decoration-color: var(--red);
     }
+  }
+
+  .empty {
+    color: var(--muted);
   }
 </style>

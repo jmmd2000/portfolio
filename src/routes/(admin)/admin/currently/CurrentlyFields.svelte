@@ -24,8 +24,8 @@
 
 <style>
   .hint {
-    margin-top: var(--old-space-1);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    margin-top: var(--space-1);
+    color: var(--muted);
+    font-size: 0.875rem;
   }
 </style>
