@@ -76,7 +76,7 @@ test("deleting a project returns to the list without it", async ({ page }) => {
   await page.goto("/admin/projects");
   await page.getByRole("link", { name: "Issues" }).click();
 
-  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await page.locator("summary", { hasText: "Delete" }).click();
   await page.getByRole("button", { name: "Delete Issues" }).click();
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Projects");

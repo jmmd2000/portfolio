@@ -69,57 +69,51 @@
 <style>
   .field {
     display: grid;
-    gap: var(--old-space-1);
-    transition: translate var(--duration-quick) var(--ease-out);
-
-    &:focus-within {
-      translate: 0 -2px;
-    }
+    align-content: start;
+    gap: 0.35rem;
   }
 
   label {
-    color: var(--colour-foreground);
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    font-size: var(--type-small);
+    font-weight: 700;
   }
 
   input,
   textarea {
     width: 100%;
-    padding: var(--old-space-2) var(--old-space-3);
-    border: 1px solid color-mix(in oklch, var(--colour-text-muted) 55%, transparent);
-    border-radius: var(--radius-medium);
-    background: var(--colour-background);
-    color: var(--colour-foreground);
+    min-height: 2.75rem;
+    padding: 0.625rem 0.75rem;
+    border: var(--rule-row);
+    border-radius: 0;
+    background: var(--paper);
+    color: var(--ink);
     font: inherit;
-    caret-color: var(--colour-accent);
-    transition: border-color var(--duration-quick) var(--ease-out);
-
-    &:hover {
-      border-color: var(--colour-text-muted);
-    }
+    font-size: 1rem;
+    caret-color: var(--red);
 
     &:focus-visible {
-      border-color: var(--colour-accent);
+      outline-offset: 0;
     }
   }
 
   textarea {
+    min-height: 7rem;
+    line-height: 1.5;
     resize: vertical;
   }
 
   .invalid :is(input, textarea) {
-    border-color: var(--colour-red);
+    border-color: var(--red);
   }
 
   .hint {
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    color: var(--muted);
+    font-size: 0.875rem;
   }
 
   .error {
-    color: var(--colour-red);
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    color: var(--red-text);
+    font-size: 0.875rem;
+    font-weight: 700;
   }
 </style>

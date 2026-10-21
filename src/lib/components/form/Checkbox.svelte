@@ -17,17 +17,16 @@
   label {
     display: inline-flex;
     align-items: center;
-    gap: var(--old-space-2);
-    color: var(--colour-foreground);
-    font-weight: 500;
+    gap: var(--space-1);
+    font-weight: 600;
     cursor: pointer;
   }
 
   input {
-    width: 1.125rem;
-    height: 1.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
     margin: 0;
-    accent-color: var(--colour-accent);
+    accent-color: var(--ink);
     cursor: pointer;
   }
 </style>

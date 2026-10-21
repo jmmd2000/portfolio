@@ -15,9 +15,8 @@
   let summary = $state<HTMLElement>();
 
   function handleKeydown(event: KeyboardEvent): void {
-    // Escape in a dialog, such as the delete confirm, closes only the dialog
-    const inDialog = event.target instanceof Element && event.target.closest("dialog") !== null;
-    if (event.key !== "Escape" || !open || inDialog) return;
+    // Escape that something inside the panel already handled, like the delete question, leaves the panel open
+    if (event.key !== "Escape" || !open || event.defaultPrevented) return;
 
     open = false;
     summary?.focus();

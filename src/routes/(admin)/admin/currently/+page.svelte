@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import Fold from "$lib/components/admin/Fold.svelte";
   import ItemButtons from "$lib/components/admin/ItemButtons.svelte";
@@ -48,7 +47,7 @@
     {/each}
   </ol>
 
-  <Fold name="Add a row" open={addResult !== undefined}>
+  <Fold name="Add a row" add open={addResult !== undefined}>
     <ItemForm action="?/add" legend="Add a row" resetOnSuccess message={addResult?.message} hideLegend>
       <!-- A new row is shown unless its box is unticked -->
       <CurrentlyFields values={addResult?.values ?? { shown: "on" }} errors={addResult?.errors} />
@@ -58,8 +57,6 @@
       {/snippet}
     </ItemForm>
   </Fold>
-
-  <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>

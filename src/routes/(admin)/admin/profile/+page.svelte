@@ -1,6 +1,5 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import Field from "$lib/components/form/Field.svelte";
@@ -29,19 +28,17 @@
       <Button type="submit" variant="primary">Save</Button>
     </div>
   </form>
-
-  <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>
   form {
     display: grid;
-    gap: var(--old-space-4);
+    gap: var(--space-2);
     width: 100%;
     max-width: 40rem;
   }
 
   .actions {
-    margin-top: var(--old-space-1);
+    margin-top: var(--space-1);
   }
 </style>

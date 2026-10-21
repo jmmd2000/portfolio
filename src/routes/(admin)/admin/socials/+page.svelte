@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import ItemForm from "$lib/components/admin/ItemForm.svelte";
@@ -31,7 +30,7 @@
     {/each}
   </ol>
 
-  <ItemForm action="?/add" legend="Add a link" resetOnSuccess message={form?.id === "new" ? form.message : undefined}>
+  <ItemForm action="?/add" legend="Add a link" add resetOnSuccess message={form?.id === "new" ? form.message : undefined}>
     <Field label="Name" name="name" value={form?.id === "new" ? form.values?.name : ""} error={form?.id === "new" ? form.errors?.name?.[0] : undefined} />
     <Field label="Address" name="url" placeholder="https:// or mailto:" value={form?.id === "new" ? form.values?.url : ""} error={form?.id === "new" ? form.errors?.url?.[0] : undefined} />
 
@@ -39,17 +38,22 @@
       <Button type="submit" variant="primary">Add</Button>
     {/snippet}
   </ItemForm>
-
-  <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>
   .socials {
     display: grid;
-    gap: var(--old-space-4);
     width: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
+
+    li {
+      padding-block: var(--space-2);
+    }
+
+    li + li {
+      border-top: 1px solid var(--line);
+    }
   }
 </style>

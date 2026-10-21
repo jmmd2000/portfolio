@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import Fold from "$lib/components/admin/Fold.svelte";
   import ItemButtons from "$lib/components/admin/ItemButtons.svelte";
@@ -86,7 +85,7 @@
       {/each}
     </ol>
 
-    <Fold name="Add a job" open={addJobResult !== undefined}>
+    <Fold name="Add a job" add open={addJobResult !== undefined}>
       <ItemForm action="?/addJob" legend="Add a job" resetOnSuccess message={addJobResult?.message} hideLegend>
         <JobFields values={addJobResult?.values ?? {}} errors={addJobResult?.errors} />
 
@@ -129,7 +128,7 @@
       {/each}
     </ol>
 
-    <Fold name="Add a skill category" open={addSkillResult !== undefined}>
+    <Fold name="Add a skill category" add open={addSkillResult !== undefined}>
       <ItemForm action="?/addSkillCategory" legend="Add a skill category" resetOnSuccess message={addSkillResult?.message} hideLegend>
         <SkillCategoryFields values={addSkillResult?.values ?? {}} errors={addSkillResult?.errors} />
 
@@ -165,7 +164,7 @@
       {/each}
     </ol>
 
-    <Fold name="Add a qualification" open={addQualificationResult !== undefined}>
+    <Fold name="Add a qualification" add open={addQualificationResult !== undefined}>
       <ItemForm action="?/addQualification" legend="Add a qualification" resetOnSuccess message={addQualificationResult?.message} hideLegend>
         <QualificationFields values={addQualificationResult?.values ?? {}} errors={addQualificationResult?.errors} />
 
@@ -175,31 +174,35 @@
       </ItemForm>
     </Fold>
   </section>
-
-  <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>
   .jump {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--old-space-4);
-    margin-top: calc(-1 * var(--old-space-3));
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    gap: var(--space-2);
+    font-weight: 700;
   }
 
   section {
     display: grid;
-    gap: var(--old-space-5);
+    gap: var(--space-2);
     width: 100%;
-    scroll-margin-top: var(--old-space-5);
+    scroll-margin-top: var(--space-3);
+  }
+
+  section + section {
+    margin-top: var(--space-3);
+  }
+
+  h2 {
+    font-size: var(--type-medium);
+    font-weight: 900;
   }
 
   .order {
-    margin-top: calc(-1 * var(--old-space-4));
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    color: var(--muted);
+    font-size: var(--type-small);
   }
 
   .items {

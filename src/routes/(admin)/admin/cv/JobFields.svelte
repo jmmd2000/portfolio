@@ -24,9 +24,3 @@
 <div class="wide">
   <Field label="Tags" name="tags" multiline hint="One per line" value={values.tags ?? ""} error={errors?.tags?.[0]} />
 </div>
-
-<style>
-  .wide {
-    grid-column: 1 / -1;
-  }
-</style>

@@ -123,16 +123,35 @@ test("deleting an article asks first, then removes it from the admin and the sit
   await page.getByRole("link", { name: "How the sand falls" }).click();
 
   await page.locator("summary", { hasText: "Details" }).click();
-  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await page.locator("summary", { hasText: "Delete" }).click();
   await page.getByRole("button", { name: "Keep" }).click();
+  await expect(page.getByRole("button", { name: "Delete How the sand falls" })).toBeHidden();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("How the sand falls");
 
-  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await page.locator("summary", { hasText: "Delete" }).click();
   await page.getByRole("button", { name: "Delete How the sand falls" }).click();
 
   await expect(page.getByText("No articles yet.")).toBeVisible();
   const response = await page.goto("/articles/how-the-sand-falls");
   expect(response?.status()).toBe(404);
+});
+
+test("Escape closes the delete question first, then the details panel", async ({ page }) => {
+  await insertArticle({ slug: "how-the-sand-falls" });
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/articles");
+  await page.getByRole("link", { name: "How the sand falls" }).click();
+
+  await page.locator("summary", { hasText: "Details" }).click();
+  await page.locator("summary", { hasText: "Delete" }).click();
+  await page.keyboard.press("Escape");
+
+  await expect(page.getByRole("button", { name: "Delete How the sand falls" })).toBeHidden();
+  await expect(page.getByLabel("Slug")).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(page.getByLabel("Slug")).toBeHidden();
 });
 
 for (const javaScript of [true, false]) {

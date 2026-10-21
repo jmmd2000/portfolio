@@ -41,7 +41,7 @@
     <p class="empty">No articles yet.</p>
   {/if}
 
-  <ItemForm action="?/add" legend="Add an article">
+  <ItemForm action="?/add" legend="Add an article" add>
     <Field label="Title" name="title" value={title} oninput={handleTitleInput} error={form?.errors?.title?.[0]} />
     <Field label="Slug" name="slug" hint="The end of its address, like my-first-article" value={slug} oninput={handleSlugInput} error={form?.errors?.slug?.[0]} />
     <div class="wide">
@@ -52,8 +52,6 @@
       <Button type="submit" variant="primary">Add</Button>
     {/snippet}
   </ItemForm>
-
-  <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>
@@ -67,41 +65,39 @@
   }
 
   li {
-    padding-block: var(--old-space-3);
-    border-bottom: 1px solid var(--colour-divider);
+    padding-block: var(--space-2);
+    border-bottom: 1px solid var(--line);
   }
 
   .name {
-    font-size: var(--font-size-title);
-    font-weight: 600;
+    font-size: 1.125rem;
+    font-weight: 700;
     text-decoration-color: transparent;
     transition: text-decoration-color var(--duration-quick) var(--ease-out);
 
     &:focus-visible {
-      text-decoration-color: var(--colour-accent);
+      text-decoration-color: var(--red);
     }
   }
 
   .status {
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 
   .draft {
-    font-style: italic;
-  }
-
-  .empty {
-    color: var(--colour-text-muted);
-  }
-
-  .wide {
-    grid-column: 1 / -1;
+    color: var(--red-text);
+    font-weight: 700;
   }
 
   @media (hover: hover) {
     .name:hover {
-      text-decoration-color: var(--colour-accent);
+      text-decoration-color: var(--red);
     }
+  }
+
+  .empty {
+    color: var(--muted);
   }
 </style>

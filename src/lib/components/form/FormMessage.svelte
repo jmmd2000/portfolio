@@ -13,19 +13,19 @@
 
 <style>
   p {
-    padding: var(--old-space-2) var(--old-space-3);
-    border-radius: var(--radius-medium);
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    font-weight: 700;
   }
 
-  .success {
-    background: var(--colour-tint);
-    color: var(--colour-foreground);
+  .success::before {
+    content: "";
+    display: inline-block;
+    width: 0.6em;
+    height: 0.6em;
+    margin-right: 0.4em;
+    background: var(--ink);
   }
 
   .error {
-    background: color-mix(in oklch, var(--colour-red) 12%, var(--colour-background));
-    color: var(--colour-red);
+    color: var(--red-text);
   }
 </style>

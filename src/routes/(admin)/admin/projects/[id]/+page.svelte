@@ -1,11 +1,11 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
+  import FieldGrid from "$lib/components/form/FieldGrid.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
   import ProjectDetail, { type ProjectDetailFields } from "$lib/components/projects/ProjectDetail.svelte";
@@ -71,7 +71,7 @@
   <form method="POST" action="?/save" use:enhance={keepValues} oninput={updatePreview}>
     <fieldset>
       <legend>On the site</legend>
-      <div class="fields">
+      <FieldGrid>
         <Field label="Name" name="title" value={values.title} error={form?.errors?.title?.[0]} />
         <Field label="One-liner" name="description" value={values.description} error={form?.errors?.description?.[0]} />
         <div class="wide">
@@ -81,7 +81,7 @@
         <Field label="Live link text" name="liveLabel" hint="Needed when there's a live link" value={values.liveLabel} error={form?.errors?.liveLabel?.[0]} />
         <Field label="Source link" name="sourceURL" hint="Optional" value={values.sourceURL} error={form?.errors?.sourceURL?.[0]} />
         <Field label="Stack" name="stack" multiline hint="One per line" value={values.stack} error={form?.errors?.stack?.[0]} />
-      </div>
+      </FieldGrid>
     </fieldset>
 
     <div class="preview">
@@ -91,12 +91,12 @@
 
     <fieldset>
       <legend>On the CV</legend>
-      <div class="fields">
+      <FieldGrid>
         <Field label="Year" name="year" hint="Optional" inputmode="numeric" value={values.year} error={form?.errors?.year?.[0]} />
         <div class="wide">
           <Field label="Highlights" name="highlights" multiline hint="One per line" value={values.highlights} error={form?.errors?.highlights?.[0]} />
         </div>
-      </div>
+      </FieldGrid>
     </fieldset>
 
     <fieldset>
@@ -116,14 +116,12 @@
       {/if}
     </div>
   </form>
-
-  <a href={resolve("/admin/projects")}>Back to the projects</a>
 </AdminPage>
 
 <style>
   form {
     display: grid;
-    gap: var(--old-space-5);
+    gap: var(--space-4);
     width: 100%;
   }
 
@@ -134,53 +132,47 @@
 
   fieldset {
     display: grid;
-    gap: var(--old-space-3);
+    gap: var(--space-2);
+    min-width: 0;
     margin: 0;
     padding: 0;
     border: none;
   }
 
   legend {
-    margin-bottom: var(--old-space-3);
+    margin-bottom: var(--space-2);
     padding: 0;
-    color: var(--colour-foreground);
-    font-size: var(--font-size-title);
-    font-weight: 600;
-  }
-
-  .fields {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    align-items: start;
-    gap: var(--old-space-3);
-  }
-
-  .wide {
-    grid-column: 1 / -1;
+    font-family: var(--font-display);
+    font-size: var(--type-label);
+    font-weight: 800;
+    text-transform: uppercase;
   }
 
   .checks {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--old-space-2) var(--old-space-5);
+    gap: var(--space-1) var(--space-3);
   }
 
   .preview {
     display: grid;
-    gap: var(--old-space-2);
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    border-block: var(--rule-row);
 
     h2 {
-      color: var(--colour-text-muted);
-      font-size: var(--font-size-label);
-      font-weight: 500;
-      font-stretch: 100%;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: var(--type-small);
+      font-weight: 700;
+      text-transform: none;
     }
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: var(--old-space-2);
+    align-items: start;
+    gap: var(--space-1) var(--space-2);
   }
 </style>
