@@ -28,7 +28,7 @@
       <li>
         <img src={project.imageURL} alt="" width="160" height="100" />
         <div>
-          <a class="name" href={resolve("/(site)/admin/projects/[id]", { id: String(project.id) })}>{project.title}</a>
+          <a class="name" href={resolve("/(admin)/admin/projects/[id]", { id: String(project.id) })}>{project.title}</a>
           <p class="status" class:draft={!project.published}>{projectStatus(project)}</p>
         </div>
         <form method="POST" action="?/move" use:enhance>
