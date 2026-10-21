@@ -12,7 +12,7 @@ test("a signed-out visitor can't save the profile", async ({ page, request, base
 test("the admin edits the profile, and the home page shows it", async ({ page }) => {
   await createAdmin();
   await logIn(page);
-  await page.getByRole("link", { name: "Profile" }).click();
+  await page.getByRole("navigation", { name: "Admin" }).getByRole("link", { name: "Profile" }).click();
 
   await page.getByLabel("Intro").fill("Test lead in Dublin.");
   await page.getByRole("button", { name: "Save" }).click();

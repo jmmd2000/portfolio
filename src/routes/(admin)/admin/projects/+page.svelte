@@ -50,8 +50,6 @@
       <Button type="submit" variant="primary">Add</Button>
     {/snippet}
   </ItemForm>
-
-  <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>

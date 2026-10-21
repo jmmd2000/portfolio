@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import Fold from "$lib/components/admin/Fold.svelte";
   import ItemButtons from "$lib/components/admin/ItemButtons.svelte";
@@ -175,8 +174,6 @@
       </ItemForm>
     </Fold>
   </section>
-
-  <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>

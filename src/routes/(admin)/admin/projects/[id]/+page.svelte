@@ -1,6 +1,5 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import Button from "$lib/components/form/Button.svelte";
@@ -116,8 +115,6 @@
       {/if}
     </div>
   </form>
-
-  <a href={resolve("/admin/projects")}>Back to the projects</a>
 </AdminPage>
 
 <style>

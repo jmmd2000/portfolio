@@ -1,6 +1,5 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
-  import Button from "$lib/components/form/Button.svelte";
   import PageHead from "$lib/components/head/PageHead.svelte";
 </script>
 
@@ -17,13 +16,6 @@
     <li><a href={resolve("/admin/articles")}>Articles</a></li>
     <li><a href={resolve("/admin/currently")}>Currently</a></li>
   </ul>
-
-  <div class="account">
-    <a href={resolve("/admin/password")}>Change password</a>
-    <form method="POST" action="/admin/logout">
-      <Button type="submit">Log out</Button>
-    </form>
-  </div>
 </section>
 
 <style>
@@ -60,14 +52,6 @@
         text-decoration-color: var(--colour-accent);
       }
     }
-  }
-
-  .account {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--old-space-3);
   }
 
   @media (hover: hover) {

@@ -17,7 +17,7 @@ test("a signed-out visitor can't add a link", async ({ page, request, baseURL })
 test("the admin adds, renames and moves a link, and the footer follows", async ({ page }) => {
   await createAdmin();
   await logIn(page);
-  await page.getByRole("link", { name: "Socials" }).click();
+  await page.getByRole("navigation", { name: "Admin" }).getByRole("link", { name: "Socials" }).click();
 
   const add = page.getByRole("group", { name: "Add a link" });
   await add.getByLabel("Name").fill("Bluesky");

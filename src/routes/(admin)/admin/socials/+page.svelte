@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import ItemForm from "$lib/components/admin/ItemForm.svelte";
@@ -39,8 +38,6 @@
       <Button type="submit" variant="primary">Add</Button>
     {/snippet}
   </ItemForm>
-
-  <a href={resolve("/admin")}>Back to the admin</a>
 </AdminPage>
 
 <style>

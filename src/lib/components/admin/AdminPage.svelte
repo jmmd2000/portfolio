@@ -13,27 +13,32 @@
 
 <PageHead {title} {description} noindex />
 
-<section>
+<div class="head">
   <h1>{title}</h1>
+</div>
+<div class="content">
   {@render children()}
-</section>
+</div>
 
 <style>
-  section {
-    display: grid;
-    gap: var(--old-space-6);
-    justify-items: start;
-    padding-block: var(--old-space-7) 0;
+  .head {
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: var(--rule-row);
   }
 
   h1 {
-    font-size: var(--font-size-page-title);
-    line-height: 1.05;
+    font-size: var(--type-large);
+    font-weight: 900;
   }
 
-  @media (max-width: 52rem) {
-    section {
-      padding-block-start: var(--old-space-6);
+  .content {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+
+    > :global(*) {
+      max-width: 100%;
     }
   }
 </style>
