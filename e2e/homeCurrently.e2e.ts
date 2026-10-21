@@ -23,7 +23,7 @@ test("a row hidden in the admin leaves the home page", async ({ page }) => {
 
   await page.goto("/");
   await expect(currently.getByRole("listitem")).toHaveText([/Bon Iver, Bon Iver/, /Breaking Bad/, /To Kill a Mockingbird/]);
-  await expect(currently.getByRole("img", { name: "Cover of Bon Iver, Bon Iver" })).toBeVisible();
+  await expect(currently.locator("img")).toHaveCount(3);
 });
 
 test("the Currently section is hidden when no rows are shown", async ({ page }) => {
@@ -36,5 +36,5 @@ test("the Currently section is hidden when no rows are shown", async ({ page }) 
 
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Projects", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Currently" })).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Currently" })).toHaveCount(0);
 });

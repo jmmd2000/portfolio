@@ -60,8 +60,7 @@
 {/if}
 
 {#if data.currentlyRows.length > 0}
-  <section class="currently" aria-labelledby="currently-heading">
-    <h2 id="currently-heading">Currently</h2>
+  <section class="currently-section" aria-label="Currently">
     <CurrentlyCards rows={data.currentlyRows} />
   </section>
 {/if}
@@ -119,8 +118,9 @@
     }
   }
 
-  .currently {
-    padding-block: var(--old-space-8) 0;
+  .currently-section {
+    padding: var(--space-3) var(--page-gutter);
+    border-bottom: var(--rule-section);
   }
 
   @media (max-width: 52rem) {
@@ -128,10 +128,6 @@
       grid-template-columns: minmax(0, 1fr);
       gap: var(--old-space-6);
       padding-block: var(--old-space-6);
-    }
-
-    .currently {
-      padding-block-start: var(--old-space-7);
     }
   }
 </style>
