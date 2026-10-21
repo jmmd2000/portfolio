@@ -205,6 +205,14 @@ a {
   text-transform: uppercase;
 }
 
+.section-title {
+  margin-bottom: var(--space-3);
+  color: var(--red);
+  font-size: var(--type-section);
+  font-weight: 900;
+  line-height: 0.85;
+}
+
 /* The fitText attachment sets the font size. This one shows until it runs. */
 .fitted-line {
   display: flex;

@@ -5,7 +5,7 @@ import { expect, test } from "./fixtures";
 
 async function cvJobTitles(page: Page): Promise<string[]> {
   await page.goto("/cv");
-  return page.locator(".job .title").allTextContents();
+  return page.getByRole("region", { name: "Experience" }).getByRole("heading", { level: 3 }).allTextContents();
 }
 
 test("a signed-out visitor can't add a job", async ({ page, request, baseURL }) => {
@@ -30,7 +30,7 @@ test("the admin edits a job's bullets, and the CV shows one per line", async ({ 
   await expect(fusio.getByText("Fusio saved.")).toBeVisible();
 
   await page.goto("/cv");
-  const job = page.locator(".job").filter({ hasText: "Fusio" });
+  const job = page.getByRole("region", { name: "Experience" }).getByRole("article").filter({ hasText: "Fusio" });
   await expect(job.getByRole("listitem")).toHaveText(["Kept the client sites up to date", "Built responsive layouts"]);
 });
 
@@ -101,7 +101,11 @@ test("the admin adds a qualification, and the CV shows it", async ({ page }) => 
   await expect(add.getByText("AWS Cloud Practitioner added.")).toBeVisible();
 
   await page.goto("/cv");
-  await expect(page.locator(".qualifications .degree")).toHaveText(["AWS Cloud Practitioner", "BSc Computer Science & Software Engineering", "QQI Level 5 Computer Systems and Networks"]);
+  await expect(page.getByRole("region", { name: "Education" }).getByRole("heading", { level: 3 })).toHaveText([
+    "AWS Cloud Practitioner",
+    "BSc Computer Science & Software Engineering",
+    "QQI Level 5 Computer Systems and Networks",
+  ]);
 });
 
 test("a saved message only shows on its own list, when another list has an item with the same id", async ({ page }) => {

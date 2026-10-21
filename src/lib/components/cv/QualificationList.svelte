@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Qualification } from "$lib/server/content/cv";
-  import { joinDetails } from "./joinDetails";
+  import CVEntry from "./CVEntry.svelte";
 
   interface Props {
     qualifications: Qualification[];
@@ -9,38 +9,35 @@
   let { qualifications }: Props = $props();
 </script>
 
-<ul class="qualifications">
+<div class="entries">
   {#each qualifications as qualification (qualification.id)}
-    <li>
-      <p class="degree">{qualification.degree}</p>
-      <p>{joinDetails([qualification.institution, qualification.location])}</p>
-      <p class="details">{qualification.startYear} to {qualification.endYear} · {qualification.grade}</p>
-    </li>
+    <CVEntry period="{qualification.startYear} to {qualification.endYear}" place={qualification.location}>
+      <h3>{qualification.degree}</h3>
+      <p class="where">{qualification.institution}</p>
+      <p class="grade">{qualification.grade}</p>
+    </CVEntry>
   {/each}
-</ul>
+</div>
 
 <style>
-  .qualifications {
-    display: grid;
-    gap: var(--old-space-5);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    li {
-      break-inside: avoid;
-    }
+  .entries > :global(* + *) {
+    border-top: var(--rule-row);
   }
 
-  .degree {
-    color: var(--colour-foreground);
+  h3 {
+    font-size: var(--type-medium);
+    font-weight: 900;
+  }
+
+  .where {
+    margin-top: 0.25rem;
+    font-weight: 700;
+  }
+
+  .grade {
+    margin-top: var(--space-1);
+    color: var(--muted);
+    font-size: var(--type-small);
     font-weight: 600;
-    font-stretch: var(--font-stretch-heading);
-    line-height: 1.35;
-  }
-
-  .details {
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
   }
 </style>

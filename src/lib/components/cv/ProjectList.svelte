@@ -1,8 +1,8 @@
 <script lang="ts">
   import { linkText } from "$lib/components/contact/linkText";
-  import LinkArrow from "$lib/components/links/LinkArrow.svelte";
   import type { Project } from "$lib/server/content/projects";
   import BulletList from "./BulletList.svelte";
+  import CVEntry from "./CVEntry.svelte";
   import DotList from "./DotList.svelte";
 
   interface Props {
@@ -10,39 +10,17 @@
   }
 
   let { projects }: Props = $props();
+
+  function linkFor(project: Project): string | null {
+    return project.liveURL ?? project.sourceURL;
+  }
 </script>
 
-<ul class="projects">
+<div class="entries">
   {#each projects as project (project.id)}
-    <li>
-      <div class="heading">
-        <h3 class="title">
-          {project.title}
-          {#if project.year}
-            <span class="year">{project.year}</span>
-          {/if}
-        </h3>
-        {#if project.liveURL || project.sourceURL}
-          <ul class="links">
-            {#if project.liveURL}
-              <li>
-                <a href={project.liveURL} rel="external">
-                  <span class="label">{project.liveLabel}</span><span class="address">{linkText(project.liveURL)}</span><span class="visually-hidden"> for {project.title}</span><LinkArrow
-                    kind="external"
-                  />
-                </a>
-              </li>
-            {/if}
-            {#if project.sourceURL}
-              <li>
-                <a href={project.sourceURL} rel="external">
-                  <span class="label">Source</span><span class="address">{linkText(project.sourceURL)}</span><span class="visually-hidden"> for {project.title}</span><LinkArrow kind="external" />
-                </a>
-              </li>
-            {/if}
-          </ul>
-        {/if}
-      </div>
+    {@const url = linkFor(project)}
+    <CVEntry period={project.year === null ? "" : String(project.year)} place={url === null ? null : linkText(url)} placeURL={url}>
+      <h3>{project.title}</h3>
       {#if project.highlights.length > 0}
         <BulletList items={project.highlights} />
       {:else}
@@ -51,98 +29,28 @@
       {#if project.stack.length > 0}
         <p class="tags"><DotList items={project.stack} /></p>
       {/if}
-    </li>
+    </CVEntry>
   {/each}
-</ul>
+</div>
 
 <style>
-  .projects {
-    display: grid;
-    gap: var(--old-space-7);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    > li {
-      max-width: 52rem;
-      break-inside: avoid;
-    }
+  .entries > :global(* + *) {
+    border-top: var(--rule-row);
   }
 
-  .heading {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--old-space-2) var(--old-space-5);
-  }
-
-  .title {
-    font-size: var(--font-size-title);
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .year {
-    margin-inline-start: var(--old-space-2);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
-    font-weight: 500;
-    font-stretch: 100%;
-  }
-
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--old-space-2) var(--old-space-5);
-    margin: 0;
-    padding: 0;
-    font-size: var(--font-size-label);
-    list-style: none;
-
-    a {
-      font-weight: 500;
-    }
-  }
-
-  .address {
-    display: none;
+  h3 {
+    font-size: var(--type-medium);
+    font-weight: 900;
   }
 
   .description {
-    max-width: 64ch;
-    margin-top: var(--old-space-4);
+    margin-top: var(--space-1);
   }
 
   .tags {
-    margin-top: var(--old-space-3);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
-  }
-
-  @media (hover: none) {
-    .links a {
-      display: inline-block;
-      margin-block: calc(-1 * var(--old-space-3));
-      padding-block: var(--old-space-3);
-    }
-  }
-
-  @media print {
-    .projects {
-      gap: var(--old-space-4);
-    }
-
-    .links a {
-      text-decoration: none;
-    }
-
-    .label {
-      display: none;
-    }
-
-    .address {
-      display: inline;
-    }
+    margin-top: var(--space-2);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 </style>
