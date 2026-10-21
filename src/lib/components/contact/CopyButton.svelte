@@ -1,13 +1,14 @@
 <script lang="ts">
   interface Props {
     text: string;
+    label?: string;
     /** Selected instead when the clipboard is blocked, so the visitor can copy it themselves */
     selectTarget?: HTMLElement;
   }
 
-  let { text, selectTarget }: Props = $props();
+  let { text, label = "Copy", selectTarget }: Props = $props();
 
-  let label = $state("Copy");
+  let result = $state("");
   let status = $state("");
   let resetTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -27,47 +28,50 @@
     clearTimeout(resetTimer);
     try {
       await navigator.clipboard.writeText(text);
-      label = "Copied";
+      result = "Copied";
       status = "Copied to the clipboard";
     } catch {
       if (selectTarget) selectText(selectTarget);
-      label = "Selected";
-      status = "Selected. Copy it with your keyboard.";
+      result = "Selected";
+      status = "The address is selected, ready to copy.";
     }
     resetTimer = setTimeout(() => {
-      label = "Copy";
+      result = "";
       status = "";
     }, 2000);
   }
 </script>
 
-<button type="button" class="copy" onclick={copy}>{label}</button>
+<button type="button" class="copy label" class:done={result !== ""} onclick={copy}>{result || label}</button>
 <span class="visually-hidden" aria-live="polite">{status}</span>
 
 <style>
   .copy {
-    min-inline-size: 6rem;
-    padding: var(--old-space-2) var(--old-space-4);
-    border: 1px solid color-mix(in oklch, var(--colour-text-on-deep) 55%, transparent);
-    border-radius: var(--radius-medium);
-    background: transparent;
-    color: var(--colour-text-on-deep);
-    font: inherit;
-    font-size: var(--font-size-label);
-    font-weight: 500;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--red);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 5px;
     cursor: pointer;
-    transition:
-      background var(--duration-quick) var(--ease-out),
-      transform var(--duration-quick) var(--ease-out);
+    transition: text-decoration-thickness var(--duration-quick) var(--ease-out);
 
-    &:active {
-      transform: translateY(1px);
+    &.done {
+      color: var(--red);
     }
   }
 
   @media (hover: hover) {
     .copy:hover {
-      background: color-mix(in oklch, var(--colour-text-on-deep) 10%, transparent);
+      text-decoration-thickness: 6px;
+    }
+  }
+
+  @media (hover: none) {
+    .copy {
+      padding-block: var(--space-1);
     }
   }
 </style>

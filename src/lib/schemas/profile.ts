@@ -7,7 +7,6 @@ export const profileSchema = z.object({
   role: requiredText("role", 80),
   intro: requiredText("intro", 200),
   location: requiredText("location", 80),
-  bio: requiredText("bio", 1000),
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;

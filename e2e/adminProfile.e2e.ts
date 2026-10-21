@@ -3,10 +3,10 @@ import { expect, test } from "./fixtures";
 
 test("a signed-out visitor can't save the profile", async ({ page, request, baseURL }) => {
   // The origin header gets the request past SvelteKit's cross-site check, so it reaches the sign-in check
-  await request.post("/admin/profile", { headers: { origin: baseURL ?? "" }, form: { name: "Someone else", role: "Role", intro: "Intro", location: "Here", bio: "Bio" } });
+  await request.post("/admin/profile", { headers: { origin: baseURL ?? "" }, form: { name: "Someone else", role: "Role", intro: "Intro", location: "Here" } });
 
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("James Doyle");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName("James Doyle");
 });
 
 test("the admin edits the profile, and the home page shows it", async ({ page }) => {
@@ -20,7 +20,7 @@ test("the admin edits the profile, and the home page shows it", async ({ page })
   await expect(page.getByLabel("Name")).toHaveValue("James Doyle");
 
   await page.goto("/");
-  await expect(page.locator("header .intro")).toHaveText("Test lead in Dublin.");
+  await expect(page.getByRole("banner").getByText("Test lead in Dublin.")).toBeVisible();
 });
 
 test("without JavaScript, a failed save keeps what was typed and says what's wrong", async ({ page }) => {
@@ -31,9 +31,9 @@ test("without JavaScript, a failed save keeps what was typed and says what's wro
   await page.goto("/admin/profile");
 
   await page.getByLabel("Name").fill("   ");
-  await page.getByLabel("Bio").fill("A bio that should still be here.");
+  await page.getByLabel("Intro").fill("An intro that should still be here.");
   await page.getByRole("button", { name: "Save" }).click();
 
   await expect(page.getByText("Add a name.")).toBeVisible();
-  await expect(page.getByLabel("Bio")).toHaveValue("A bio that should still be here.");
+  await expect(page.getByLabel("Intro")).toHaveValue("An intro that should still be here.");
 });

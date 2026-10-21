@@ -1,14 +1,12 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
-  import ArrowRight from "@lucide/svelte/icons/arrow-right";
   import type { Project } from "$lib/server/content/projects";
 
   interface Props {
     project: Pick<Project, "id" | "title" | "description" | "imageURL">;
-    headingLevel: "h2" | "h3";
   }
 
-  let { project, headingLevel }: Props = $props();
+  let { project }: Props = $props();
 
   let imageFailed = $state(false);
 </script>
@@ -21,32 +19,31 @@
       <img src={project.imageURL} alt="" width="1600" height="1000" loading="lazy" onerror={() => (imageFailed = true)} />
     {/if}
   </span>
-  <svelte:element this={headingLevel} class="name">{project.title} <span class="arrow" aria-hidden="true"><ArrowRight size="1em" strokeWidth={2} /></span></svelte:element>
-  <p class="description">{project.description}</p>
+  <div>
+    <h3>{project.title}</h3>
+    <p>{project.description}</p>
+  </div>
 </a>
 
 <style>
   .row {
     display: grid;
-    align-content: start;
-    border-radius: var(--radius-large);
-    color: var(--colour-text);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-4);
+    align-items: center;
+    padding-block: var(--space-4);
+    border-bottom: var(--rule-row);
     text-decoration: none;
   }
 
   .shot {
     display: grid;
     overflow: hidden;
-    margin-bottom: var(--old-space-4);
     aspect-ratio: 16 / 10;
-    border-radius: var(--radius-medium);
-    background: var(--colour-background);
-    box-shadow:
-      0 1px 2px oklch(0.2 0.02 var(--hue) / 0.08),
-      var(--shadow-picture);
+    outline: var(--rule-row);
     transition:
-      transform var(--duration-lift) var(--ease-out),
-      box-shadow var(--duration-lift) var(--ease-out);
+      transform 250ms var(--ease-out),
+      box-shadow 250ms var(--ease-out);
 
     img {
       width: 100%;
@@ -58,62 +55,45 @@
   }
 
   .fallback {
-    place-self: center;
-    padding: var(--old-space-3);
-    color: var(--colour-foreground);
-    font-weight: 600;
+    display: grid;
+    place-items: center;
+    padding: var(--space-2);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-display);
+    font-size: var(--type-medium);
+    font-weight: 900;
     text-align: center;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
   }
 
-  .name {
-    margin-bottom: var(--old-space-1);
-    font-size: var(--font-size-title);
-    line-height: 1.3;
+  h3 {
+    font-size: var(--type-large);
+    font-weight: 900;
+    overflow-wrap: anywhere;
   }
 
-  .arrow {
-    display: inline-block;
-    vertical-align: -0.125em;
-    color: var(--colour-text-muted);
-    transition:
-      transform 250ms var(--ease-out),
-      color 250ms var(--ease-out);
+  p {
+    max-width: 40ch;
+    margin-top: var(--space-2);
   }
 
-  .row:focus-visible {
-    .shot {
-      transform: translateY(-4px);
-    }
-
-    .arrow {
-      transform: translateX(3px);
-      color: var(--colour-accent);
-    }
+  .row:focus-visible .shot {
+    box-shadow: 6px 6px 0 var(--red);
   }
 
   @media (hover: hover) {
-    .row:hover {
-      .shot {
-        transform: translateY(-4px);
-        box-shadow:
-          0 1px 2px oklch(0.2 0.02 var(--hue) / 0.08),
-          var(--shadow-picture-lifted);
-      }
-
-      .arrow {
-        transform: translateX(3px);
-        color: var(--colour-accent);
-      }
+    .row:hover .shot {
+      transform: translate(-6px, -6px);
+      box-shadow: 6px 6px 0 var(--red);
     }
   }
 
-  @media (max-width: 52rem) {
-    .shot {
-      margin-bottom: var(--old-space-3);
-    }
-
-    .name {
-      font-size: var(--font-size-summary);
+  @media (max-width: 47.5rem) {
+    .row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-2);
     }
   }
 </style>
