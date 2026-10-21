@@ -46,6 +46,10 @@
   }
 
   @media print {
+    .tags {
+      margin-top: var(--space-1);
+    }
+
     .where a {
       text-decoration: none;
     }

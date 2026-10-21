@@ -37,4 +37,16 @@
       }
     }
   }
+
+  @media print {
+    .bullets {
+      gap: 0.25rem;
+      max-width: none;
+      margin-top: var(--space-1);
+
+      li {
+        line-height: 1.4;
+      }
+    }
+  }
 </style>

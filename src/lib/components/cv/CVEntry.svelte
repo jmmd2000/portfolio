@@ -67,4 +67,16 @@
       grid-template-columns: minmax(0, 1fr);
     }
   }
+
+  @media print {
+    .entry {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      gap: var(--space-2);
+      padding-block: var(--space-1);
+    }
+
+    .when a {
+      text-decoration: none;
+    }
+  }
 </style>

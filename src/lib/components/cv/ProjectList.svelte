@@ -53,4 +53,10 @@
     font-size: var(--type-small);
     font-weight: 600;
   }
+
+  @media print {
+    .tags {
+      margin-top: var(--space-1);
+    }
+  }
 </style>

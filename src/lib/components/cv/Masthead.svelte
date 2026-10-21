@@ -86,6 +86,15 @@
   }
 
   @media print {
+    .masthead {
+      padding: 0 0 var(--space-2);
+      border-bottom-width: 2px;
+    }
+
+    h1 {
+      margin-bottom: var(--space-1);
+    }
+
     .contact a {
       text-decoration: none;
     }

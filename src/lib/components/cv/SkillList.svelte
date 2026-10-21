@@ -60,4 +60,20 @@
       grid-template-columns: minmax(0, 1fr);
     }
   }
+
+  @media print {
+    .skills {
+      break-inside: avoid;
+    }
+
+    .skills div {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      gap: var(--space-2);
+      padding-block: 0.25rem;
+    }
+
+    .note {
+      margin-top: var(--space-1);
+    }
+  }
 </style>

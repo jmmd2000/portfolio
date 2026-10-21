@@ -56,4 +56,15 @@
   .entries > :global(* + *) {
     border-top: var(--rule-row);
   }
+
+  @media print {
+    .cv-section {
+      padding: var(--space-2) 0;
+      border-bottom-width: 2px;
+    }
+
+    .entries > :global(* + *) {
+      border-top-width: 1px;
+    }
+  }
 </style>

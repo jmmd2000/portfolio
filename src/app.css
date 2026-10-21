@@ -273,4 +273,15 @@ a {
   body {
     background: none;
   }
+
+  /* fitText sets an inline size for the screen's width, which is too wide for the page, so print sets its own */
+  .fitted-line,
+  .fitted-line > .part {
+    font-size: 3.5rem !important;
+  }
+
+  .section-title {
+    margin-bottom: var(--space-1);
+    font-size: 2rem;
+  }
 }
