@@ -1,23 +1,11 @@
 import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "$lib/server/db";
-import { articles, projects } from "$lib/server/db/schema";
+import { articles } from "$lib/server/db/schema";
 import { seedDatabase } from "$lib/server/db/seed";
 import { testEnvironment } from "$lib/server/db/testEnvironment";
 import { wipeDatabase } from "$lib/server/db/wipe";
-import {
-  countPublishedArticles,
-  createArticle,
-  deleteArticle,
-  getArticleBySlug,
-  getProjectChoices,
-  getPublishedArticleLinks,
-  getPublishedArticles,
-  getPublishedArticleSlugs,
-  getSlugRedirect,
-  isSlugTaken,
-  updateArticle,
-} from "./articles";
+import { countPublishedArticles, createArticle, deleteArticle, getArticleBySlug, getPublishedArticles, getPublishedArticleSlugs, getSlugRedirect, isSlugTaken, updateArticle } from "./articles";
 
 beforeEach(async () => {
   await wipeDatabase(testEnvironment.DATABASE_URL_TEST);
@@ -34,15 +22,6 @@ async function insertArticle(overrides: Partial<typeof articles.$inferInsert> = 
     publishedAt: new Date("2026-10-03T09:00:00Z"),
     ...overrides,
   });
-}
-
-async function insertProject(published: boolean): Promise<number> {
-  const [project] = await db
-    .insert(projects)
-    .values({ title: "SandSim", description: "Falling sand.", imageURL: "https://assets.jamesmddoyle.com/sandsim.webp", published, sort: 99 })
-    .returning({ id: projects.id });
-  if (!project) throw new Error("The project wasn't created");
-  return project.id;
 }
 
 describe("drafts", () => {
@@ -73,48 +52,6 @@ it("lists published articles newest first", async () => {
 
   expect(slugs).toEqual(["newer", "older"]);
   expect(await countPublishedArticles()).toBe(2);
-});
-
-describe("the project an article belongs to", () => {
-  it("is included when the project is published", async () => {
-    const projectID = await insertProject(true);
-    await insertArticle({ projectID });
-
-    expect((await getPublishedArticles())[0]?.project).toEqual({ id: projectID, title: "SandSim" });
-  });
-
-  it("is left out when the project isn't published, so the article list doesn't name a missing project", async () => {
-    await insertArticle({ projectID: await insertProject(false) });
-
-    expect((await getPublishedArticles())[0]?.project).toBeNull();
-  });
-
-  it("is cleared when the project is deleted, and the article stays", async () => {
-    const projectID = await insertProject(true);
-    await insertArticle({ projectID });
-
-    await db.delete(projects).where(eq(projects.id, projectID));
-
-    expect((await getPublishedArticles())[0]?.project).toBeNull();
-  });
-
-  it("gets a link to its article only once the article is published", async () => {
-    const projectID = await insertProject(true);
-    await insertArticle({ slug: "draft", projectID, published: false, publishedAt: null });
-    await insertArticle({ slug: "no-project" });
-    expect(await getPublishedArticleLinks()).toEqual([]);
-
-    await db.update(articles).set({ published: true, publishedAt: new Date() }).where(eq(articles.slug, "draft"));
-
-    expect(await getPublishedArticleLinks()).toEqual([{ projectID, slug: "draft" }]);
-  });
-
-  it("can only have one article", async () => {
-    const projectID = await insertProject(true);
-    await insertArticle({ projectID });
-
-    await expect(insertArticle({ slug: "second", projectID })).rejects.toThrow();
-  });
 });
 
 describe("the articles table", () => {
@@ -158,7 +95,7 @@ describe("admin editing", () => {
 
   it("sets the publish date on first publish and keeps it when unpublished and published again", async () => {
     const created = await createArticle({ title: "New", slug: "new", summary: "Not ready." });
-    const edit = { title: "New", slug: "new", summary: "Not ready.", body: "", projectID: null };
+    const edit = { title: "New", slug: "new", summary: "Not ready.", body: "" };
 
     const published = await updateArticle(created.id, { ...edit, published: true });
     const firstDate = published?.publishedAt;
@@ -170,23 +107,10 @@ describe("admin editing", () => {
     const republished = await updateArticle(created.id, { ...edit, published: true });
     expect(republished?.publishedAt).toEqual(firstDate);
   });
-
-  it("offers projects without an article, plus the edited article's own project", async () => {
-    const takenID = await insertProject(true);
-    const ownID = await insertProject(false);
-    await insertArticle({ slug: "other", projectID: takenID });
-    const edited = await createArticle({ title: "New", slug: "new", summary: "Not ready." });
-    await updateArticle(edited.id, { title: "New", slug: "new", summary: "Not ready.", body: "", projectID: ownID, published: false });
-
-    const choiceIDs = (await getProjectChoices(edited.id)).map(project => project.id);
-
-    expect(choiceIDs).toContain(ownID);
-    expect(choiceIDs).not.toContain(takenID);
-  });
 });
 
 describe("renaming", () => {
-  const edit = { title: "How the sand falls", summary: "One rule per material.", body: "", projectID: null };
+  const edit = { title: "How the sand falls", summary: "One rule per material.", body: "" };
 
   async function addArticle(slug: string): Promise<number> {
     return (await createArticle({ title: "How the sand falls", slug, summary: "One rule per material." })).id;

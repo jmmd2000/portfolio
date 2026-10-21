@@ -11,7 +11,6 @@ export interface ArticleListItem {
   dateTime: string;
   readingMinutes: number;
   hasDemo: boolean;
-  projectTitle: string | null;
 }
 
 export interface ArticleYear {
@@ -28,7 +27,6 @@ export function toArticleListItem(article: PublishedArticle): ArticleListItem {
     dateTime: articleDateTime(article.publishedAt),
     readingMinutes: readingMinutes(article.body),
     hasDemo: hasDemo(article.body),
-    projectTitle: article.project?.title ?? null,
   };
 }
 

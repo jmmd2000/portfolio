@@ -81,7 +81,7 @@ test("a slug another article uses is reported on the field", async ({ page }) =>
   await expect(add.getByLabel("Title")).toHaveValue("Another");
 });
 
-test("publishing an article puts it on the site as a write-up for its project", async ({ page }) => {
+test("publishing an article puts it on the site", async ({ page }) => {
   await insertArticle({ slug: "how-the-sand-falls", published: false, publishedAt: null });
   await createAdmin();
   await logIn(page);
@@ -89,13 +89,12 @@ test("publishing an article puts it on the site as a write-up for its project", 
   await page.getByRole("link", { name: "How the sand falls" }).click();
 
   await page.locator("summary", { hasText: "Details" }).click();
-  await page.getByLabel("Write-up for").selectOption({ label: "SandSim" });
   await page.getByLabel("Published").check();
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("Published.")).toBeVisible();
 
-  await page.goto("/projects");
-  await expect(page.getByRole("link", { name: "Read the write-up for SandSim" })).toBeVisible();
+  await page.goto("/articles");
+  await expect(page.getByRole("main").getByRole("link", { name: /How the sand falls/ })).toBeVisible();
 });
 
 test("renaming a published article sends its old address to the new one", async ({ page }) => {

@@ -64,6 +64,13 @@
       "when": 1792604481449,
       "tag": "0008_empty_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792606146529,
+      "tag": "0009_dashing_sabretooth",
+      "breakpoints": true
     }
   ]
 }

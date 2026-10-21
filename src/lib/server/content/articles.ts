@@ -1,16 +1,11 @@
-import { and, asc, desc, eq, isNotNull, isNull, ne, or } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { db } from "$lib/server/db";
-import { articleSlugRedirects, articles, projects } from "$lib/server/db/schema";
+import { articleSlugRedirects, articles } from "$lib/server/db/schema";
 import type { ArticleInput, NewArticleInput } from "$lib/schemas/article";
 
 const homeArticleCount = 5;
 
 export type Article = typeof articles.$inferSelect;
-
-export interface ArticleProject {
-  id: number;
-  title: string;
-}
 
 export interface PublishedArticle {
   slug: string;
@@ -18,8 +13,6 @@ export interface PublishedArticle {
   summary: string;
   body: string;
   publishedAt: Date;
-  /** The project the article is a write-up for. Null when it has none, or when that project isn't published */
-  project: ArticleProject | null;
 }
 
 interface PublishedArticleRow {
@@ -28,16 +21,13 @@ interface PublishedArticleRow {
   summary: string;
   body: string;
   publishedAt: Date | null;
-  projectID: number | null;
-  projectTitle: string | null;
 }
 
 function toPublishedArticle(row: PublishedArticleRow): PublishedArticle {
   // The database refuses a published article without a date, so this only fails if that check is removed
   if (row.publishedAt === null) throw new Error(`The article "${row.slug}" is published but has no publish date`);
 
-  const project = row.projectID === null || row.projectTitle === null ? null : { id: row.projectID, title: row.projectTitle };
-  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt, project };
+  return { slug: row.slug, title: row.title, summary: row.summary, body: row.body, publishedAt: row.publishedAt };
 }
 
 /** Published articles, newest first. A limit keeps only the newest few */
@@ -49,11 +39,8 @@ async function findPublishedArticles(limit?: number): Promise<PublishedArticle[]
       summary: articles.summary,
       body: articles.body,
       publishedAt: articles.publishedAt,
-      projectID: projects.id,
-      projectTitle: projects.title,
     })
     .from(articles)
-    .leftJoin(projects, and(eq(articles.projectID, projects.id), eq(projects.published, true)))
     .where(eq(articles.published, true))
     .orderBy(desc(articles.publishedAt))
     .$dynamic();
@@ -71,7 +58,7 @@ export async function getHomeArticles(): Promise<PublishedArticle[]> {
   return findPublishedArticles(homeArticleCount);
 }
 
-export interface ShownArticle extends Omit<PublishedArticle, "publishedAt" | "project"> {
+export interface ShownArticle extends Omit<PublishedArticle, "publishedAt"> {
   id: number;
   published: boolean;
   /** Null when the article has never been published */
@@ -85,26 +72,6 @@ export async function getArticleBySlug(slug: string): Promise<ShownArticle | nul
     .from(articles)
     .where(eq(articles.slug, slug));
   return article ?? null;
-}
-
-export interface ArticleLink {
-  projectID: number;
-  slug: string;
-}
-
-/** Each published article that belongs to a project, so the projects page can link to it */
-export async function getPublishedArticleLinks(): Promise<ArticleLink[]> {
-  const rows = await db
-    .select({ projectID: articles.projectID, slug: articles.slug })
-    .from(articles)
-    .where(and(eq(articles.published, true), isNotNull(articles.projectID)));
-
-  // The query already drops rows without a project, but Drizzle still types projectID as nullable
-  const links: ArticleLink[] = [];
-  for (const row of rows) {
-    if (row.projectID !== null) links.push({ projectID: row.projectID, slug: row.slug });
-  }
-  return links;
 }
 
 /** The slugs of published articles, newest first, for the sitemap */
@@ -192,16 +159,6 @@ export async function getSlugRedirect(oldSlug: string): Promise<SlugRedirect | n
     .innerJoin(articles, eq(articleSlugRedirects.articleID, articles.id))
     .where(eq(articleSlugRedirects.oldSlug, oldSlug));
   return redirect ?? null;
-}
-
-/** The projects an article can belong to: those without an article, plus the edited article's own project */
-export async function getProjectChoices(editedArticleID: number): Promise<ArticleProject[]> {
-  return db
-    .select({ id: projects.id, title: projects.title })
-    .from(projects)
-    .leftJoin(articles, eq(articles.projectID, projects.id))
-    .where(or(isNull(articles.id), eq(articles.id, editedArticleID)))
-    .orderBy(asc(projects.sort));
 }
 
 export async function deleteArticle(id: number): Promise<boolean> {

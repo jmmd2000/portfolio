@@ -33,45 +33,44 @@
       {/if}
     </p>
   </header>
-  <MarkdownContent {html} />
+  <div class="body">
+    <MarkdownContent {html} />
+  </div>
 </article>
 
 <style>
   header {
-    max-width: var(--reading-width);
-    padding-block: var(--old-space-7) var(--old-space-6);
+    padding: var(--space-4) var(--page-gutter);
+    border-bottom: var(--rule-section);
   }
 
   h1 {
-    font-size: var(--font-size-page-title);
-    line-height: 1.1;
+    max-width: 16ch;
+    font-size: var(--type-section);
+    font-weight: 900;
+    line-height: 0.85;
   }
 
   .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 var(--old-space-3);
-    margin-top: var(--old-space-4);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
-
-    > * {
-      white-space: nowrap;
-    }
-
-    a {
-      font-weight: 500;
-    }
+    gap: var(--space-1) var(--space-3);
+    margin-top: var(--space-3);
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
 
     strong {
-      color: var(--colour-foreground);
-      font-weight: 500;
+      color: var(--red-text);
+      font-weight: 800;
     }
   }
 
-  @media (max-width: 52rem) {
-    header {
-      padding-block: var(--old-space-6) var(--old-space-5);
+  .body {
+    padding: var(--space-4) var(--page-gutter) var(--space-5);
+
+    > :global(*) {
+      margin-inline: auto;
     }
   }
 </style>
