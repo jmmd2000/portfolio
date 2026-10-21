@@ -11,24 +11,24 @@
 
 <PageHeader title="Projects" lead="Things I've built in my own time." />
 
-<ul class="project-list">
-  {#each data.projects as project, index (project.id)}
-    <li><ProjectDetail {project} headingLevel="h2" imageLoading={index === 0 ? "eager" : "lazy"} writeUpSlug={project.writeUpSlug} /></li>
-  {/each}
-</ul>
+<div class="projects">
+  <ol class="project-list">
+    {#each data.projects as project, index (project.id)}
+      <li><ProjectDetail {project} headingLevel="h2" imageLoading={index === 0 ? "eager" : "lazy"} writeUpSlug={project.writeUpSlug} /></li>
+    {/each}
+  </ol>
+</div>
 
 <style>
-  .project-list {
-    display: grid;
-    gap: var(--old-space-8);
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .projects {
+    padding: var(--space-3) var(--page-gutter) var(--space-5);
+    border-bottom: var(--rule-section);
   }
 
-  @media (max-width: 52rem) {
-    .project-list {
-      gap: var(--old-space-7);
-    }
+  .project-list {
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule-row);
+    list-style: none;
   }
 </style>

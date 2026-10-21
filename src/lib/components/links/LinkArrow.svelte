@@ -23,7 +23,6 @@
   .arrow {
     display: inline-block;
     margin-inline-start: 0.25em;
-    color: var(--colour-text-muted);
     vertical-align: -0.125em;
     transition:
       transform 250ms var(--ease-out),
@@ -39,7 +38,7 @@
   }
 
   :global(a:focus-visible) .arrow {
-    color: var(--colour-accent);
+    color: var(--red);
   }
 
   @media (hover: hover) {
@@ -52,7 +51,7 @@
     }
 
     :global(a:hover) .arrow {
-      color: var(--colour-accent);
+      color: var(--red);
     }
   }
 
