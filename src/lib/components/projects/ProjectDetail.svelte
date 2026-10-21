@@ -2,7 +2,7 @@
   import type { Project } from "$lib/server/content/projects";
 
   /** Only the fields the project shows, so the admin preview can pass what's typed before it's saved */
-  export type ProjectDetailFields = Pick<Project, "id" | "title" | "description" | "imageURL" | "liveURL" | "liveLabel" | "sourceURL" | "stack">;
+  export type ProjectDetailFields = Pick<Project, "id" | "title" | "description" | "imageURL" | "liveURL" | "liveLabel" | "sourceURL" | "stack" | "year">;
 
   const stackList = new Intl.ListFormat("en-GB", { type: "conjunction" });
 </script>
@@ -32,14 +32,17 @@
       <img src={project.imageURL} alt="Screenshot of {project.title}" width="1600" height="1000" loading={imageLoading} onerror={() => (imageFailed = true)} />
     {/if}
   </span>
-  <div class="words">
+  <div>
+    {#if project.year !== null}
+      <p class="small">{project.year}</p>
+    {/if}
     <svelte:element this={headingLevel} class="name">{project.title}</svelte:element>
     <p class="description">{project.description}</p>
     {#if project.stack.length > 0}
-      <p class="stack">Built with {stackList.format(project.stack)}</p>
+      <p class="small stack">Built with {stackList.format(project.stack)}</p>
     {/if}
     {#if project.liveURL || project.sourceURL || writeUpSlug}
-      <ul class="links">
+      <ul class="links label">
         {#if project.liveURL}
           <li>
             <a href={project.liveURL} rel="external">{project.liveLabel}<span class="visually-hidden"> for {project.title}</span><LinkArrow kind="external" /></a>
@@ -64,23 +67,21 @@
   .project {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    align-items: center;
-    gap: var(--old-space-7);
-    scroll-margin-top: var(--old-space-6);
+    gap: var(--space-4);
+    align-items: start;
+    padding-block: var(--space-4);
+    border-bottom: var(--rule-row);
+    scroll-margin-top: var(--space-3);
   }
 
   .shot {
     display: grid;
     overflow: hidden;
     aspect-ratio: 16 / 10;
-    border-radius: var(--radius-medium);
-    background: var(--colour-tint);
-    box-shadow:
-      0 1px 2px oklch(0.2 0.02 var(--hue) / 0.08),
-      var(--shadow-picture);
+    outline: var(--rule-row);
     transition:
-      transform var(--duration-lift) var(--ease-out),
-      box-shadow var(--duration-lift) var(--ease-out);
+      transform 250ms var(--ease-out),
+      box-shadow 250ms var(--ease-out);
 
     img {
       width: 100%;
@@ -92,75 +93,72 @@
   }
 
   .fallback {
-    place-self: center;
-    padding: var(--old-space-4);
-    color: var(--colour-foreground);
-    font-size: var(--font-size-title);
-    font-weight: 600;
+    display: grid;
+    place-items: center;
+    padding: var(--space-2);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-display);
+    font-size: var(--type-large);
+    font-weight: 900;
     text-align: center;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .small {
+    color: var(--muted);
+    font-size: var(--type-small);
+    font-weight: 600;
   }
 
   .name {
-    font-size: var(--font-size-heading);
-    font-weight: 620;
+    margin-top: var(--space-1);
+    font-size: var(--type-large);
+    font-weight: 900;
+    overflow-wrap: anywhere;
   }
 
   .description {
-    max-width: 60ch;
-    margin-top: var(--old-space-2);
-    font-size: var(--font-size-summary);
-    line-height: 1.5;
+    max-width: 40ch;
+    margin-top: var(--space-2);
   }
 
   .stack {
-    margin-top: var(--old-space-5);
-    color: var(--colour-text-muted);
-    font-size: var(--font-size-label);
+    margin-top: var(--space-2);
   }
 
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--old-space-2) var(--old-space-5);
-    margin: var(--old-space-5) 0 0;
+    gap: var(--space-1) var(--space-3);
+    margin: var(--space-3) 0 0;
     padding: 0;
-    font-size: var(--font-size-label);
     list-style: none;
 
     a {
-      font-weight: 500;
+      display: inline-block;
+      padding-block: var(--space-1);
     }
   }
 
-  /* The picture lifts when one of the project's links is in use */
+  /* The screenshot lifts when one of the project's links is in use */
   .project:has(.links a:focus-visible) .shot {
-    transform: translateY(-4px);
-    box-shadow:
-      0 1px 2px oklch(0.2 0.02 var(--hue) / 0.08),
-      var(--shadow-picture-lifted);
+    transform: translate(-6px, -6px);
+    box-shadow: 6px 6px 0 var(--red);
   }
 
   @media (hover: hover) {
     .project:has(.links a:hover) .shot {
-      transform: translateY(-4px);
-      box-shadow:
-        0 1px 2px oklch(0.2 0.02 var(--hue) / 0.08),
-        var(--shadow-picture-lifted);
+      transform: translate(-6px, -6px);
+      box-shadow: 6px 6px 0 var(--red);
     }
   }
 
-  @media (hover: none) {
-    .links a {
-      display: inline-block;
-      padding-block: var(--old-space-2);
-    }
-  }
-
-  @media (max-width: 52rem) {
+  @media (max-width: 47.5rem) {
     .project {
       grid-template-columns: minmax(0, 1fr);
-      align-items: start;
-      gap: var(--old-space-5);
+      gap: var(--space-3);
     }
   }
 </style>
