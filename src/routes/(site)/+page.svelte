@@ -63,8 +63,11 @@
   .rows {
     margin: 0;
     padding: 0;
-    border-top: var(--rule-row);
     list-style: none;
+
+    > li + li {
+      border-top: var(--rule-row);
+    }
   }
 
   .more {
@@ -74,7 +77,6 @@
   }
 
   .currently-section {
-    padding: var(--space-3) var(--page-padding);
-    border-bottom: var(--rule-section);
+    padding: var(--space-3) var(--page-padding) var(--space-2);
   }
 </style>

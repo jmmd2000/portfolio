@@ -22,7 +22,6 @@
     gap: var(--space-4);
     align-items: center;
     padding-block: var(--space-3);
-    border-bottom: var(--rule-row);
     text-decoration: none;
   }
 

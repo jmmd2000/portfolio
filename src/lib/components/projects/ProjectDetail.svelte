@@ -69,7 +69,6 @@
     gap: var(--space-4);
     align-items: start;
     padding-block: var(--space-4);
-    border-bottom: var(--rule-row);
     scroll-margin-top: var(--space-3);
   }
 

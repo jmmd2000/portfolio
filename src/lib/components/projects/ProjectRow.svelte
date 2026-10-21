@@ -47,7 +47,6 @@
     gap: var(--space-3);
     align-items: center;
     padding-block: var(--space-3);
-    border-bottom: var(--rule-row);
   }
 
   .shot {
