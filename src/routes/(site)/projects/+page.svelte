@@ -20,7 +20,7 @@
 <style>
   .project-list {
     display: grid;
-    gap: var(--space-8);
+    gap: var(--old-space-8);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -28,7 +28,7 @@
 
   @media (max-width: 52rem) {
     .project-list {
-      gap: var(--space-7);
+      gap: var(--old-space-7);
     }
   }
 </style>

@@ -16,7 +16,7 @@
 
 <style>
   .page-header {
-    padding-block: var(--space-7);
+    padding-block: var(--old-space-7);
   }
 
   h1 {
@@ -26,7 +26,7 @@
 
   .intro {
     max-width: 46ch;
-    margin-top: var(--space-4);
+    margin-top: var(--old-space-4);
     color: var(--colour-foreground);
     font-size: var(--font-size-title);
     font-weight: 450;
@@ -36,7 +36,7 @@
 
   @media (max-width: 52rem) {
     .page-header {
-      padding-block: var(--space-6);
+      padding-block: var(--old-space-6);
     }
   }
 </style>

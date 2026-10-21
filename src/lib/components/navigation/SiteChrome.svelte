@@ -47,10 +47,10 @@
 
   .skip-link {
     position: absolute;
-    inset-inline-start: var(--space-4);
-    inset-block-start: var(--space-4);
+    inset-inline-start: var(--old-space-4);
+    inset-block-start: var(--old-space-4);
     z-index: 20;
-    padding: var(--space-2) var(--space-4);
+    padding: var(--old-space-2) var(--old-space-4);
     border-radius: var(--radius-medium);
     background: var(--colour-foreground);
     color: var(--colour-background);

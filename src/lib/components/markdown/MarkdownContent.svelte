@@ -21,14 +21,14 @@
     font-size: var(--font-size-summary);
 
     > :global(* + *) {
-      margin-top: var(--space-5);
+      margin-top: var(--old-space-5);
     }
 
     :global {
       h2,
       h3,
       h4 {
-        scroll-margin-top: var(--space-6);
+        scroll-margin-top: var(--old-space-6);
       }
 
       .heading-link {
@@ -56,16 +56,16 @@
       }
 
       h2 {
-        margin-top: var(--space-7);
+        margin-top: var(--old-space-7);
       }
 
       h3 {
-        margin-top: var(--space-6);
+        margin-top: var(--old-space-6);
         font-size: var(--font-size-title);
       }
 
       h4 {
-        margin-top: var(--space-6);
+        margin-top: var(--old-space-6);
         font-size: var(--font-size-summary);
         font-weight: 600;
         font-stretch: 100%;
@@ -77,11 +77,11 @@
       }
 
       li {
-        padding-inline-start: var(--space-1);
+        padding-inline-start: var(--old-space-1);
       }
 
       li + li {
-        margin-top: var(--space-2);
+        margin-top: var(--old-space-2);
       }
 
       li::marker {
@@ -90,7 +90,7 @@
 
       blockquote {
         margin-inline: 0;
-        padding: var(--space-4) var(--space-5);
+        padding: var(--old-space-4) var(--old-space-5);
         border-radius: var(--radius-medium);
         background: var(--colour-tint);
         color: var(--colour-foreground);
@@ -117,7 +117,7 @@
 
       hr {
         height: 1px;
-        margin-block: var(--space-6);
+        margin-block: var(--old-space-6);
         border: 0;
         background: var(--colour-divider);
       }
@@ -132,7 +132,7 @@
 
       th,
       td {
-        padding: var(--space-2) var(--space-4) var(--space-2) 0;
+        padding: var(--old-space-2) var(--old-space-4) var(--old-space-2) 0;
         border-bottom: 1px solid var(--colour-divider);
       }
 
@@ -165,7 +165,7 @@
       }
 
       .code-block figcaption {
-        padding: var(--space-2) var(--space-4);
+        padding: var(--old-space-2) var(--old-space-4);
         border-bottom: 1px solid var(--colour-divider);
         color: var(--colour-text-muted);
         font-size: var(--font-size-label);
@@ -173,7 +173,7 @@
 
       pre {
         margin: 0;
-        padding: var(--space-4);
+        padding: var(--old-space-4);
         overflow-x: auto;
         color: var(--colour-text);
         line-height: 1.65;

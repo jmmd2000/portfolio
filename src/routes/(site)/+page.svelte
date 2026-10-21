@@ -78,24 +78,24 @@
 
 <style>
   h2 {
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--old-space-5);
   }
 
   .two-columns {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: var(--space-7);
-    padding-block: var(--space-7);
+    gap: var(--old-space-7);
+    padding-block: var(--old-space-7);
   }
 
   .bio {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--old-space-4);
     max-width: 60ch;
   }
 
   .after-list {
-    margin-top: var(--space-5);
+    margin-top: var(--old-space-5);
     font-size: var(--font-size-label);
 
     a {
@@ -105,7 +105,7 @@
 
   /* The tint runs the full width of the window without making the page scroll sideways */
   .band {
-    padding-block: var(--space-7);
+    padding-block: var(--old-space-7);
     background: var(--colour-tint);
     box-shadow: 0 0 0 100vmax var(--colour-tint);
     clip-path: inset(0 -100vmax);
@@ -115,8 +115,8 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    gap: var(--space-4);
-    margin-bottom: var(--space-5);
+    gap: var(--old-space-4);
+    margin-bottom: var(--old-space-5);
 
     h2 {
       margin-bottom: 0;
@@ -131,22 +131,22 @@
   .projects {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-6);
+    gap: var(--old-space-6);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .currently {
-    padding-block: var(--space-8) 0;
+    padding-block: var(--old-space-8) 0;
   }
 
   .articles {
-    padding-block: var(--space-7) 0;
+    padding-block: var(--old-space-7) 0;
 
     ul {
       display: grid;
-      gap: var(--space-4);
+      gap: var(--old-space-4);
       max-width: var(--reading-width);
       margin: 0;
       padding: 0;
@@ -219,25 +219,25 @@
   @media (max-width: 52rem) {
     .two-columns {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--space-6);
-      padding-block: var(--space-6);
+      gap: var(--old-space-6);
+      padding-block: var(--old-space-6);
     }
 
     .band {
-      padding-block: var(--space-6);
+      padding-block: var(--old-space-6);
     }
 
     .projects {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--space-5);
+      gap: var(--old-space-5);
     }
 
     .articles {
-      padding-block-start: var(--space-6);
+      padding-block-start: var(--old-space-6);
     }
 
     .currently {
-      padding-block-start: var(--space-7);
+      padding-block-start: var(--old-space-7);
     }
   }
 </style>

@@ -35,8 +35,8 @@
 
   .buttons {
     display: flex;
-    gap: var(--space-2);
-    padding-bottom: var(--space-3);
+    gap: var(--old-space-2);
+    padding-bottom: var(--old-space-3);
   }
 
   /* On a wide screen the buttons sit in the summary's row, on top of the details, so the open form below keeps the full width */
@@ -54,7 +54,7 @@
     .buttons {
       grid-row: 1;
       grid-column: 2;
-      padding-block: var(--space-2);
+      padding-block: var(--old-space-2);
     }
 
     .has-buttons summary {
@@ -65,7 +65,7 @@
   summary {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--old-space-2);
     min-height: 4rem;
     color: var(--colour-foreground);
     font-size: var(--font-size-title);
@@ -91,6 +91,6 @@
   }
 
   .content {
-    padding-bottom: var(--space-5);
+    padding-bottom: var(--old-space-5);
   }
 </style>

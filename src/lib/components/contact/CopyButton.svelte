@@ -47,7 +47,7 @@
 <style>
   .copy {
     min-inline-size: 6rem;
-    padding: var(--space-2) var(--space-4);
+    padding: var(--old-space-2) var(--old-space-4);
     border: 1px solid color-mix(in oklch, var(--colour-text-on-deep) 55%, transparent);
     border-radius: var(--radius-medium);
     background: transparent;

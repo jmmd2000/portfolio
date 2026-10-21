@@ -40,8 +40,8 @@
 
 <style>
   footer {
-    margin-top: var(--space-8);
-    padding-block: var(--space-7) var(--space-6);
+    margin-top: var(--old-space-8);
+    padding-block: var(--old-space-7) var(--old-space-6);
     background: var(--colour-deep);
     color: var(--colour-text-on-deep-muted);
 
@@ -58,7 +58,7 @@
   }
 
   .hello {
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--old-space-3);
     color: var(--colour-text-on-deep);
     font-size: var(--font-size-heading);
     font-weight: 620;
@@ -69,7 +69,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-3) var(--space-5);
+    gap: var(--old-space-3) var(--old-space-5);
   }
 
   .email {
@@ -91,15 +91,15 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: var(--space-4) var(--space-6);
-    margin-top: var(--space-7);
+    gap: var(--old-space-4) var(--old-space-6);
+    margin-top: var(--old-space-7);
     font-size: var(--font-size-label);
   }
 
   .socials {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
+    gap: var(--old-space-2) var(--old-space-5);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -136,18 +136,18 @@
     .socials a,
     .log-in {
       display: inline-block;
-      padding-block: var(--space-3);
+      padding-block: var(--old-space-3);
     }
   }
 
   @media (max-width: 52rem) {
     footer {
-      margin-top: var(--space-7);
-      padding-block: var(--space-6) var(--space-5);
+      margin-top: var(--old-space-7);
+      padding-block: var(--old-space-6) var(--old-space-5);
     }
 
     .footer-row {
-      margin-top: var(--space-6);
+      margin-top: var(--old-space-6);
     }
   }
 

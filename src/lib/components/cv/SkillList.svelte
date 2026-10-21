@@ -22,13 +22,13 @@
 <style>
   .skills {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--old-space-3);
     margin: 0;
 
     div {
       display: grid;
       grid-template-columns: 10.5rem minmax(0, 1fr);
-      gap: var(--space-4);
+      gap: var(--old-space-4);
     }
 
     dt {
@@ -42,7 +42,7 @@
   }
 
   .note {
-    margin-top: var(--space-4);
+    margin-top: var(--old-space-4);
     color: var(--colour-text-muted);
     font-size: var(--font-size-label);
   }

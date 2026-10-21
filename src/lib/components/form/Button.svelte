@@ -17,7 +17,7 @@
 
 <style>
   button {
-    padding: var(--space-2) var(--space-4);
+    padding: var(--old-space-2) var(--old-space-4);
     border: 1px solid transparent;
     border-radius: var(--radius-medium);
     font: inherit;
@@ -43,7 +43,7 @@
   .icon {
     display: inline-grid;
     place-items: center;
-    padding: var(--space-2);
+    padding: var(--old-space-2);
 
     :global(svg) {
       width: 1lh;

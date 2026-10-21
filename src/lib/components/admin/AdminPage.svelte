@@ -21,9 +21,9 @@
 <style>
   section {
     display: grid;
-    gap: var(--space-6);
+    gap: var(--old-space-6);
     justify-items: start;
-    padding-block: var(--space-7) 0;
+    padding-block: var(--old-space-7) 0;
   }
 
   h1 {
@@ -33,7 +33,7 @@
 
   @media (max-width: 52rem) {
     section {
-      padding-block-start: var(--space-6);
+      padding-block-start: var(--old-space-6);
     }
   }
 </style>

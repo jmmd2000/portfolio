@@ -13,7 +13,7 @@
 
 <style>
   p {
-    padding: var(--space-2) var(--space-3);
+    padding: var(--old-space-2) var(--old-space-3);
     border-radius: var(--radius-medium);
     font-size: var(--font-size-label);
     font-weight: 500;

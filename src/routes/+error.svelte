@@ -29,7 +29,7 @@
 <style>
   /* The code is set wide like the home page name, the only other place type is this big */
   .error {
-    padding-block: var(--space-8) var(--space-7);
+    padding-block: var(--old-space-8) var(--old-space-7);
   }
 
   .code {
@@ -43,7 +43,7 @@
 
   h1 {
     max-width: 34ch;
-    margin-top: var(--space-5);
+    margin-top: var(--old-space-5);
     font-size: var(--font-size-lead);
     font-weight: 450;
     font-stretch: 100%;
@@ -52,7 +52,7 @@
 
   .detail {
     max-width: 60ch;
-    margin-top: var(--space-3);
+    margin-top: var(--old-space-3);
   }
 
   code {
@@ -66,7 +66,7 @@
 
   @media (max-width: 52rem) {
     .error {
-      padding-block: var(--space-7) var(--space-6);
+      padding-block: var(--old-space-7) var(--old-space-6);
     }
   }
 </style>

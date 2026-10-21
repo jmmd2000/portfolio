@@ -69,7 +69,7 @@
 <style>
   .field {
     display: grid;
-    gap: var(--space-1);
+    gap: var(--old-space-1);
     transition: translate var(--duration-quick) var(--ease-out);
 
     &:focus-within {
@@ -86,7 +86,7 @@
   input,
   textarea {
     width: 100%;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--old-space-2) var(--old-space-3);
     border: 1px solid color-mix(in oklch, var(--colour-text-muted) 55%, transparent);
     border-radius: var(--radius-medium);
     background: var(--colour-background);

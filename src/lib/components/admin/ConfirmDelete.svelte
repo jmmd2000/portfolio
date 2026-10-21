@@ -25,7 +25,7 @@
 <style>
   dialog {
     width: min(26rem, calc(100% - 2 * var(--page-gutter)));
-    padding: var(--space-5);
+    padding: var(--old-space-5);
     border: 1px solid var(--colour-divider);
     border-radius: var(--radius-large);
     background: var(--colour-background);
@@ -41,7 +41,7 @@
     }
 
     p {
-      margin-block: var(--space-2) var(--space-5);
+      margin-block: var(--old-space-2) var(--old-space-5);
       color: var(--colour-text);
     }
   }
@@ -50,6 +50,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
-    gap: var(--space-2);
+    gap: var(--old-space-2);
   }
 </style>

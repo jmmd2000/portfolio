@@ -51,14 +51,14 @@
 
   fieldset {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--old-space-3);
     margin: 0;
     padding: 0;
     border: none;
   }
 
   legend {
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--old-space-3);
     padding: 0;
     color: var(--colour-foreground);
     font-size: var(--font-size-title);
@@ -69,14 +69,14 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
     align-items: start;
-    gap: var(--space-3);
+    gap: var(--old-space-3);
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--old-space-2);
   }
 
   .message {

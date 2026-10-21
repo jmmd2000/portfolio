@@ -30,12 +30,12 @@
 <style>
   form {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--old-space-4);
     width: 100%;
     max-width: 26rem;
   }
 
   .actions {
-    margin-top: var(--space-1);
+    margin-top: var(--old-space-1);
   }
 </style>

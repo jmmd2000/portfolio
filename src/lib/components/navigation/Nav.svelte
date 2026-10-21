@@ -48,8 +48,8 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-3) var(--space-5);
-    padding-block: var(--space-5);
+    gap: var(--old-space-3) var(--old-space-5);
+    padding-block: var(--old-space-5);
   }
 
   .home {
@@ -68,7 +68,7 @@
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
+    gap: var(--old-space-2) var(--old-space-5);
     margin-inline-start: auto;
   }
 
@@ -106,7 +106,7 @@
     }
 
     .nav-link {
-      padding-block: var(--space-3);
+      padding-block: var(--old-space-3);
     }
   }
 
