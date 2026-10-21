@@ -4,7 +4,6 @@
   import PageHead from "$lib/components/head/PageHead.svelte";
   import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
   import CurrentlyCards from "$lib/components/home/CurrentlyCards.svelte";
-  import HomeHeader from "$lib/components/home/HomeHeader.svelte";
   import WorkList from "$lib/components/home/WorkList.svelte";
   import ProjectRow from "$lib/components/projects/ProjectRow.svelte";
   import type { PageProps } from "./$types";
@@ -17,8 +16,6 @@
 
 <PageHead description="James Doyle, a software engineer from Dublin." />
 <PersonStructuredData profile={data.profile} socials={data.socials} />
-
-<HomeHeader profile={data.profile} />
 
 <div class="two-columns">
   <section aria-labelledby="about-heading">

@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { resolve } from "$app/paths";
+  import HomeHeader from "$lib/components/home/HomeHeader.svelte";
   import Footer from "$lib/components/navigation/Footer.svelte";
   import Nav from "$lib/components/navigation/Nav.svelte";
+  import type { Profile } from "$lib/server/content/profile";
   import type { Social } from "$lib/server/content/socials";
   import { siteName } from "$lib/site";
 
@@ -11,18 +13,26 @@
     currentPath: string | null;
     socials: Social[];
     hasArticles: boolean;
+    /** Needed on the home page, which shows the name and intro in place of the slim bar */
+    profile?: Profile;
     children: Snippet;
   }
 
-  let { currentPath, socials, hasArticles, children }: Props = $props();
+  let { currentPath, socials, hasArticles, profile, children }: Props = $props();
+
+  const isHome = $derived(currentPath === "/");
 </script>
 
 <div class="site">
   <a class="skip-link label" href="#main">Skip to content</a>
-  <header class="bar">
-    <a class="home label" href={resolve("/")}>{siteName}</a>
-    <Nav {currentPath} {hasArticles} />
-  </header>
+  {#if isHome && profile}
+    <HomeHeader {profile} {hasArticles} />
+  {:else}
+    <header class="bar">
+      <a class="home label" href={resolve("/")}>{siteName}</a>
+      <Nav {currentPath} {hasArticles} />
+    </header>
+  {/if}
   <main id="main">
     {@render children()}
   </main>
