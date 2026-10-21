@@ -51,6 +51,10 @@
         .map(line => line.trim())
         .filter(line => line !== ""),
       year: /^\d{4}$/.test(text("year")) ? Number(text("year")) : null,
+      highlights: text("highlights")
+        .split("\n")
+        .map(line => line.trim())
+        .filter(line => line !== ""),
     };
   }
 
