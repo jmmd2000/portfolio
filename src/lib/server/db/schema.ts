@@ -128,6 +128,25 @@ export const liveSettings = pgTable(
   table => [check("live_settings_singleton", sql`${table.id} = 1`)]
 );
 
+/** Plum, the cat every visitor shares. There is only ever one row. Each stat runs from 0 to 100, and higher is better */
+export const plum = pgTable(
+  "plum",
+  {
+    id: integer().primaryKey().default(1),
+    food: integer().notNull().default(80),
+    happiness: integer().notNull().default(80),
+    energy: integer().notNull().default(100),
+    /** When her stats last decayed. It moves on in whole 15-minute steps */
+    decayedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  table => [
+    check("plum_singleton", sql`${table.id} = 1`),
+    check("plum_food_range", sql`${table.food} between 0 and 100`),
+    check("plum_happiness_range", sql`${table.happiness} between 0 and 100`),
+    check("plum_energy_range", sql`${table.energy} between 0 and 100`),
+  ]
+);
+
 /** The secret that scrambles visitors' IPs on one Irish date. A new random one is made each day */
 export const visitorSecrets = pgTable("visitor_secrets", {
   day: date().primaryKey(),
