@@ -5,6 +5,7 @@
   import Button from "$lib/components/form/Button.svelte";
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import Field from "$lib/components/form/Field.svelte";
+  import ImageField from "$lib/components/images/ImageField.svelte";
   import FieldGrid from "$lib/components/form/FieldGrid.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
@@ -75,7 +76,7 @@
         <Field label="Name" name="title" value={values.title} error={form?.errors?.title?.[0]} />
         <Field label="One-liner" name="description" value={values.description} error={form?.errors?.description?.[0]} />
         <div class="wide">
-          <Field label="Screenshot URL" name="imageURL" value={values.imageURL} error={form?.errors?.imageURL?.[0]} />
+          <ImageField label="Screenshot URL" name="imageURL" value={values.imageURL} error={form?.errors?.imageURL?.[0]} />
         </div>
         <Field label="Live link" name="liveURL" hint="Optional" value={values.liveURL} error={form?.errors?.liveURL?.[0]} />
         <Field label="Live link text" name="liveLabel" hint="Needed when there's a live link" value={values.liveLabel} error={form?.errors?.liveLabel?.[0]} />
