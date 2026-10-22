@@ -16,6 +16,7 @@
   import { savedTimeLabel } from "$lib/components/editor/savedTime";
   import Button from "$lib/components/form/Button.svelte";
   import Field from "$lib/components/form/Field.svelte";
+  import ImagePicker from "$lib/components/images/ImagePicker.svelte";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import ThemeToggle from "$lib/components/theme/ThemeToggle.svelte";
   import type { PageProps } from "./$types";
@@ -280,6 +281,7 @@
             {entry.name} <kbd aria-hidden="true">{entry.shortcut}</kbd>
           </Button>
         {/each}
+        <ImagePicker small onpick={url => insertMarkup({ kind: "block", block: `![Alt text](${url})`, select: "Alt text" })} />
         <EditorPanel label="Insert">
           {#snippet icon()}<Plus size="1.125em" aria-hidden="true" />{/snippet}
           <MarkdownReference oninsert={insertMarkup} />
