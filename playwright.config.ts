@@ -32,6 +32,8 @@ export default defineConfig({
       R2_SECRET_ACCESS_KEY: "e2e",
       R2_BUCKET: "e2e",
       ASSETS_URL: "https://assets.e2e.invalid",
+      // As in production, so a 10 MB upload reaches the app instead of being refused by the server first
+      BODY_SIZE_LIMIT: "11M",
     },
   },
 });
