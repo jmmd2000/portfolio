@@ -1,6 +1,7 @@
 <!--
   @component
-  Plum's red band on the home page: her pen, how she is, her stats, and Feed, Pet and Play. Every visitor shares
+  Plum's red band on the home page: her pen, how she is, her stats, and Feed, Pet and Play. The visitor can swap
+  the pen to a photo of the real Plum and back. Every visitor shares
   her. The band asks the server how she is every 10 seconds while the tab is visible, and shows what other
   visitors did. Awake, she blinks every few seconds and plays a short animation now and then. Asleep, her ear
   flicks now and then. Neither happens if the visitor asks for reduced motion. With no `plum` (her data couldn't
@@ -17,6 +18,7 @@
   import { coolingMessage, doneMessage, hungryMessages, othersMessages, othersSleepMessages, refusalMessages, sleepMessages, unreachableMessage } from "./plumMessages";
   import PlumSprite from "./PlumSprite.svelte";
   import PlumStats from "./PlumStats.svelte";
+  import { realPlumPhotoDescription, realPlumPhotoURL } from "./realPlumPhoto";
 
   interface Props {
     plum: PlumState | null;
@@ -62,6 +64,7 @@
   /** 0 with her eyes open, 1 half shut, 2 shut */
   let blinkStep = $state(0);
   let gaze = $state<GazeDirection | null>(null);
+  let showingPhoto = $state(false);
 
   let band = $state<HTMLElement>();
   let yard = $state<HTMLElement>();
@@ -294,11 +297,17 @@
   <h2 class="section-title" id="plum-heading">Plum</h2>
   <div class="pen">
     <div class="yard" bind:this={yard}>
-      <PlumSprite sheet={penSprites[sprite.name]} frame={sprite.frame} loop={sprite.loop} label="Plum, {spriteDescriptions[sprite.name]}" />
+      {#if !showingPhoto}
+        <PlumSprite sheet={penSprites[sprite.name]} frame={sprite.frame} loop={sprite.loop} label="Plum, {spriteDescriptions[sprite.name]}" />
+      {:else if realPlumPhotoURL}
+        <img class="photo" src={realPlumPhotoURL} alt={realPlumPhotoDescription} />
+      {:else}
+        <p>Nothing here yet.</p>
+      {/if}
     </div>
     <div>
       <h3 class="mood">{latest ? moodLine(latest) : "She's asleep"}</h3>
-      <p class="about">The site's cat. Every visitor shares her, so whatever you do, the next person sees.</p>
+      <button type="button" class="real" disabled={!ready} onclick={() => (showingPhoto = !showingPhoto)}>{showingPhoto ? "Back to pixel Plum" : "See the real Plum"}</button>
       {#if latest}
         <PlumStats stats={latest.stats} />
       {/if}
@@ -362,10 +371,29 @@
     line-height: 0.95;
   }
 
-  .about {
-    max-width: 40ch;
-    margin: var(--space-2) 0 0;
-    font-weight: 500;
+  .photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .real {
+    margin-top: var(--space-2);
+    padding: var(--space-1) 0;
+    border: none;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 5px;
+    cursor: pointer;
+    transition: text-decoration-thickness var(--duration-quick) var(--ease-out);
+
+    &:disabled {
+      cursor: default;
+    }
   }
 
   .actions {
@@ -412,6 +440,10 @@
   }
 
   @media (hover: hover) {
+    .real:hover:not(:disabled) {
+      text-decoration-thickness: 6px;
+    }
+
     .actions button:hover:not(:disabled) {
       transform: translate(-3px, -3px);
       box-shadow: 3px 3px 0 var(--ink);
