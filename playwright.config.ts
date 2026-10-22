@@ -32,6 +32,10 @@ export default defineConfig({
       R2_SECRET_ACCESS_KEY: "e2e",
       R2_BUCKET: "e2e",
       ASSETS_URL: "https://assets.e2e.invalid",
+      // No test picks a row for Spotify to replace, so the server never calls it
+      SPOTIFY_CLIENT_ID: "e2e",
+      SPOTIFY_CLIENT_SECRET: "e2e",
+      SPOTIFY_REFRESH_TOKEN: "e2e",
       // As in production, so a 10 MB upload reaches the app instead of being refused by the server first
       BODY_SIZE_LIMIT: "11M",
     },

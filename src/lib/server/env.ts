@@ -12,6 +12,9 @@ const environmentSchema = z.object({
   R2_BUCKET: z.string().min(1),
   /** The bucket's public address, with no slash at the end */
   ASSETS_URL: z.url().transform(url => url.replace(/\/+$/, "")),
+  SPOTIFY_CLIENT_ID: z.string().min(1),
+  SPOTIFY_CLIENT_SECRET: z.string().min(1),
+  SPOTIFY_REFRESH_TOKEN: z.string().min(1),
 });
 
 const parsedEnvironment = environmentSchema.safeParse(process.env);
