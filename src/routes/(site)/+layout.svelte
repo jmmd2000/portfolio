@@ -6,6 +6,6 @@
   let { data, children }: LayoutProps = $props();
 </script>
 
-<SiteLayout currentPath={page.url.pathname} socials={data.socials} hasArticles={data.hasArticles} profile={data.profile}>
+<SiteLayout currentPath={page.url.pathname} socials={data.socials} hasArticles={data.hasArticles} profile={data.profile} visitorCount={data.visitorCount}>
   {@render children()}
 </SiteLayout>

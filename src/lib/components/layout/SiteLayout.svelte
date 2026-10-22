@@ -15,10 +15,12 @@
     hasArticles: boolean;
     /** Needed on the home page, which shows the name and intro in place of the slim bar */
     profile?: Profile;
+    /** The footer leaves the count out when this is missing or null */
+    visitorCount?: number | null;
     children: Snippet;
   }
 
-  let { currentPath, socials, hasArticles, profile, children }: Props = $props();
+  let { currentPath, socials, hasArticles, profile, visitorCount = null, children }: Props = $props();
 
   const isHome = $derived(currentPath === "/");
 </script>
@@ -36,7 +38,7 @@
   <main id="main">
     {@render children()}
   </main>
-  <Footer {socials} {isHome} />
+  <Footer {socials} {isHome} {visitorCount} />
 </div>
 
 <style>
