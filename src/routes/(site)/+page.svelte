@@ -4,6 +4,7 @@
   import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
   import ArticleRow from "$lib/components/home/ArticleRow.svelte";
   import CurrentlyRows from "$lib/components/home/CurrentlyRows.svelte";
+  import PlumBand from "$lib/components/plum/PlumBand.svelte";
   import ProjectRow from "$lib/components/projects/ProjectRow.svelte";
   import type { PageProps } from "./$types";
 
@@ -39,6 +40,8 @@
     <a class="more label" href={resolve("/articles")}>{allArticlesText}</a>
   </section>
 {/if}
+
+<PlumBand plum={data.plum} />
 
 {#if data.currentlyRows.length > 0}
   <section class="home-section" aria-labelledby="currently-heading">

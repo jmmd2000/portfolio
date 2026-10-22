@@ -1,0 +1,1 @@
+ALTER TABLE "plum" ADD COLUMN "awake_until" timestamp with time zone;

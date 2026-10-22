@@ -5,9 +5,20 @@
   import Checkbox from "$lib/components/form/Checkbox.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import { keepValues } from "$lib/components/form/keepValues";
+  import { moodLine, statWord } from "$lib/plum/plumMood";
   import type { PageProps } from "./$types";
 
   let { data, form }: PageProps = $props();
+
+  const plumRows = $derived(
+    data.plum
+      ? [
+          { name: "Food", value: data.plum.stats.food },
+          { name: "Happiness", value: data.plum.stats.happiness },
+          { name: "Energy", value: data.plum.stats.energy },
+        ]
+      : []
+  );
 </script>
 
 <AdminPage title="Live parts" description="Settings for the parts of the site that change on their own.">
@@ -34,6 +45,23 @@
       <Button type="submit" variant="primary">Save</Button>
     </div>
   </form>
+
+  <section class="plum" aria-labelledby="plum-heading">
+    <h2 class="label" id="plum-heading">Plum</h2>
+    {#if data.plum}
+      <p>{moodLine(data.plum)}.</p>
+      <dl>
+        {#each plumRows as row (row.name)}
+          <div>
+            <dt>{row.name}</dt>
+            <dd>{row.value} out of 100, {statWord(row.value).toLowerCase()}</dd>
+          </div>
+        {/each}
+      </dl>
+    {:else}
+      <p class="hint">Her stats couldn't be read.</p>
+    {/if}
+  </section>
 </AdminPage>
 
 <style>
@@ -65,5 +93,36 @@
 
   .actions {
     margin-top: var(--space-1);
+  }
+
+  .plum {
+    display: grid;
+    gap: var(--space-1);
+    width: 100%;
+    max-width: 40rem;
+
+    h2 {
+      margin-bottom: var(--space-1);
+      font-size: var(--type-label);
+    }
+  }
+
+  dl {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+
+    > div {
+      display: grid;
+      grid-template-columns: 7rem minmax(0, 1fr);
+    }
+  }
+
+  dt {
+    font-weight: 700;
+  }
+
+  dd {
+    margin: 0;
   }
 </style>
