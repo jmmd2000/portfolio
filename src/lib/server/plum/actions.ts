@@ -1,8 +1,8 @@
 import { sql } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { plum, plumCooldowns } from "$lib/server/db/schema";
-import { asleepBelow, cooldownSeconds, fullFrom, plumActions, type PlumAction } from "$lib/plum/plumRules";
-import { ensurePlum, getPlum, type PlumStats } from "./plum";
+import { asleepBelow, cooldownSeconds, fullFrom, plumActions, type PlumAction, type PlumStats } from "$lib/plum/plumRules";
+import { ensurePlum, getPlum } from "./plum";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 

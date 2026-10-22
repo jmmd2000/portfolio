@@ -1,3 +1,10 @@
+/** Plum's stats. Each runs from 0 to 100, and higher is better */
+export interface PlumStats {
+  food: number;
+  happiness: number;
+  energy: number;
+}
+
 export const plumActions = ["feed", "pet", "play"] as const;
 
 export type PlumAction = (typeof plumActions)[number];

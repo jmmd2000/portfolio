@@ -1,13 +1,7 @@
 import { sql } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { plum } from "$lib/server/db/schema";
-
-/** Plum's stats. Each runs from 0 to 100, and higher is better */
-export interface PlumStats {
-  food: number;
-  happiness: number;
-  energy: number;
-}
+import type { PlumStats } from "$lib/plum/plumRules";
 
 const decayStepMinutes = 15;
 const decayCheckIntervalMilliseconds = 60_000;
