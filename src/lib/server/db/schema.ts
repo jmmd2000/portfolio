@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { boolean, check, date, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, check, date, index, integer, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
 
 export const profile = pgTable(
   "profile",
@@ -109,6 +109,28 @@ export const currently = pgTable("currently", {
   shown: boolean().notNull().default(true),
   sort: integer().notNull(),
 });
+
+/** Running totals, one row per name, such as "visitors" */
+export const counters = pgTable("counters", {
+  name: text().primaryKey(),
+  count: integer().notNull(),
+});
+
+/** The secret that scrambles visitors' IPs on one Irish date. A new random one is made each day */
+export const visitorSecrets = pgTable("visitor_secrets", {
+  day: date().primaryKey(),
+  secret: text().notNull(),
+});
+
+/** The scrambled IP of each visitor counted on one Irish date */
+export const visitorHashes = pgTable(
+  "visitor_hashes",
+  {
+    day: date().notNull(),
+    hash: text().notNull(),
+  },
+  table => [primaryKey({ columns: [table.day, table.hash] })]
+);
 
 // Better-auth tables
 
