@@ -3,7 +3,7 @@
   import PageHead from "$lib/components/head/PageHead.svelte";
   import PersonStructuredData from "$lib/components/head/PersonStructuredData.svelte";
   import ArticleRow from "$lib/components/home/ArticleRow.svelte";
-  import CurrentlyCards from "$lib/components/home/CurrentlyCards.svelte";
+  import CurrentlyRows from "$lib/components/home/CurrentlyRows.svelte";
   import ProjectRow from "$lib/components/projects/ProjectRow.svelte";
   import type { PageProps } from "./$types";
 
@@ -41,8 +41,9 @@
 {/if}
 
 {#if data.currentlyRows.length > 0}
-  <section class="currently-section" aria-label="Currently">
-    <CurrentlyCards rows={data.currentlyRows} />
+  <section class="home-section" aria-labelledby="currently-heading">
+    <h2 class="section-title" id="currently-heading">Currently</h2>
+    <CurrentlyRows rows={data.currentlyRows} />
   </section>
 {/if}
 
@@ -50,6 +51,10 @@
   .home-section {
     padding: var(--space-3) var(--page-padding) var(--space-5);
     border-bottom: var(--rule-section);
+
+    &:last-of-type {
+      border-bottom: none;
+    }
   }
 
   .rows {
@@ -66,9 +71,5 @@
     display: inline-block;
     margin-top: var(--space-3);
     padding-block: var(--space-1);
-  }
-
-  .currently-section {
-    padding: var(--space-3) var(--page-padding) var(--space-2);
   }
 </style>

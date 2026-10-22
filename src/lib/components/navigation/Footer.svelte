@@ -24,25 +24,36 @@
     <a class="fitted-email fitted-line" href={emailSocial.url} rel="external" bind:this={fittedEmail} {@attach fitText(5.5)}><span class="part">{linkText(emailSocial.url)}</span></a>
   {/if}
   <div class="row">
-    {#if emailSocial && isHome}
-      <CopyButton text={linkText(emailSocial.url)} label="Copy email" selectTarget={fittedEmail} />
-    {:else if emailSocial}
-      <a class="email label" href={emailSocial.url} rel="external">{linkText(emailSocial.url)}</a>
+    <div class="links">
+      {#if emailSocial && isHome}
+        <CopyButton text={linkText(emailSocial.url)} label="Copy email" selectTarget={fittedEmail} />
+      {:else if emailSocial}
+        <a class="email label" href={emailSocial.url} rel="external">{linkText(emailSocial.url)}</a>
+      {/if}
+      <ul class="socials label">
+        {#each otherSocials as social (social.id)}
+          <li><a href={social.url} rel="external">{social.name}</a></li>
+        {/each}
+      </ul>
+    </div>
+    {#if visitorCount !== null}
+      <p class="visitors label">You are visitor {visitorCount.toLocaleString("en-GB")}</p>
     {/if}
-    <ul class="socials label">
-      {#each otherSocials as social (social.id)}
-        <li><a href={social.url} rel="external">{social.name}</a></li>
-      {/each}
-    </ul>
   </div>
-  {#if visitorCount !== null}
-    <p class="visitors label">You are visitor {visitorCount.toLocaleString("en-GB")}</p>
-  {/if}
 </footer>
 
 <style>
+  /* The footer swaps in the band's colours, so every link, outline and button inside it reads on the dark band */
   footer {
-    padding: var(--space-3) var(--page-padding) var(--space-4);
+    --ink: var(--band-ink);
+    --muted: var(--band-muted);
+    --red: var(--band-red);
+    --red-text: var(--band-red);
+
+    padding: var(--space-4) var(--page-padding) var(--space-5);
+    border-top: var(--rule-section);
+    background: var(--band);
+    color: var(--ink);
   }
 
   .fitted-email {
@@ -70,8 +81,15 @@
     gap: var(--space-2) var(--space-3);
   }
 
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
   .visitors {
-    margin: var(--space-3) 0 0;
+    margin: 0;
     color: var(--muted);
   }
 
