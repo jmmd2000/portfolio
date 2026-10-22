@@ -1,9 +1,11 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { invalidateAll } from "$app/navigation";
   import AdminPage from "$lib/components/admin/AdminPage.svelte";
   import ConfirmDelete from "$lib/components/admin/ConfirmDelete.svelte";
   import CopyButton from "$lib/components/contact/CopyButton.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
+  import ImageUploader from "$lib/components/images/ImageUploader.svelte";
   import { formatBytes } from "$lib/images/formatBytes";
   import type { PageProps } from "./$types";
 
@@ -20,6 +22,8 @@
   {#if data.failed}
     <FormMessage status="error">The image storage couldn't be reached, so the images can't be listed. Try again in a minute.</FormMessage>
   {:else}
+    <ImageUploader onuploaded={() => invalidateAll()} dropOnPage />
+
     <p class="usage">
       <meter min="0" max={freeStorageBytes} value={data.storageUsed} aria-hidden="true"></meter>
       {formatBytes(data.storageUsed)} of the free 10 GB used
