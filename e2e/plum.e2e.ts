@@ -3,17 +3,20 @@ import type { Browser, Page } from "@playwright/test";
 import { e2eEnvironment } from "./environment";
 import { expect, test } from "./fixtures";
 
-interface Stats {
+interface PlumSetup {
   food: number;
   happiness: number;
   energy: number;
+  /** She sleeps at night and when tired. Unless a test says otherwise, she's kept awake, whatever time it runs */
+  asleep?: boolean;
 }
 
-async function setPlum({ food, happiness, energy }: Stats): Promise<void> {
+async function setPlum({ food, happiness, energy, asleep = false }: PlumSetup): Promise<void> {
   const client = postgres(e2eEnvironment.DATABASE_URL_TEST_E2E, { max: 1, onnotice: () => {} });
+  const awakeUntil = asleep ? null : new Date(Date.now() + 24 * 60 * 60 * 1000);
   try {
-    await client`insert into plum (id, food, happiness, energy) values (1, ${food}, ${happiness}, ${energy})
-      on conflict (id) do update set food = excluded.food, happiness = excluded.happiness, energy = excluded.energy`;
+    await client`insert into plum (id, food, happiness, energy, awake_until) values (1, ${food}, ${happiness}, ${energy}, ${awakeUntil})
+      on conflict (id) do update set food = excluded.food, happiness = excluded.happiness, energy = excluded.energy, awake_until = excluded.awake_until`;
   } finally {
     await client.end();
   }
@@ -47,19 +50,36 @@ test("feeding her raises her food, plays her eating sprite and counts the cooldo
   await expect(band(page).getByRole("button", { name: /^Feed again in \d+s$/ })).toBeDisabled();
 });
 
-test("she refuses food when she's full and play when she's too tired, and the buttons stay free", async ({ page }) => {
-  await setPlum({ food: 95, happiness: 50, energy: 10 });
+test("she refuses food when she's full, and the button stays free", async ({ page }) => {
+  await setPlum({ food: 95, happiness: 50, energy: 100 });
   await page.goto("/");
-  await expect(band(page).getByRole("heading", { name: "She's asleep" })).toBeVisible();
 
   await band(page).getByRole("button", { name: "Feed" }).click();
+
   await expect(band(page).getByRole("status")).toHaveText("She's full. She sniffed it and walked off.");
   await expect(band(page).getByRole("img", { name: "Plum, turning her nose up at the food" })).toBeVisible();
+  await expect(band(page).getByRole("button", { name: "Feed" })).toBeEnabled();
+});
+
+test("asleep, she refuses food and purrs in her sleep when petted, and playing wakes her up", async ({ page }) => {
+  await setPlum({ food: 30, happiness: 50, energy: 10, asleep: true });
+  await page.goto("/");
+  await expect(band(page).getByRole("img", { name: "Plum, asleep" })).toBeVisible();
+
+  await band(page).getByRole("button", { name: "Feed" }).click();
+  await expect(band(page).getByRole("status")).toHaveText("She's asleep. Her bowl can wait.");
+  await expect(band(page).getByRole("button", { name: "Feed" })).toBeEnabled();
+
+  await band(page).getByRole("button", { name: "Pet" }).click();
+  await expect(band(page).getByRole("status")).toHaveText("You petted her. She purred without waking up.");
+  await expect(band(page).getByRole("img", { name: "Plum, purring in her sleep" })).toBeVisible();
 
   await band(page).getByRole("button", { name: "Play" }).click();
-  await expect(band(page).getByRole("status")).toHaveText("She's too tired to play. Let her rest for a while.");
-  await expect(band(page).getByRole("button", { name: "Feed" })).toBeEnabled();
-  await expect(band(page).getByRole("button", { name: "Play" })).toBeEnabled();
+  await expect(band(page).getByRole("status")).toHaveText("You woke her up to play. She'll be up for an hour.");
+  await expect(band(page).getByRole("heading", { name: /^She's (up past her bedtime|awake, just about)$/ })).toBeVisible();
+
+  await band(page).getByRole("button", { name: "Feed" }).click();
+  await expect(band(page).getByRole("status")).toHaveText("You fed her just now. Everyone who visits will see it.");
 });
 
 test("another visitor sees a feed within 10 seconds, with her eating sprite", async ({ page, browser }) => {
@@ -84,6 +104,7 @@ test.describe("with reduced motion", () => {
   test.use({ reducedMotion: "reduce" });
 
   test("her sprite stays on its first frame", async ({ page }) => {
+    await setPlum({ food: 80, happiness: 80, energy: 100 });
     await page.goto("/");
 
     await band(page).getByRole("button", { name: "Pet" }).click();
@@ -108,6 +129,7 @@ test.describe("with reduced motion", () => {
   });
 
   test("she plays no idle animations", async ({ page }) => {
+    await setPlum({ food: 80, happiness: 80, energy: 100 });
     await page.clock.install();
     await page.goto("/");
     const sprite = band(page).getByRole("img", { name: "Plum, sitting" });

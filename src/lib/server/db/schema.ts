@@ -138,6 +138,8 @@ export const plum = pgTable(
     energy: integer().notNull().default(100),
     /** When her stats last decayed. It moves on in whole 15-minute steps */
     decayedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /** Someone woke her to play, so she stays awake until this time, whatever the hour or her energy */
+    awakeUntil: timestamp({ withTimezone: true }),
   },
   table => [
     check("plum_singleton", sql`${table.id} = 1`),

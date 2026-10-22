@@ -1,7 +1,8 @@
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { plum, plumCooldowns } from "$lib/server/db/schema";
-import { asleepBelow, cooldownSeconds, fullFrom, plumActions, type PlumAction } from "$lib/plum/plumRules";
+import { cooldownSeconds, fullFrom, plumActions, type PlumAction } from "$lib/plum/plumRules";
+import { sleepState, wokenUpMilliseconds } from "$lib/plum/plumSleep";
 import type { ActionOutcome, ActionResult, CooldownsLeft, PlumState } from "$lib/schemas/plumState";
 import { ensurePlum, getPlum } from "./plum";
 
@@ -9,13 +10,14 @@ type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 /** Thrown inside an action's transaction to undo it, so a refused action doesn't use up the cooldown */
 class RefusedAction extends Error {
-  constructor(readonly outcome: "full" | "tired") {
+  constructor(readonly outcome: "full" | "asleep") {
     super(`Plum refused: ${outcome}`);
   }
 }
 
 export async function getPlumState(now: Date): Promise<PlumState> {
-  return { stats: await getPlum(), cooldowns: await getCooldownsLeft(now) };
+  const { awakeUntil, ...stats } = await getPlum();
+  return { stats, cooldowns: await getCooldownsLeft(now), ...sleepState(stats.energy, awakeUntil, now) };
 }
 
 async function getCooldownsLeft(now: Date): Promise<CooldownsLeft> {
@@ -44,8 +46,7 @@ export async function act(action: PlumAction, now: Date): Promise<ActionResult> 
       const claimed = await claimCooldown(transaction, action, now);
       if (!claimed) return "cooling";
 
-      await changeStats(transaction, action);
-      return "done";
+      return await changeStats(transaction, action, now);
     });
   } catch (error) {
     if (!(error instanceof RefusedAction)) throw error;
@@ -70,27 +71,39 @@ async function claimCooldown(transaction: Transaction, action: PlumAction, now: 
   return claimed.length > 0;
 }
 
-/** Changes her stats in one update, kept between 0 and 100. Throws RefusedAction if she's full or too tired */
-async function changeStats(transaction: Transaction, action: PlumAction): Promise<void> {
+/**
+ * Changes her stats for the action, each in one update kept between 0 and 100. Her row is locked first, so
+ * whether she's asleep or full can't change before the update. Feeding is refused while she's asleep or full,
+ * by throwing RefusedAction. Playing while she's asleep wakes her for an hour. Petting her never wakes her.
+ */
+async function changeStats(transaction: Transaction, action: PlumAction, now: Date): Promise<"done" | "woke"> {
+  const [current] = await transaction.select({ food: plum.food, energy: plum.energy, awakeUntil: plum.awakeUntil }).from(plum).for("update");
+  if (!current) throw new Error("Plum's row is missing");
+  const { sleep } = sleepState(current.energy, current.awakeUntil, now);
+
   if (action === "feed") {
-    const fed = await transaction
+    if (sleep) throw new RefusedAction("asleep");
+    if (current.food >= fullFrom) throw new RefusedAction("full");
+
+    await transaction
       .update(plum)
       .set({ food: sql`least(100, ${plum.food} + 45)` })
-      .where(sql`${plum.food} < ${fullFrom}`)
-      .returning({ id: plum.id });
-    if (fed.length === 0) throw new RefusedAction("full");
-    return;
+      .where(eq(plum.id, 1));
+    return "done";
   }
 
   if (action === "pet") {
-    await transaction.update(plum).set({ happiness: sql`least(100, ${plum.happiness} + 15)` });
-    return;
+    await transaction
+      .update(plum)
+      .set({ happiness: sql`least(100, ${plum.happiness} + 15)` })
+      .where(eq(plum.id, 1));
+    return "done";
   }
 
-  const played = await transaction
+  const awakeUntil = sleep ? new Date(now.getTime() + wokenUpMilliseconds) : current.awakeUntil;
+  await transaction
     .update(plum)
-    .set({ happiness: sql`least(100, ${plum.happiness} + 25)`, energy: sql`greatest(0, ${plum.energy} - 20)` })
-    .where(sql`${plum.energy} >= ${asleepBelow}`)
-    .returning({ id: plum.id });
-  if (played.length === 0) throw new RefusedAction("tired");
+    .set({ happiness: sql`least(100, ${plum.happiness} + 25)`, energy: sql`greatest(0, ${plum.energy} - 20)`, awakeUntil })
+    .where(eq(plum.id, 1));
+  return sleep ? "woke" : "done";
 }

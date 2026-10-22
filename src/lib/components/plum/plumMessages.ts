@@ -9,13 +9,29 @@ const doneMessages: Record<PlumAction, string[]> = {
 
 export const refusalMessages = {
   full: "She's full. She sniffed it and walked off.",
-  tired: "She's too tired to play. Let her rest for a while.",
+  asleep: "She's asleep. Her bowl can wait.",
+};
+
+/** What the visitor reads when she's hungry, so she doesn't seem to forget about her food */
+export const hungryMessages = {
+  pet: "You petted her. She purred, then looked at her bowl.",
+  play: "You played with her, but she kept looking at her bowl.",
+};
+
+export const sleepMessages = {
+  petted: "You petted her. She purred without waking up.",
+  woken: "You woke her up to play. She'll be up for an hour.",
 };
 
 export const othersMessages: Record<PlumAction, string> = {
   feed: "Someone else just fed her.",
   pet: "Someone else just petted her.",
   play: "Someone else just played with her.",
+};
+
+export const othersSleepMessages = {
+  petted: "Someone petted her in her sleep.",
+  woken: "Someone woke her up to play.",
 };
 
 export const coolingMessage = "Someone else got there first.";

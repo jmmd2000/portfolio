@@ -9,6 +9,8 @@ import tailFlick from "$lib/assets/plum/idle-tail.png";
 import idle from "$lib/assets/plum/idle.png";
 import playing from "$lib/assets/plum/playing.png";
 import purring from "$lib/assets/plum/purring.png";
+import sleepEar from "$lib/assets/plum/sleep-ear.png";
+import sleepPurr from "$lib/assets/plum/sleep-purr.png";
 import watchingBlink from "$lib/assets/plum/watching-blink.png";
 import watching from "$lib/assets/plum/watching.png";
 
@@ -20,12 +22,13 @@ export interface SpriteSheet {
   durations: number[];
 }
 
-export type PenSprite = "idle" | "watching" | "eating" | "purring" | "playing" | "hungry" | "full" | "asleep" | "blink" | "watchingBlink" | IdleAnimation;
+export type PenSprite = "idle" | "watching" | "eating" | "purring" | "playing" | "hungry" | "full" | "asleep" | "blink" | "watchingBlink" | "sleepPurr" | IdleAnimation;
 
 /** The short animations she plays now and then while idle. Each ends on her still idle pose */
 export const idleAnimations = ["earTwitch", "tailFlick", "pawLick"] as const;
 
-export type IdleAnimation = (typeof idleAnimations)[number];
+/** Her ear flicks in her sleep now and then. It ends on her first sleeping frame */
+export type IdleAnimation = (typeof idleAnimations)[number] | "sleepEar";
 
 function sheet(src: string, durations: number[]): SpriteSheet {
   return { src, frameWidth: 32, frameHeight: 32, durations };
@@ -45,6 +48,9 @@ export const penSprites: Record<PenSprite, SpriteSheet> = {
   full: sheet(full, [1000]),
   // Breathing out, then in
   asleep: sheet(asleep, [1600, 1600]),
+  // Purring in her sleep, a heart drifting up as she breathes
+  sleepPurr: sheet(sleepPurr, [400, 400, 400, 400, 100]),
+  sleepEar: sheet(sleepEar, [150, 120, 200, 100]),
   // Her eyes half shut, shut, half shut, then open. The site picks the frame
   blink: sheet(blink, [70, 110, 70, 100]),
   earTwitch: sheet(earTwitch, [120, 100, 160, 100]),

@@ -2,15 +2,15 @@ import { fail } from "@sveltejs/kit";
 import { requireAdmin } from "$lib/server/auth/requireAdmin";
 import { getLiveSettings, updateLiveSettings } from "$lib/server/content/liveSettings";
 import { formText } from "$lib/server/formText";
-import { getPlum } from "$lib/server/plum/plum";
+import { getPlumState } from "$lib/server/plum/actions";
 import { liveSettingsSchema } from "$lib/schemas/liveSettings";
-import type { PlumStats } from "$lib/plum/plumRules";
+import type { PlumState } from "$lib/schemas/plumState";
 import type { Actions, PageServerLoad } from "./$types";
 
-/** Plum's stats, or null if they can't be read. The settings still load */
-async function loadPlumStats(): Promise<PlumStats | null> {
+/** How Plum is, or null if it can't be read. The settings still load */
+async function loadPlum(): Promise<PlumState | null> {
   try {
-    return await getPlum();
+    return await getPlumState(new Date());
   } catch (error) {
     console.error("Couldn't read Plum's stats:", error);
     return null;
@@ -18,7 +18,7 @@ async function loadPlumStats(): Promise<PlumStats | null> {
 }
 
 export const load: PageServerLoad = async () => {
-  const [settings, plum] = await Promise.all([getLiveSettings(), loadPlumStats()]);
+  const [settings, plum] = await Promise.all([getLiveSettings(), loadPlum()]);
   return { settings, plum };
 };
 

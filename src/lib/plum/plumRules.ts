@@ -15,5 +15,5 @@ export const cooldownSeconds: Record<PlumAction, number> = { feed: 25, pet: 12, 
 /** She refuses food from this much food up */
 export const fullFrom = 90;
 
-/** Below this much energy she's asleep, and too tired to play */
+/** Below this much energy she naps */
 export const asleepBelow = 25;

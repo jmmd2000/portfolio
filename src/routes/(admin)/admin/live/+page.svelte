@@ -13,9 +13,9 @@
   const plumRows = $derived(
     data.plum
       ? [
-          { name: "Food", value: data.plum.food },
-          { name: "Happiness", value: data.plum.happiness },
-          { name: "Energy", value: data.plum.energy },
+          { name: "Food", value: data.plum.stats.food },
+          { name: "Happiness", value: data.plum.stats.happiness },
+          { name: "Energy", value: data.plum.stats.energy },
         ]
       : []
   );

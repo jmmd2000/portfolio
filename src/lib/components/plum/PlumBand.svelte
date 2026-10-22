@@ -2,18 +2,19 @@
   @component
   Plum's red band on the home page: her pen, how she is, her stats, and Feed, Pet and Play. Every visitor shares
   her. The band asks the server how she is every 10 seconds while the tab is visible, and shows what other
-  visitors did. She blinks every few seconds, and while she's idle she plays a short animation now and then,
-  unless the visitor asks for reduced motion. With no `plum` (her data couldn't load) she shows asleep with the buttons off.
+  visitors did. Awake, she blinks every few seconds and plays a short animation now and then. Asleep, her ear
+  flicks now and then. Neither happens if the visitor asks for reduced motion. With no `plum` (her data couldn't
+  load) she shows asleep with the buttons off.
 -->
 <script lang="ts">
   import { onMount, untrack } from "svelte";
-  import { isAsleep, moodLine, restingSprite } from "$lib/plum/plumMood";
+  import { isHungry, moodLine, restingSprite } from "$lib/plum/plumMood";
   import { plumActions, type PlumAction } from "$lib/plum/plumRules";
   import { actionResultSchema, plumStateSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
   import { actionsByOthers } from "./actionsByOthers";
   import { gazeAt, gazeFrame, type GazeDirection } from "./gaze";
   import { idleAnimations, penSprites, type IdleAnimation, type PenSprite } from "./penSprites";
-  import { coolingMessage, doneMessage, othersMessages, refusalMessages, unreachableMessage } from "./plumMessages";
+  import { coolingMessage, doneMessage, hungryMessages, othersMessages, othersSleepMessages, refusalMessages, sleepMessages, unreachableMessage } from "./plumMessages";
   import PlumSprite from "./PlumSprite.svelte";
   import PlumStats from "./PlumStats.svelte";
 
@@ -39,7 +40,9 @@
     hungry: "looking hungry",
     full: "turning her nose up at the food",
     asleep: "asleep",
-    // A blink keeps the label it had, so screen readers aren't told about every blink
+    sleepPurr: "purring in her sleep",
+    // A blink or a flick in her sleep keeps the label she had, so screen readers aren't told about each one
+    sleepEar: "asleep",
     blink: "sitting",
     watchingBlink: "watching you",
     earTwitch: "twitching an ear",
@@ -73,13 +76,14 @@
   const sprite = $derived.by((): { name: PenSprite; frame?: number; loop?: boolean } => {
     if (!latest) return { name: "asleep" };
     if (actionSprite) return { name: actionSprite };
-    if (gaze && !isAsleep(latest.stats)) {
+    if (gaze && !latest.sleep) {
       if (blinkStep > 0) return { name: "watchingBlink", frame: gazeFrame(gaze) * 2 + blinkStep - 1 };
       return { name: "watching", frame: gazeFrame(gaze) };
     }
 
-    const resting = restingSprite(latest.stats);
-    if (resting === "idle" && idleAnimation) return { name: idleAnimation, loop: false };
+    const resting = restingSprite(latest);
+    if (resting === "asleep" && idleAnimation === "sleepEar") return { name: idleAnimation, loop: false };
+    if (resting === "idle" && idleAnimation && idleAnimation !== "sleepEar") return { name: idleAnimation, loop: false };
     if (resting === "idle" && blinkStep > 0) return { name: "blink", frame: blinkStep - 1 };
     return { name: resting };
   });
@@ -115,19 +119,48 @@
     actionSpriteTimer = setTimeout(() => (actionSprite = null), actionSpriteMilliseconds);
   }
 
-  function showOutcome(action: PlumAction, outcome: ActionOutcome): void {
-    if (outcome === "done") {
-      showSprite(actionSprites[action]);
-      message = doneMessage(action, actionCounts[action]);
-      actionCounts[action] += 1;
+  /**
+   * Shows her reaction to the visitor's action and says what happened.
+   *
+   * @param before how she was just before, so a hungry cat's messages mention her food
+   * @param after how she is afterwards, so a pet while she's asleep shows her purring in her sleep
+   */
+  function showOutcome(action: PlumAction, outcome: ActionOutcome, before: PlumState | null, after: PlumState): void {
+    if (outcome === "cooling") {
+      message = coolingMessage;
     } else if (outcome === "full") {
       showSprite("full");
       message = refusalMessages.full;
-    } else if (outcome === "tired") {
+    } else if (outcome === "asleep") {
       showSprite("asleep");
-      message = refusalMessages.tired;
+      message = refusalMessages.asleep;
+    } else if (outcome === "woke") {
+      showSprite("playing");
+      message = sleepMessages.woken;
+    } else if (action === "pet" && after.sleep) {
+      showSprite("sleepPurr");
+      message = sleepMessages.petted;
+    } else if (action !== "feed" && before && isHungry(before)) {
+      showSprite(actionSprites[action]);
+      message = hungryMessages[action];
     } else {
-      message = coolingMessage;
+      showSprite(actionSprites[action]);
+      message = doneMessage(action, actionCounts[action]);
+      actionCounts[action] += 1;
+    }
+  }
+
+  /** Shows what another visitor just did, as this visitor would have seen it */
+  function showOthersAction(action: PlumAction, before: PlumState | null, after: PlumState): void {
+    if (action === "pet" && after.sleep) {
+      showSprite("sleepPurr");
+      message = othersSleepMessages.petted;
+    } else if (action === "play" && before?.sleep && !after.sleep) {
+      showSprite("playing");
+      message = othersSleepMessages.woken;
+    } else {
+      showSprite(actionSprites[action]);
+      message = othersMessages[action];
     }
   }
 
@@ -138,8 +171,9 @@
       if (!response.ok) throw new Error(`The server answered ${response.status}`);
 
       const result = actionResultSchema.parse(await response.json());
+      const before = latest;
       remember(result);
-      showOutcome(action, result.outcome);
+      showOutcome(action, result.outcome, before, result);
     } catch {
       message = unreachableMessage;
     } finally {
@@ -156,28 +190,29 @@
       const state = plumStateSchema.parse(await response.json());
       const expected = { feed: secondsLeft("feed"), pet: secondsLeft("pet"), play: secondsLeft("play") };
       const othersAction = actionsByOthers(expected, state.cooldowns).at(-1);
+      const before = latest;
       remember(state);
 
-      if (othersAction && !actionSprite) {
-        showSprite(actionSprites[othersAction]);
-        message = othersMessages[othersAction];
-      }
+      if (othersAction && !actionSprite) showOthersAction(othersAction, before, state);
     } catch {
       // Keeps her last known state
     }
   }
 
-  /** Waits 8 to 12 seconds, then plays a random idle animation if she's sitting idle, and waits again */
+  /**
+   * Waits 8 to 12 seconds, then plays a random idle animation if she's sitting idle, or flicks her ear if she's
+   * asleep, and waits again
+   */
   function waitForIdle(): void {
     const wait = idleWaitMilliseconds.shortest + Math.random() * (idleWaitMilliseconds.longest - idleWaitMilliseconds.shortest);
     idleTimer = setTimeout(() => {
-      if (sprite.name === "idle" && !document.hidden) playIdle();
+      if (!document.hidden && sprite.name === "idle") playIdle(idleAnimations[Math.floor(Math.random() * idleAnimations.length)] ?? "earTwitch");
+      if (!document.hidden && sprite.name === "asleep") playIdle("sleepEar");
       waitForIdle();
     }, wait);
   }
 
-  function playIdle(): void {
-    const name = idleAnimations[Math.floor(Math.random() * idleAnimations.length)] ?? "blink";
+  function playIdle(name: IdleAnimation): void {
     const length = penSprites[name].durations.reduce((total, duration) => total + duration, 0);
     idleAnimation = name;
     idleEndTimer = setTimeout(() => (idleAnimation = null), length);
@@ -262,7 +297,7 @@
       <PlumSprite sheet={penSprites[sprite.name]} frame={sprite.frame} loop={sprite.loop} label="Plum, {spriteDescriptions[sprite.name]}" />
     </div>
     <div>
-      <h3 class="mood">{latest ? moodLine(latest.stats) : "She's asleep"}</h3>
+      <h3 class="mood">{latest ? moodLine(latest) : "She's asleep"}</h3>
       <p class="about">The site's cat. Every visitor shares her, so whatever you do, the next person sees.</p>
       {#if latest}
         <PlumStats stats={latest.stats} />
