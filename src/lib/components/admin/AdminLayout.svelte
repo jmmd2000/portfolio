@@ -21,6 +21,7 @@
     { label: "Articles", path: "/admin/articles" },
     { label: "Currently", path: "/admin/currently" },
     { label: "Images", path: "/admin/images" },
+    { label: "Live parts", path: "/admin/live" },
   ] as const;
 
   function ariaCurrent(path: string): "page" | undefined {

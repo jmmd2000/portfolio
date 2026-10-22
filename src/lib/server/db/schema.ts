@@ -116,6 +116,16 @@ export const counters = pgTable("counters", {
   count: integer().notNull(),
 });
 
+/** Settings for the live parts of the site. There is only ever one row */
+export const liveSettings = pgTable(
+  "live_settings",
+  {
+    id: integer().primaryKey().default(1),
+    visitorCountShown: boolean().notNull().default(true),
+  },
+  table => [check("live_settings_singleton", sql`${table.id} = 1`)]
+);
+
 /** The secret that scrambles visitors' IPs on one Irish date. A new random one is made each day */
 export const visitorSecrets = pgTable("visitor_secrets", {
   day: date().primaryKey(),
