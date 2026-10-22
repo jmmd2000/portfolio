@@ -147,6 +147,16 @@ export const plum = pgTable(
   ]
 );
 
+/** When each of Plum's actions can next be done. One row per action, shared by every visitor */
+export const plumCooldowns = pgTable(
+  "plum_cooldowns",
+  {
+    action: text().primaryKey(),
+    readyAt: timestamp({ withTimezone: true }).notNull(),
+  },
+  table => [check("plum_cooldowns_action", sql`${table.action} in ('feed', 'pet', 'play')`)]
+);
+
 /** The secret that scrambles visitors' IPs on one Irish date. A new random one is made each day */
 export const visitorSecrets = pgTable("visitor_secrets", {
   day: date().primaryKey(),
