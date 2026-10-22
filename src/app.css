@@ -211,6 +211,14 @@ a {
     flex-direction: column;
     gap: 0.06em;
     line-height: 0.86;
+
+    /*
+     * Stacked words each fill the width, so each one's size depends on its length. A capital in Big Shoulders at 900
+     * is about 0.49em wide on average, which puts this close to the fitted size before fitText runs.
+     */
+    > .part {
+      font-size: min(10rem, calc((100vw - 2 * var(--page-gutter)) / (var(--letters) * 0.49)));
+    }
   }
 }
 

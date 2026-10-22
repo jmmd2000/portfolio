@@ -17,7 +17,7 @@
   <!-- Each letter is its own element so it can lift on hover -->
   <h1 class="fitted-line" aria-label={profile.name} {@attach fitText(10)}>
     {#each words as word, wordIndex (wordIndex)}
-      <span class="part" aria-hidden="true"
+      <span class="part" style:--letters={word.length} aria-hidden="true"
         >{#each [...word] as letter, letterIndex (letterIndex)}<span class="letter">{letter}</span>{/each}</span
       >
     {/each}

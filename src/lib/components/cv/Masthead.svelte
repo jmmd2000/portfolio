@@ -18,7 +18,7 @@
 <header class="masthead">
   <!-- The spaces between the parts keep the name readable when copied or read from a PDF. The layout ignores them -->
   <h1 class="fitted-line" {@attach fitText(10)}>
-    {#each words as word, index (index)}{index > 0 ? " " : ""}<span class="part">{word}</span>{/each}
+    {#each words as word, index (index)}{index > 0 ? " " : ""}<span class="part" style:--letters={word.length}>{word}</span>{/each}
   </h1>
   <div class="row">
     <p class="role">{profile.role}</p>
