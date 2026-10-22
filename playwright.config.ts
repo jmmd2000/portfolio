@@ -26,6 +26,12 @@ export default defineConfig({
       ORIGIN: `http://localhost:${port}`,
       BETTER_AUTH_URL: `http://localhost:${port}`,
       ADDRESS_HEADER: "x-forwarded-for",
+      // Image storage the tests can't reach, so the e2e server never touches a real bucket
+      R2_ENDPOINT: "http://127.0.0.1:9",
+      R2_ACCESS_KEY_ID: "e2e",
+      R2_SECRET_ACCESS_KEY: "e2e",
+      R2_BUCKET: "e2e",
+      ASSETS_URL: "https://assets.e2e.invalid",
     },
   },
 });
