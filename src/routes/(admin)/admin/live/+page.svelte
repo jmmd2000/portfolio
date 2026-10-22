@@ -20,14 +20,8 @@
 
     <fieldset>
       <legend class="label">Spotify</legend>
-      <label class="select-label" for="spotify-row">Row that shows what's playing</label>
-      <select id="spotify-row" name="spotifyRowID">
-        <option value="" selected={data.settings.spotifyRowID === null}>None</option>
-        {#each data.currentlyRows as row (row.id)}
-          <option value={String(row.id)} selected={row.id === data.settings.spotifyRowID}>{row.label}: {row.title}{row.shown ? "" : " (hidden)"}</option>
-        {/each}
-      </select>
-      <p class="hint">While a track plays, this Currently row shows it, then goes back to what's saved. With None, Spotify is never asked.</p>
+      <Checkbox label="Show what's playing on Spotify" name="spotifyShown" checked={data.settings.spotifyShown} />
+      <p class="hint">While a track plays, the Currently row labelled Listening shows it, then goes back to what's saved. While this is off, Spotify is never asked.</p>
     </fieldset>
 
     {#if form?.saved}
@@ -62,27 +56,6 @@
   legend {
     margin-bottom: var(--space-1);
     padding: 0;
-  }
-
-  .select-label {
-    font-size: var(--type-small);
-    font-weight: 700;
-  }
-
-  select {
-    width: 100%;
-    min-height: 2.75rem;
-    padding: 0.625rem 0.75rem;
-    border: var(--rule-row);
-    border-radius: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font: inherit;
-    font-size: 1rem;
-
-    &:focus-visible {
-      outline-offset: 0;
-    }
   }
 
   .hint {

@@ -1,4 +1,4 @@
-import { withNowPlaying } from "$lib/components/home/nowPlayingRow";
+import { isListeningRow, withNowPlaying } from "$lib/components/home/nowPlayingRow";
 import { toArticleListItem } from "$lib/server/content/articleList";
 import { getHomeArticles } from "$lib/server/content/articles";
 import { getShownCurrentlyRows } from "$lib/server/content/currently";
@@ -16,9 +16,9 @@ export const load: PageServerLoad = async () => {
     getLiveSettings(),
   ]);
 
-  // Spotify is only asked when the row it can replace is on the page
-  const spotifyRowShown = currentlyRows.some(row => row.id === liveSettings.spotifyRowID);
-  const nowPlaying = spotifyRowShown ? await spotify.getNowPlaying() : null;
+  // Spotify is only asked when it's switched on and the Listening row is on the page
+  const askSpotify = liveSettings.spotifyShown && currentlyRows.some(isListeningRow);
+  const nowPlaying = askSpotify ? await spotify.getNowPlaying() : null;
 
-  return { featuredProjects, projectCount, currentlyRows: withNowPlaying(currentlyRows, liveSettings.spotifyRowID, nowPlaying), articles: homeArticles.map(toArticleListItem) };
+  return { featuredProjects, projectCount, currentlyRows: withNowPlaying(currentlyRows, nowPlaying), articles: homeArticles.map(toArticleListItem) };
 };

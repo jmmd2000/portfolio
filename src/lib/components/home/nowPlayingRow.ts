@@ -6,10 +6,18 @@ export interface ShownCurrentlyRow extends CurrentlyRow {
   live: boolean;
 }
 
-/** The rows with Spotify's track in place of the chosen row. Without a track, every row shows what's saved for it */
-export function withNowPlaying(rows: CurrentlyRow[], spotifyRowID: number | null, nowPlaying: NowPlaying | null): ShownCurrentlyRow[] {
-  return rows.map(row => {
-    if (nowPlaying === null || row.id !== spotifyRowID) return { ...row, live: false };
+/** Whether Spotify can replace this row: it's labelled Listening, ignoring case and spaces */
+export function isListeningRow(row: CurrentlyRow): boolean {
+  return row.label.trim().toLowerCase() === "listening";
+}
+
+/** The rows with Spotify's track in place of the first Listening row. Without a track, every row shows what's saved for it */
+export function withNowPlaying(rows: CurrentlyRow[], nowPlaying: NowPlaying | null): ShownCurrentlyRow[] {
+  if (nowPlaying === null) return rows.map(row => ({ ...row, live: false }));
+
+  const listeningRowIndex = rows.findIndex(isListeningRow);
+  return rows.map((row, index) => {
+    if (index !== listeningRowIndex) return { ...row, live: false };
 
     return { ...row, label: "Listening now", title: nowPlaying.title, subtitle: nowPlaying.artists, imageURL: nowPlaying.coverURL, url: nowPlaying.url, live: true };
   });
