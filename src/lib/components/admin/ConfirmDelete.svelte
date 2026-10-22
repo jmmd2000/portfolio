@@ -7,9 +7,11 @@
     formaction: string;
     /** As tall as a text field, for a delete button that sits beside one */
     large?: boolean;
+    /** A line under the question, like what still uses the thing */
+    note?: string;
   }
 
-  let { name, formaction, large = false }: Props = $props();
+  let { name, formaction, large = false, note }: Props = $props();
 
   let details = $state<HTMLDetailsElement>();
   let summary = $state<HTMLElement>();
@@ -34,6 +36,9 @@
   <summary bind:this={summary} onkeydown={handleKeydown}>Delete</summary>
   <span class="question">
     <span>Delete {name}?</span>
+    {#if note}
+      <span class="note">{note}</span>
+    {/if}
     <Button type="submit" {formaction} variant="destructive" small aria-label="Delete {name}" onkeydown={handleKeydown}>Delete</Button>
     <Button small onclick={keep} onkeydown={handleKeydown}>Keep</Button>
   </span>
@@ -67,6 +72,12 @@
   }
 
   /* The same padding and line height as a text field, so it's exactly as tall as one */
+  .note {
+    flex-basis: 100%;
+    color: var(--red-text);
+    font-size: var(--type-small);
+  }
+
   .large summary {
     padding: 0.625rem 1.125rem;
     font-size: 1rem;
