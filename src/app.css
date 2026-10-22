@@ -1,7 +1,11 @@
+/*
+ * Text shows in a fallback font until the web fonts load, then swaps. Each fallback is a local font scaled to
+ * take the same width as its web font, measured in Chromium, so the swap doesn't move the page.
+ */
 @font-face {
   font-family: "Big Shoulders Display Variable";
   font-style: normal;
-  font-display: block;
+  font-display: swap;
   font-weight: 100 900;
   src: url("@fontsource-variable/big-shoulders-display/files/big-shoulders-display-latin-wght-normal.woff2") format("woff2-variations");
 }
@@ -9,9 +13,39 @@
 @font-face {
   font-family: "Albert Sans Variable";
   font-style: normal;
-  font-display: block;
+  font-display: swap;
   font-weight: 100 900;
   src: url("@fontsource-variable/albert-sans/files/albert-sans-latin-wght-normal.woff2") format("woff2-variations");
+}
+
+/* Display text is 800 to 900, so one bold face is enough. The sizes match Big Shoulders at 900 */
+@font-face {
+  font-family: "Big Shoulders Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Helvetica Bold");
+  size-adjust: 69.3%;
+  ascent-override: 141.3%;
+  descent-override: 30.3%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Albert Sans Fallback";
+  font-weight: 100 500;
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Helvetica");
+  size-adjust: 103.2%;
+  ascent-override: 92.1%;
+  descent-override: 24.2%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Albert Sans Fallback";
+  font-weight: 600 900;
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Helvetica Bold");
+  size-adjust: 96.9%;
+  ascent-override: 98.1%;
+  descent-override: 25.8%;
+  line-gap-override: 0%;
 }
 
 :root {
@@ -49,8 +83,8 @@
   --rule-section: 6px solid var(--ink);
   --rule-row: 2px solid var(--ink);
 
-  --font-display: "Big Shoulders Display Variable", Impact, sans-serif;
-  --font-body: "Albert Sans Variable", system-ui, sans-serif;
+  --font-display: "Big Shoulders Display Variable", "Big Shoulders Fallback", Impact, sans-serif;
+  --font-body: "Albert Sans Variable", "Albert Sans Fallback", system-ui, sans-serif;
   --font-code: "Monaspace Neon", ui-monospace, monospace;
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
