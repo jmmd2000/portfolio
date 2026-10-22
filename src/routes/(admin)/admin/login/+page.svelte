@@ -3,6 +3,8 @@
   import Field from "$lib/components/form/Field.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import PageHead from "$lib/components/head/PageHead.svelte";
+  import { penSprites } from "$lib/components/plum/penSprites";
+  import PlumSprite from "$lib/components/plum/PlumSprite.svelte";
   import type { PageProps } from "./$types";
 
   let { form }: PageProps = $props();
@@ -24,12 +26,15 @@
       <Button type="submit" variant="primary">Log in</Button>
     </div>
   </form>
+  <div class="plum">
+    <PlumSprite sheet={penSprites.asleep} label="Plum, asleep" />
+  </div>
 </div>
 
 <style>
   .login {
     display: grid;
-    grid-template-columns: auto minmax(0, 24rem);
+    grid-template-columns: auto minmax(0, 24rem) auto;
     justify-content: start;
     align-items: end;
     gap: var(--space-5);
@@ -50,6 +55,14 @@
 
   .actions {
     margin-top: var(--space-1);
+  }
+
+  /* On the dark theme a faint rim keeps the black cat from vanishing into the page */
+  .plum {
+    --plum-scale: 5;
+    --sprite-rim: light-dark(transparent, oklch(0.32 0.01 60));
+
+    filter: drop-shadow(2px 0 0 var(--sprite-rim)) drop-shadow(-2px 0 0 var(--sprite-rim)) drop-shadow(0 2px 0 var(--sprite-rim)) drop-shadow(0 -2px 0 var(--sprite-rim));
   }
 
   @media (max-width: 54rem) {
