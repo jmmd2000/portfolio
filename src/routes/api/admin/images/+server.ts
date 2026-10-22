@@ -3,10 +3,8 @@ import { maxUploadBytes } from "$lib/images/limits";
 import { requireAdmin } from "$lib/server/auth/requireAdmin";
 import { randomSuffix, uploadName } from "$lib/server/images/imageName";
 import { detectImageType } from "$lib/server/images/imageType";
-import { listImages, uploadImage } from "$lib/server/images/storage";
+import { listImages, storageFailedMessage, uploadImage } from "$lib/server/images/storage";
 import type { RequestHandler } from "./$types";
-
-const storageFailedMessage = "The image storage couldn't be reached. Try again in a minute.";
 
 /** Every image in the bucket, newest first */
 export const GET: RequestHandler = async ({ locals }) => {

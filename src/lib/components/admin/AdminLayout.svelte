@@ -20,6 +20,7 @@
     { label: "Projects", path: "/admin/projects" },
     { label: "Articles", path: "/admin/articles" },
     { label: "Currently", path: "/admin/currently" },
+    { label: "Images", path: "/admin/images" },
   ] as const;
 
   function ariaCurrent(path: string): "page" | undefined {

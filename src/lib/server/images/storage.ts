@@ -17,6 +17,8 @@ const client = new S3Client({
   credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY },
 });
 
+export const storageFailedMessage = "The image storage couldn't be reached. Try again in a minute.";
+
 export function imageURL(name: string): string {
   return `${env.ASSETS_URL}/${encodeURIComponent(name)}`;
 }

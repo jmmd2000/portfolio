@@ -19,3 +19,12 @@ test("the images API refuses files that aren't images, and images over 10 MB", a
   const overLimit = await page.request.post("/api/admin/images", { headers, multipart: { file: { name: "huge.png", mimeType: "image/png", buffer: tooBig } } });
   expect(overLimit.status()).toBe(413);
 });
+
+test("the images page says so when the storage can't be reached, instead of failing", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/images");
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Images");
+  await expect(page.getByRole("alert")).toHaveText("The image storage couldn't be reached, so the images can't be listed. Try again in a minute.");
+});
