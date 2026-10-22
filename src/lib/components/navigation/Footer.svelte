@@ -8,9 +8,11 @@
     socials: Social[];
     /** The home page ends with the email filling the width and a Copy email button */
     isHome: boolean;
+    /** Left out when null */
+    visitorCount: number | null;
   }
 
-  let { socials, isHome }: Props = $props();
+  let { socials, isHome, visitorCount }: Props = $props();
 
   let emailSocial = $derived(socials.find(social => social.url.startsWith("mailto:")));
   let otherSocials = $derived(socials.filter(social => social !== emailSocial));
@@ -33,6 +35,9 @@
       {/each}
     </ul>
   </div>
+  {#if visitorCount !== null}
+    <p class="visitors label">You are visitor {visitorCount.toLocaleString("en-GB")}</p>
+  {/if}
 </footer>
 
 <style>
@@ -63,6 +68,11 @@
     justify-content: space-between;
     align-items: center;
     gap: var(--space-2) var(--space-3);
+  }
+
+  .visitors {
+    margin: var(--space-3) 0 0;
+    color: var(--muted);
   }
 
   .email {

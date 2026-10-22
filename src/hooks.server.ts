@@ -1,9 +1,14 @@
-import type { Handle } from "@sveltejs/kit";
+import type { Handle, ServerInit } from "@sveltejs/kit";
 import type { User } from "better-auth";
 import { getSessionCookie } from "better-auth/cookies";
 import { auth } from "$lib/server/auth";
+import { startVisitorCleanup } from "$lib/server/visitors/visits";
 
 const loginPath = "/admin/login";
+
+export const init: ServerInit = () => {
+  startVisitorCleanup();
+};
 
 function isAdminPath(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/") || pathname.startsWith("/api/admin/");
