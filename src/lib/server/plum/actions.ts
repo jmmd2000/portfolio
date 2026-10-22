@@ -1,29 +1,11 @@
 import { sql } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { plum, plumCooldowns } from "$lib/server/db/schema";
-import { asleepBelow, cooldownSeconds, fullFrom, plumActions, type PlumAction, type PlumStats } from "$lib/plum/plumRules";
+import { asleepBelow, cooldownSeconds, fullFrom, plumActions, type PlumAction } from "$lib/plum/plumRules";
+import type { ActionOutcome, ActionResult, CooldownsLeft, PlumState } from "$lib/schemas/plumState";
 import { ensurePlum, getPlum } from "./plum";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
-
-/** The seconds left on each action's cooldown. 0 means anyone can do it now */
-export type CooldownsLeft = Record<PlumAction, number>;
-
-/** What every visitor sees of Plum */
-export interface PlumState {
-  stats: PlumStats;
-  cooldowns: CooldownsLeft;
-}
-
-/**
- * What came of an action. She refuses food when she's full and play when she's too tired. "cooling" means
- * someone did it within its cooldown.
- */
-export type ActionOutcome = "done" | "full" | "tired" | "cooling";
-
-export interface ActionResult extends PlumState {
-  outcome: ActionOutcome;
-}
 
 /** Thrown inside an action's transaction to undo it, so a refused action doesn't use up the cooldown */
 class RefusedAction extends Error {

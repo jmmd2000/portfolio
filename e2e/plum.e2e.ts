@@ -1,0 +1,126 @@
+import postgres from "postgres";
+import type { Browser, Page } from "@playwright/test";
+import { e2eEnvironment } from "./environment";
+import { expect, test } from "./fixtures";
+
+interface Stats {
+  food: number;
+  happiness: number;
+  energy: number;
+}
+
+async function setPlum({ food, happiness, energy }: Stats): Promise<void> {
+  const client = postgres(e2eEnvironment.DATABASE_URL_TEST_E2E, { max: 1, onnotice: () => {} });
+  try {
+    await client`insert into plum (id, food, happiness, energy) values (1, ${food}, ${happiness}, ${energy})
+      on conflict (id) do update set food = excluded.food, happiness = excluded.happiness, energy = excluded.energy`;
+  } finally {
+    await client.end();
+  }
+}
+
+/** A second visitor in their own browser, kept off other sites like the main page */
+async function secondVisitor(browser: Browser): Promise<Page> {
+  const context = await browser.newContext({ baseURL: "http://localhost:4173", extraHTTPHeaders: { "x-forwarded-for": "127.0.0.2" } });
+  const page = await context.newPage();
+  await page.route(
+    url => url.hostname !== "localhost",
+    route => route.abort()
+  );
+  return page;
+}
+
+function band(page: Page) {
+  return page.getByRole("region", { name: "Plum" });
+}
+
+test("feeding her raises her food, plays her eating sprite and counts the cooldown down", async ({ page }) => {
+  await setPlum({ food: 30, happiness: 50, energy: 100 });
+  await page.goto("/");
+  await expect(band(page).getByText("Low", { exact: true })).toBeVisible();
+
+  await band(page).getByRole("button", { name: "Feed" }).click();
+
+  await expect(band(page).getByRole("status")).toHaveText("You fed her just now. Everyone who visits will see it.");
+  await expect(band(page).getByRole("img", { name: "Plum, eating" })).toBeVisible();
+  await expect(band(page).getByText("Low", { exact: true })).toHaveCount(0);
+  await expect(band(page).getByRole("button", { name: /^Feed again in \d+s$/ })).toBeDisabled();
+});
+
+test("she refuses food when she's full and play when she's too tired, and the buttons stay free", async ({ page }) => {
+  await setPlum({ food: 95, happiness: 50, energy: 10 });
+  await page.goto("/");
+  await expect(band(page).getByRole("heading", { name: "She's asleep" })).toBeVisible();
+
+  await band(page).getByRole("button", { name: "Feed" }).click();
+  await expect(band(page).getByRole("status")).toHaveText("She's full. She sniffed it and walked off.");
+  await expect(band(page).getByRole("img", { name: "Plum, turning her nose up at the food" })).toBeVisible();
+
+  await band(page).getByRole("button", { name: "Play" }).click();
+  await expect(band(page).getByRole("status")).toHaveText("She's too tired to play. Let her rest for a while.");
+  await expect(band(page).getByRole("button", { name: "Feed" })).toBeEnabled();
+  await expect(band(page).getByRole("button", { name: "Play" })).toBeEnabled();
+});
+
+test("another visitor sees a feed within 10 seconds, with her eating sprite", async ({ page, browser }) => {
+  await setPlum({ food: 30, happiness: 50, energy: 100 });
+  const otherPage = await secondVisitor(browser);
+  await otherPage.clock.install();
+  await otherPage.goto("/");
+  await page.goto("/");
+  await expect(band(otherPage).getByRole("button", { name: "Feed" })).toBeEnabled();
+
+  await band(page).getByRole("button", { name: "Feed" }).click();
+  await expect(band(page).getByRole("status")).toHaveText(/^You fed her/);
+  await otherPage.clock.fastForward(10_000);
+
+  await expect(band(otherPage).getByRole("status")).toHaveText("Someone else just fed her.");
+  await expect(band(otherPage).getByRole("img", { name: "Plum, eating" })).toBeVisible();
+  await expect(band(otherPage).getByRole("button", { name: /^Feed again in \d+s$/ })).toBeDisabled();
+  await otherPage.context().close();
+});
+
+test.describe("with reduced motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("her sprite stays on its first frame", async ({ page }) => {
+    await page.goto("/");
+
+    await band(page).getByRole("button", { name: "Pet" }).click();
+    const sprite = band(page).getByRole("img", { name: "Plum, purring" });
+    await expect(sprite).toBeVisible();
+
+    // Notes every frame shown for a second, long enough for the purring sprite's three frames to play if it moved
+    const framesShown = await sprite.evaluate(
+      element =>
+        new Promise<string[]>(resolve => {
+          const frames = [element.getAttribute("data-frame") ?? ""];
+          const observer = new MutationObserver(() => frames.push(element.getAttribute("data-frame") ?? ""));
+          observer.observe(element, { attributes: true, attributeFilter: ["data-frame"] });
+          setTimeout(() => {
+            observer.disconnect();
+            resolve(frames);
+          }, 1000);
+        })
+    );
+
+    expect(new Set(framesShown)).toEqual(new Set(["0"]));
+  });
+});
+
+test("her pen shows her asleep with the buttons off when her data can't be read, and the page still loads", async ({ page }) => {
+  const client = postgres(e2eEnvironment.DATABASE_URL_TEST_E2E, { max: 1, onnotice: () => {} });
+  try {
+    await client`alter table plum rename to plum_unreachable`;
+    const response = await page.goto("/");
+
+    expect(response?.status()).toBe(200);
+    await expect(band(page).getByRole("img", { name: "Plum, asleep" })).toBeVisible();
+    for (const name of ["Feed", "Pet", "Play"]) {
+      await expect(band(page).getByRole("button", { name })).toBeDisabled();
+    }
+  } finally {
+    await client`alter table plum_unreachable rename to plum`;
+    await client.end();
+  }
+});

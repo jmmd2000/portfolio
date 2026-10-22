@@ -17,7 +17,3 @@ export const fullFrom = 90;
 
 /** Below this much energy she's asleep, and too tired to play */
 export const asleepBelow = 25;
-
-export function isPlumAction(value: unknown): value is PlumAction {
-  return plumActions.some(action => action === value);
-}
