@@ -85,6 +85,13 @@
       "when": 1792662722054,
       "tag": "0011_loud_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792666761564,
+      "tag": "0012_thin_quicksilver",
+      "breakpoints": true
     }
   ]
 }

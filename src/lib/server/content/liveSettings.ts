@@ -5,10 +5,10 @@ import type { LiveSettingsInput } from "$lib/schemas/liveSettings";
 export type LiveSettings = LiveSettingsInput;
 
 /** What the site uses until the settings are first saved */
-const defaultLiveSettings: LiveSettings = { visitorCountShown: true };
+const defaultLiveSettings: LiveSettings = { visitorCountShown: true, spotifyRowID: null };
 
 export async function getLiveSettings(): Promise<LiveSettings> {
-  const [row] = await db.select({ visitorCountShown: liveSettings.visitorCountShown }).from(liveSettings).limit(1);
+  const [row] = await db.select({ visitorCountShown: liveSettings.visitorCountShown, spotifyRowID: liveSettings.spotifyRowID }).from(liveSettings).limit(1);
   return row ?? defaultLiveSettings;
 }
 
