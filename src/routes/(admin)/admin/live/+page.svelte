@@ -18,6 +18,12 @@
       <p class="hint">Visitors are still counted while it's hidden.</p>
     </fieldset>
 
+    <fieldset>
+      <legend class="label">Spotify</legend>
+      <Checkbox label="Show what's playing on Spotify" name="spotifyShown" checked={data.settings.spotifyShown} />
+      <p class="hint">While a track plays, the Currently row labelled Listening shows it, then goes back to what's saved. While this is off, Spotify is never asked.</p>
+    </fieldset>
+
     {#if form?.saved}
       <FormMessage status="success">Live parts saved.</FormMessage>
     {:else if form?.message}

@@ -122,6 +122,8 @@ export const liveSettings = pgTable(
   {
     id: integer().primaryKey().default(1),
     visitorCountShown: boolean().notNull().default(true),
+    /** Whether the Listening row shows what's playing on Spotify */
+    spotifyShown: boolean().notNull().default(false),
   },
   table => [check("live_settings_singleton", sql`${table.id} = 1`)]
 );

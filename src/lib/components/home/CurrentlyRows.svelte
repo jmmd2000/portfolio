@@ -1,23 +1,35 @@
 <script lang="ts">
-  import type { CurrentlyRow } from "$lib/server/content/currently";
+  import type { ShownCurrentlyRow } from "./nowPlayingRow";
 
   interface Props {
-    rows: CurrentlyRow[];
+    rows: ShownCurrentlyRow[];
   }
 
   let { rows }: Props = $props();
 
-  let failedImageIDs = $state<number[]>([]);
+  // Keyed by address, so a broken Spotify cover doesn't also hide the row's saved cover
+  let failedImageURLs = $state<string[]>([]);
 </script>
 
 <ol class="currently">
   {#each rows as row (row.id)}
     <li>
       <svelte:element this={row.url ? "a" : "div"} class="row" href={row.url ?? undefined} rel={row.url ? "external" : undefined}>
-        <span class="kind label">{row.label}</span>
+        <span class="kind label">
+          {#if row.live}
+            <svg class="bars" viewBox="0 0 16 14" aria-hidden="true">
+              <rect x="0" y="4" width="3" height="10" />
+              <rect x="4.33" y="0" width="3" height="14" />
+              <rect x="8.66" y="6" width="3" height="8" />
+              <rect x="13" y="2" width="3" height="12" />
+            </svg>
+          {/if}
+          {row.label}
+        </span>
         <span class="cover">
-          {#if row.imageURL && !failedImageIDs.includes(row.id)}
-            <img src={row.imageURL} alt="" loading="lazy" onerror={() => (failedImageIDs = [...failedImageIDs, row.id])} />
+          {#if row.imageURL && !failedImageURLs.includes(row.imageURL)}
+            {@const imageURL = row.imageURL}
+            <img src={imageURL} alt="" loading="lazy" onerror={() => (failedImageURLs = [...failedImageURLs, imageURL])} />
           {/if}
         </span>
         <span class="text">
@@ -50,7 +62,48 @@
   }
 
   .kind {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--red-text);
+  }
+
+  .bars {
+    flex: none;
+    width: 1rem;
+    height: 0.875rem;
+    fill: currentColor;
+
+    rect {
+      transform-box: fill-box;
+      transform-origin: bottom;
+      transition: transform 250ms var(--ease-out);
+    }
+  }
+
+  /* The bars only change when the visitor points at or focuses the row */
+  @media (prefers-reduced-motion: no-preference) {
+    a.row:focus-visible .bars {
+      rect:nth-child(odd) {
+        transform: scaleY(0.5);
+      }
+
+      rect:nth-child(even) {
+        transform: scaleY(1.15);
+      }
+    }
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    a.row:hover .bars {
+      rect:nth-child(odd) {
+        transform: scaleY(0.5);
+      }
+
+      rect:nth-child(even) {
+        transform: scaleY(1.15);
+      }
+    }
   }
 
   /* Covers keep their own shape (a square album, a tall book) at one height, centred in a fixed column */
