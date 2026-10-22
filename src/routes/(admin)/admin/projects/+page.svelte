@@ -6,6 +6,7 @@
   import MoveButtons from "$lib/components/admin/MoveButtons.svelte";
   import Button from "$lib/components/form/Button.svelte";
   import Field from "$lib/components/form/Field.svelte";
+  import ImageField from "$lib/components/images/ImageField.svelte";
   import type { Project } from "$lib/server/content/projects";
   import type { PageProps } from "./$types";
 
@@ -43,7 +44,7 @@
     <Field label="Name" name="title" value={form?.values?.title ?? ""} error={form?.errors?.title?.[0]} />
     <Field label="One-liner" name="description" value={form?.values?.description ?? ""} error={form?.errors?.description?.[0]} />
     <div class="wide">
-      <Field label="Screenshot URL" name="imageURL" placeholder="https://assets.jamesmddoyle.com/..." value={form?.values?.imageURL ?? ""} error={form?.errors?.imageURL?.[0]} />
+      <ImageField label="Screenshot URL" name="imageURL" placeholder="https://assets.jamesmddoyle.com/..." value={form?.values?.imageURL ?? ""} error={form?.errors?.imageURL?.[0]} />
     </div>
 
     {#snippet actions()}

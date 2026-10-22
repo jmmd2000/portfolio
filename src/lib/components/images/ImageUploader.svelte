@@ -18,11 +18,15 @@
   interface Props {
     /** Called after each image is stored */
     onuploaded?: (image: UploadedImage) => void;
+    /** Called once every file picked or dropped together has finished, with the images that were stored */
+    onfinished?: (images: UploadedImage[]) => void;
     /** Images dropped anywhere on the page upload too, with an outline while they're dragged over it */
     dropOnPage?: boolean;
+    /** Shows the resize and quality settings. Without them, uploads use the last settings saved in this browser */
+    showSettings?: boolean;
   }
 
-  let { onuploaded, dropOnPage = false }: Props = $props();
+  let { onuploaded, onfinished, dropOnPage = false, showSettings = true }: Props = $props();
 
   interface Upload {
     id: number;
@@ -62,14 +66,15 @@
     return "The upload failed. Try again.";
   }
 
-  async function upload(file: File): Promise<void> {
+  /** Processes and stores one image. Returns it, or null when it failed, with the reason shown in the list */
+  async function upload(file: File): Promise<UploadedImage | null> {
     const id = nextID++;
     uploads = [{ id, name: file.name, status: "working", message: "Uploading" }, ...uploads];
 
     const processed = await processImage(file, settings).catch(() => ({ file, name: file.name }));
     if (processed.file.size > maxUploadBytes) {
       updateUpload(id, { status: "failed", message: `It's ${formatBytes(processed.file.size)}. Images can be up to 10 MB.` });
-      return;
+      return null;
     }
 
     const formData = new FormData();
@@ -77,16 +82,18 @@
     const response = await fetch("/api/admin/images", { method: "POST", body: formData }).catch(() => null);
     if (!response?.ok) {
       updateUpload(id, { status: "failed", message: response ? await errorMessage(response) : "The upload failed. Check the connection and try again." });
-      return;
+      return null;
     }
 
     const image = (await response.json()) as UploadedImage;
     updateUpload(id, { status: "done", name: image.name, message: `${formatBytes(file.size)} → ${formatBytes(image.size)}` });
     onuploaded?.(image);
+    return image;
   }
 
-  function uploadAll(files: FileList | null | undefined): void {
-    for (const file of files ?? []) void upload(file);
+  async function uploadAll(files: FileList | null | undefined): Promise<void> {
+    const results = await Promise.all(Array.from(files ?? [], upload));
+    onfinished?.(results.filter(image => image !== null));
   }
 
   function carriesFiles(event: DragEvent): boolean {
@@ -110,11 +117,11 @@
 
     event.preventDefault();
     dragDepth = 0;
-    uploadAll(event.dataTransfer?.files);
+    void uploadAll(event.dataTransfer?.files);
   }
 
   function handleChoose(event: Event & { currentTarget: HTMLInputElement }): void {
-    uploadAll(event.currentTarget.files);
+    void uploadAll(event.currentTarget.files);
     event.currentTarget.value = "";
   }
 </script>
@@ -126,15 +133,17 @@
     <Button variant="primary" onclick={() => fileInput?.click()}>Upload images</Button>
     <input bind:this={fileInput} type="file" accept="image/*" multiple hidden onchange={handleChoose} />
 
-    <details class="settings">
-      <summary>Upload settings</summary>
-      <div class="settings-fields">
-        <Field label="Maximum width (px)" type="number" min="16" max="10000" value={settings.maxWidth} oninput={event => changeSettings({ maxWidth: numberFrom(event, settings.maxWidth) })} />
-        <Field label="Quality (1 to 100)" type="number" min="1" max="100" value={settings.quality} oninput={event => changeSettings({ quality: numberFrom(event, settings.quality) })} />
-        <Checkbox label="Convert to WebP" checked={settings.convertToWebP} onchange={event => changeSettings({ convertToWebP: event.currentTarget.checked })} />
-      </div>
-      <p class="hint">Applies to JPEG and PNG images. SVGs, GIFs and WebP files are uploaded as they are. Up to 10 MB each.</p>
-    </details>
+    {#if showSettings}
+      <details class="settings">
+        <summary>Upload settings</summary>
+        <div class="settings-fields">
+          <Field label="Maximum width (px)" type="number" min="16" max="10000" value={settings.maxWidth} oninput={event => changeSettings({ maxWidth: numberFrom(event, settings.maxWidth) })} />
+          <Field label="Quality (1 to 100)" type="number" min="1" max="100" value={settings.quality} oninput={event => changeSettings({ quality: numberFrom(event, settings.quality) })} />
+          <Checkbox label="Convert to WebP" checked={settings.convertToWebP} onchange={event => changeSettings({ convertToWebP: event.currentTarget.checked })} />
+        </div>
+        <p class="hint">Applies to JPEG and PNG images. SVGs, GIFs and WebP files are uploaded as they are. Up to 10 MB each.</p>
+      </details>
+    {/if}
   </div>
 
   {#if uploads.length > 0}
