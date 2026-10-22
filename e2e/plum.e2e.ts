@@ -106,6 +106,26 @@ test.describe("with reduced motion", () => {
 
     expect(new Set(framesShown)).toEqual(new Set(["0"]));
   });
+
+  test("she plays no idle animations", async ({ page }) => {
+    await page.clock.install();
+    await page.goto("/");
+    const sprite = band(page).getByRole("img", { name: "Plum, sitting" });
+    await expect(sprite).toBeVisible();
+
+    // Notes every sprite she shows over 30 seconds, long enough for at least two idles if they played
+    await sprite.evaluate(element => {
+      const labels: string[] = [];
+      Object.assign(window, { spriteLabels: labels });
+      new MutationObserver(() => labels.push(element.getAttribute("aria-label") ?? "")).observe(element, { attributes: true, attributeFilter: ["aria-label"] });
+    });
+    for (let step = 0; step < 60; step += 1) {
+      await page.clock.runFor(500);
+    }
+    const labels = await page.evaluate(() => ("spriteLabels" in window ? window.spriteLabels : null));
+
+    expect(labels).toEqual([]);
+  });
 });
 
 test("her pen shows her asleep with the buttons off when her data can't be read, and the page still loads", async ({ page }) => {

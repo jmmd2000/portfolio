@@ -2,7 +2,8 @@
   @component
   Plum drawn from a sprite sheet, every pixel a square of `--plum-scale` CSS pixels (6 unless the parent sets it).
   Keep the scale a whole number, so neighbouring frames never show at the edges. Without a `frame`, the frames
-  play in turn from the first whenever the sheet changes. With reduced motion she stays on the first frame.
+  play in turn from the first whenever the sheet changes, round and round unless `loop` is false. With reduced
+  motion she stays on the first frame.
 -->
 <script lang="ts">
   import type { SpriteSheet } from "./penSprites";
@@ -13,9 +14,11 @@
     label: string;
     /** Shows this frame and plays nothing */
     frame?: number;
+    /** False plays the frames once and stays on the last */
+    loop?: boolean;
   }
 
-  let { sheet, label, frame }: Props = $props();
+  let { sheet, label, frame, loop = true }: Props = $props();
 
   let playingFrame = $state(0);
 
@@ -28,6 +31,8 @@
     let index = 0;
     let timer: ReturnType<typeof setTimeout>;
     function showNextFrame(): void {
+      if (!loop && index === durations.length - 1) return;
+
       timer = setTimeout(() => {
         index = (index + 1) % durations.length;
         playingFrame = index;

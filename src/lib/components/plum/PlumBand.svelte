@@ -2,7 +2,8 @@
   @component
   Plum's red band on the home page: her pen, how she is, her stats, and Feed, Pet and Play. Every visitor shares
   her. The band asks the server how she is every 10 seconds while the tab is visible, and shows what other
-  visitors did. With no `plum` (her data couldn't load) she shows asleep with the buttons off.
+  visitors did. She blinks every few seconds, and while she's idle she plays a short animation now and then,
+  unless the visitor asks for reduced motion. With no `plum` (her data couldn't load) she shows asleep with the buttons off.
 -->
 <script lang="ts">
   import { onMount, untrack } from "svelte";
@@ -11,7 +12,7 @@
   import { actionResultSchema, plumStateSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
   import { actionsByOthers } from "./actionsByOthers";
   import { gazeAt, gazeFrame, type GazeDirection } from "./gaze";
-  import { penSprites, type PenSprite } from "./penSprites";
+  import { idleAnimations, penSprites, type IdleAnimation, type PenSprite } from "./penSprites";
   import { coolingMessage, doneMessage, othersMessages, refusalMessages, unreachableMessage } from "./plumMessages";
   import PlumSprite from "./PlumSprite.svelte";
   import PlumStats from "./PlumStats.svelte";
@@ -24,6 +25,8 @@
 
   const checkIntervalMilliseconds = 10_000;
   const actionSpriteMilliseconds = 3000;
+  const idleWaitMilliseconds = { shortest: 8000, longest: 12000 };
+  const blinkWaitMilliseconds = { shortest: 2500, longest: 5500 };
 
   const actionNames: Record<PlumAction, string> = { feed: "Feed", pet: "Pet", play: "Play" };
   const actionSprites: Record<PlumAction, PenSprite> = { feed: "eating", pet: "purring", play: "playing" };
@@ -36,6 +39,12 @@
     hungry: "looking hungry",
     full: "turning her nose up at the food",
     asleep: "asleep",
+    // A blink keeps the label it had, so screen readers aren't told about every blink
+    blink: "sitting",
+    watchingBlink: "watching you",
+    earTwitch: "twitching an ear",
+    tailFlick: "flicking her tail",
+    pawLick: "licking her paw",
   };
 
   let latest = $state<PlumState | null>(untrack(() => plum));
@@ -46,20 +55,33 @@
   let busy = $state(false);
   let message = $state("");
   let actionSprite = $state<PenSprite | null>(null);
+  let idleAnimation = $state<IdleAnimation | null>(null);
+  /** 0 with her eyes open, 1 half shut, 2 shut */
+  let blinkStep = $state(0);
   let gaze = $state<GazeDirection | null>(null);
 
   let band = $state<HTMLElement>();
   let yard = $state<HTMLElement>();
   let reducedMotion = false;
   let actionSpriteTimer: ReturnType<typeof setTimeout> | undefined;
+  let idleTimer: ReturnType<typeof setTimeout> | undefined;
+  let idleEndTimer: ReturnType<typeof setTimeout> | undefined;
+  let blinkTimer: ReturnType<typeof setTimeout> | undefined;
   /** How many times this visitor did each action, so its messages come in turn */
   const actionCounts: Record<PlumAction, number> = { feed: 0, pet: 0, play: 0 };
 
-  const sprite = $derived.by((): { name: PenSprite; frame?: number } => {
+  const sprite = $derived.by((): { name: PenSprite; frame?: number; loop?: boolean } => {
     if (!latest) return { name: "asleep" };
     if (actionSprite) return { name: actionSprite };
-    if (gaze && !isAsleep(latest.stats)) return { name: "watching", frame: gazeFrame(gaze) };
-    return { name: restingSprite(latest.stats) };
+    if (gaze && !isAsleep(latest.stats)) {
+      if (blinkStep > 0) return { name: "watchingBlink", frame: gazeFrame(gaze) * 2 + blinkStep - 1 };
+      return { name: "watching", frame: gazeFrame(gaze) };
+    }
+
+    const resting = restingSprite(latest.stats);
+    if (resting === "idle" && idleAnimation) return { name: idleAnimation, loop: false };
+    if (resting === "idle" && blinkStep > 0) return { name: "blink", frame: blinkStep - 1 };
+    return { name: resting };
   });
 
   function readyTimes(cooldowns: CooldownsLeft | undefined): Record<PlumAction, number> {
@@ -145,6 +167,39 @@
     }
   }
 
+  /** Waits 8 to 12 seconds, then plays a random idle animation if she's sitting idle, and waits again */
+  function waitForIdle(): void {
+    const wait = idleWaitMilliseconds.shortest + Math.random() * (idleWaitMilliseconds.longest - idleWaitMilliseconds.shortest);
+    idleTimer = setTimeout(() => {
+      if (sprite.name === "idle" && !document.hidden) playIdle();
+      waitForIdle();
+    }, wait);
+  }
+
+  function playIdle(): void {
+    const name = idleAnimations[Math.floor(Math.random() * idleAnimations.length)] ?? "blink";
+    const length = penSprites[name].durations.reduce((total, duration) => total + duration, 0);
+    idleAnimation = name;
+    idleEndTimer = setTimeout(() => (idleAnimation = null), length);
+  }
+
+  /** Waits 2.5 to 5.5 seconds, blinks, and waits again. A blink only shows while she's idle or watching */
+  function waitForBlink(): void {
+    const wait = blinkWaitMilliseconds.shortest + Math.random() * (blinkWaitMilliseconds.longest - blinkWaitMilliseconds.shortest);
+    blinkTimer = setTimeout(() => {
+      if (!document.hidden) blink();
+      waitForBlink();
+    }, wait);
+  }
+
+  /** Half shut, shut, half shut, open: about a quarter of a second */
+  function blink(): void {
+    blinkStep = 1;
+    setTimeout(() => (blinkStep = 2), 70);
+    setTimeout(() => (blinkStep = 1), 180);
+    setTimeout(() => (blinkStep = 0), 250);
+  }
+
   /** Turns her head towards the pointer while it's over the band */
   function watchPointer(event: PointerEvent): void {
     if (reducedMotion || event.pointerType === "touch" || !band || !yard) return;
@@ -166,6 +221,10 @@
   onMount(() => {
     reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     ready = true;
+    if (!reducedMotion) {
+      waitForIdle();
+      waitForBlink();
+    }
 
     const clock = setInterval(() => (now = Date.now()), 1000);
     const checks = setInterval(() => {
@@ -180,6 +239,9 @@
       clearInterval(clock);
       clearInterval(checks);
       clearTimeout(actionSpriteTimer);
+      clearTimeout(idleTimer);
+      clearTimeout(idleEndTimer);
+      clearTimeout(blinkTimer);
       document.removeEventListener("visibilitychange", checkWhenShown);
     };
   });
@@ -197,7 +259,7 @@
   <h2 class="section-title" id="plum-heading">Plum</h2>
   <div class="pen">
     <div class="yard" bind:this={yard}>
-      <PlumSprite sheet={penSprites[sprite.name]} frame={sprite.frame} label="Plum, {spriteDescriptions[sprite.name]}" />
+      <PlumSprite sheet={penSprites[sprite.name]} frame={sprite.frame} loop={sprite.loop} label="Plum, {spriteDescriptions[sprite.name]}" />
     </div>
     <div>
       <h3 class="mood">{latest ? moodLine(latest.stats) : "She's asleep"}</h3>
