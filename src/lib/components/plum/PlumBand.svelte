@@ -1,9 +1,9 @@
 <!--
   @component
   Plum's red band on the home page: her pen, how she is, her stats, and Feed, Pet and Play. The visitor can swap
-  the pen to a photo of the real Plum and back. Every visitor shares
-  her. The band asks the server how she is every 10 seconds while the tab is visible, and shows what other
-  visitors did. Awake, she blinks every few seconds and plays a short animation now and then. Asleep, her ear
+  the pen to a photo of the real Plum and back. Every visitor shares her. The band asks the server how she is
+  every 10 seconds while the tab is visible, and shows what other visitors did. Under the buttons, a message
+  after an action shows for 10 seconds, then the line goes back to when she was last fed. Awake, she blinks every few seconds and plays a short animation now and then. Asleep, her ear
   flicks now and then. Neither happens if the visitor asks for reduced motion. With no `plum` (her data couldn't
   load) she shows asleep with the buttons off.
 -->
@@ -17,6 +17,7 @@
   import { idleAnimations, penSprites, type IdleAnimation, type PenSprite } from "./penSprites";
   import { coolingMessage, doneMessage, hungryMessages, othersMessages, othersSleepMessages, refusalMessages, sleepMessages, unreachableMessage } from "./plumMessages";
   import PlumSprite from "./PlumSprite.svelte";
+  import { lastFedLine } from "./lastFed";
   import PlumStats from "./PlumStats.svelte";
   import { realPlumPhotoDescription, realPlumPhotoURL } from "./realPlumPhoto";
 
@@ -27,6 +28,7 @@
   let { plum }: Props = $props();
 
   const checkIntervalMilliseconds = 10_000;
+  const messageMilliseconds = 10_000;
   const actionSpriteMilliseconds = 3000;
   const idleWaitMilliseconds = { shortest: 8000, longest: 12000 };
   const blinkWaitMilliseconds = { shortest: 2500, longest: 5500 };
@@ -55,6 +57,10 @@
   let latest = $state<PlumState | null>(untrack(() => plum));
   /** When each cooldown ends, by this browser's clock */
   let readyAt = $state<Record<PlumAction, number>>(untrack(() => readyTimes(plum?.cooldowns)));
+  /** When she was last fed, by this browser's clock, or null if nobody has fed her yet */
+  let fedAt = $state<number | null>(untrack(() => fedTime(plum?.lastFedSecondsAgo ?? null)));
+  /** When this visitor last fed her, by this browser's clock, so the line can say "You" */
+  let ownFeedAt = $state<number | null>(null);
   let now = $state(Date.now());
   let ready = $state(false);
   let busy = $state(false);
@@ -73,6 +79,7 @@
   let idleTimer: ReturnType<typeof setTimeout> | undefined;
   let idleEndTimer: ReturnType<typeof setTimeout> | undefined;
   let blinkTimer: ReturnType<typeof setTimeout> | undefined;
+  let messageTimer: ReturnType<typeof setTimeout> | undefined;
   /** How many times this visitor did each action, so its messages come in turn */
   const actionCounts: Record<PlumAction, number> = { feed: 0, pet: 0, play: 0 };
 
@@ -109,10 +116,29 @@
     return seconds > 0 ? `${actionNames[action]} again in ${seconds}s` : actionNames[action];
   }
 
+  const lastFedText = $derived.by(() => {
+    if (!latest) return "";
+    const secondsAgo = fedAt === null ? null : Math.max(0, Math.floor((now - fedAt) / 1000));
+    const fedByThisVisitor = ownFeedAt !== null && fedAt !== null && Math.abs(fedAt - ownFeedAt) < 2000;
+    return lastFedLine(secondsAgo, fedByThisVisitor);
+  });
+
+  function fedTime(lastFedSecondsAgo: number | null): number | null {
+    return lastFedSecondsAgo === null ? null : Date.now() - lastFedSecondsAgo * 1000;
+  }
+
   function remember(state: PlumState): void {
     latest = state;
     readyAt = readyTimes(state.cooldowns);
+    fedAt = fedTime(state.lastFedSecondsAgo);
     now = Date.now();
+  }
+
+  /** Shows a message under the buttons for 10 seconds */
+  function say(text: string): void {
+    clearTimeout(messageTimer);
+    message = text;
+    messageTimer = setTimeout(() => (message = ""), messageMilliseconds);
   }
 
   /** Shows a sprite for three seconds, then goes back to how she is at rest */
@@ -130,26 +156,27 @@
    */
   function showOutcome(action: PlumAction, outcome: ActionOutcome, before: PlumState | null, after: PlumState): void {
     if (outcome === "cooling") {
-      message = coolingMessage;
+      say(coolingMessage);
     } else if (outcome === "full") {
       showSprite("full");
-      message = refusalMessages.full;
+      say(refusalMessages.full);
     } else if (outcome === "asleep") {
       showSprite("asleep");
-      message = refusalMessages.asleep;
+      say(refusalMessages.asleep);
     } else if (outcome === "woke") {
       showSprite("playing");
-      message = sleepMessages.woken;
+      say(sleepMessages.woken);
     } else if (action === "pet" && after.sleep) {
       showSprite("sleepPurr");
-      message = sleepMessages.petted;
+      say(sleepMessages.petted);
     } else if (action !== "feed" && before && isHungry(before)) {
       showSprite(actionSprites[action]);
-      message = hungryMessages[action];
+      say(hungryMessages[action]);
     } else {
       showSprite(actionSprites[action]);
-      message = doneMessage(action, actionCounts[action]);
+      say(doneMessage(action, actionCounts[action]));
       actionCounts[action] += 1;
+      if (action === "feed") ownFeedAt = fedAt;
     }
   }
 
@@ -157,13 +184,13 @@
   function showOthersAction(action: PlumAction, before: PlumState | null, after: PlumState): void {
     if (action === "pet" && after.sleep) {
       showSprite("sleepPurr");
-      message = othersSleepMessages.petted;
+      say(othersSleepMessages.petted);
     } else if (action === "play" && before?.sleep && !after.sleep) {
       showSprite("playing");
-      message = othersSleepMessages.woken;
+      say(othersSleepMessages.woken);
     } else {
       showSprite(actionSprites[action]);
-      message = othersMessages[action];
+      say(othersMessages[action]);
     }
   }
 
@@ -178,7 +205,7 @@
       remember(result);
       showOutcome(action, result.outcome, before, result);
     } catch {
-      message = unreachableMessage;
+      say(unreachableMessage);
     } finally {
       busy = false;
     }
@@ -280,6 +307,7 @@
       clearTimeout(idleTimer);
       clearTimeout(idleEndTimer);
       clearTimeout(blinkTimer);
+      clearTimeout(messageTimer);
       document.removeEventListener("visibilitychange", checkWhenShown);
     };
   });
@@ -316,7 +344,11 @@
           <button type="button" disabled={!ready || !latest || busy || secondsLeft(action) > 0} onclick={() => doAction(action)}>{buttonText(action)}</button>
         {/each}
       </div>
-      <p class="message" role="status">{message}</p>
+      <p class="message">
+        <span role="status">{message}</span>
+        <!-- Not announced: it changes every minute as the time goes on -->
+        {#if !message}<span>{lastFedText}</span>{/if}
+      </p>
     </div>
   </div>
 </section>
