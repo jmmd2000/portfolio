@@ -141,6 +141,20 @@ describe("act", () => {
 });
 
 describe("getPlumState", () => {
+  it("counts the seconds since she was last fed, and a refused feed doesn't count as one", async () => {
+    await setPlum({ food: 10, happiness: 50, energy: 50 });
+    const beforeAnyFeed = await getPlumState(now);
+    await act("feed", now);
+    await act("feed", secondsLater(30));
+    const refused = await act("feed", secondsLater(60));
+
+    const state = await getPlumState(secondsLater(600));
+
+    expect(beforeAnyFeed.lastFedSecondsAgo).toBeNull();
+    expect(refused.outcome).toBe("full");
+    expect(state.lastFedSecondsAgo).toBe(570);
+  });
+
   it("counts each cooldown down to 0", async () => {
     await setPlum({ food: 10, happiness: 50, energy: 50 });
     await act("feed", now);

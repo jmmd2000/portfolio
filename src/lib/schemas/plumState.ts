@@ -8,13 +8,15 @@ const sleepReason = z.enum(["night", "nap"]).nullable();
 
 /**
  * What every visitor sees of Plum: her stats, the seconds left on each action's cooldown (0 when it's ready), why
- * she's asleep (null when she's awake), and what someone woke her from (null unless she's only awake because of it).
+ * she's asleep (null when she's awake), what someone woke her from (null unless she's only awake because of it),
+ * and how many seconds ago she was last fed (null if nobody has fed her yet).
  */
 export const plumStateSchema = z.object({
   stats: z.object({ food: stat, happiness: stat, energy: stat }),
   cooldowns: z.object({ feed: secondsLeft, pet: secondsLeft, play: secondsLeft }),
   sleep: sleepReason,
   wokenFrom: sleepReason,
+  lastFedSecondsAgo: z.number().int().min(0).nullable(),
 });
 
 /**

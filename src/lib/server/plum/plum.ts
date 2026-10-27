@@ -10,9 +10,10 @@ const decayCheckIntervalMilliseconds = 60_000;
 /** How much each stat changes every 15 minutes. She gets hungrier and lonelier, and rests, twice as fast at night */
 const decayPerStep = { food: -2, happiness: -1, energy: 5, nightEnergy: 10 };
 
-/** Her stats, and until when someone's kept her awake */
+/** Her stats, until when someone's kept her awake, and when she was last fed */
 export interface PlumRow extends PlumStats {
   awakeUntil: Date | null;
+  lastFedAt: Date | null;
 }
 
 /** Adds her row with its starting stats the first time anything needs it */
@@ -22,7 +23,7 @@ export async function ensurePlum(): Promise<void> {
 
 export async function getPlum(): Promise<PlumRow> {
   await ensurePlum();
-  const [row] = await db.select({ food: plum.food, happiness: plum.happiness, energy: plum.energy, awakeUntil: plum.awakeUntil }).from(plum);
+  const [row] = await db.select({ food: plum.food, happiness: plum.happiness, energy: plum.energy, awakeUntil: plum.awakeUntil, lastFedAt: plum.lastFedAt }).from(plum);
   if (!row) throw new Error("Plum's row is missing");
 
   return row;

@@ -31,8 +31,8 @@ beforeEach(async () => {
 });
 
 describe("getPlum", () => {
-  it("gives her starting stats the first time, with nobody keeping her awake", async () => {
-    expect(await getPlum()).toEqual({ food: 80, happiness: 80, energy: 100, awakeUntil: null });
+  it("gives her starting stats the first time, with nobody keeping her awake or having fed her", async () => {
+    expect(await getPlum()).toEqual({ food: 80, happiness: 80, energy: 100, awakeUntil: null, lastFedAt: null });
   });
 });
 
