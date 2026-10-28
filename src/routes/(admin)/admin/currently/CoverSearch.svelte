@@ -161,7 +161,7 @@
         {#each results as result, index (result.coverURL)}
           <li>
             <button class="result" class:faded={copying !== null && copying !== index} type="button" disabled={copying !== null} onclick={() => pick(index)}>
-              <span class="thumbnail" class:square={searched.source === "album"}>
+              <span class="thumbnail">
                 <img src={result.thumbnailURL} alt="" loading="lazy" referrerpolicy="no-referrer" />
                 {#if copying === index}<span class="copying">Copying…</span>{/if}
               </span>
@@ -299,6 +299,7 @@
   .results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(9rem, 100%), 1fr));
+    align-items: start;
     gap: var(--space-2);
     margin: 0;
     padding: 0.25rem;
@@ -327,26 +328,20 @@
     }
   }
 
+  /* Each cover keeps its own shape, so none is cropped or shown with empty bands */
   .thumbnail {
     position: relative;
     display: block;
-    overflow: hidden;
-    aspect-ratio: 2 / 3;
     outline: var(--rule-row);
     background: var(--sunken);
     transition:
       transform var(--duration-quick) var(--ease-out),
       box-shadow var(--duration-quick) var(--ease-out);
 
-    &.square {
-      aspect-ratio: 1;
-    }
-
     img {
       display: block;
       width: 100%;
-      height: 100%;
-      object-fit: contain;
+      height: auto;
       filter: var(--filter-picture);
     }
   }
