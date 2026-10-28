@@ -1,0 +1,156 @@
+import { createAdmin, logIn } from "./adminSession";
+import { insertArticle, openEditor } from "./articles";
+import { expect, test } from "./fixtures";
+
+test("a new article is a draft that stays off the site", async ({ page, request }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.getByRole("navigation", { name: "Admin" }).getByRole("link", { name: "Articles" }).click();
+
+  const add = page.getByRole("group", { name: "Add an article" });
+  await add.getByLabel("Title").fill("How the sand falls");
+  await add.getByLabel("Slug").fill("how-the-sand-falls");
+  await add.getByLabel("Summary").fill("One rule per material.");
+  await add.getByRole("button", { name: "Add" }).click();
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("How the sand falls");
+  await page.getByLabel("Body").fill("## The grid");
+  const saved = page.waitForResponse(response => response.request().method() === "POST");
+  await page.getByRole("button", { name: "Save" }).click();
+  await saved;
+
+  // A signed-out visitor, since the signed-in admin can see drafts
+  const response = await request.get("/articles/how-the-sand-falls");
+  expect(response.status()).toBe(404);
+});
+
+test("the Published switch puts a draft on the site when it's saved", async ({ page, request }) => {
+  await insertArticle({ slug: "how-the-sand-falls", published: false, publishedAt: null });
+  await createAdmin();
+  await logIn(page);
+  await openEditor(page);
+
+  await page.getByRole("switch", { name: "Published" }).check();
+  // A signed-out visitor, since the signed-in admin can see drafts
+  expect((await request.get("/articles/how-the-sand-falls")).status()).toBe(404);
+
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect.poll(async () => (await request.get("/articles/how-the-sand-falls")).status()).toBe(200);
+});
+
+test("a new article's slug follows its title until the slug is typed by hand", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/articles");
+  const add = page.getByRole("group", { name: "Add an article" });
+
+  await add.getByLabel("Title").fill("How the Sand Falls!");
+  await expect(add.getByLabel("Slug")).toHaveValue("how-the-sand-falls");
+  await add.getByLabel("Slug").fill("sand");
+  await add.getByLabel("Title").fill("Falling sand");
+
+  await expect(add.getByLabel("Slug")).toHaveValue("sand");
+});
+
+test("without JavaScript, a new article with a blank slug gets one from its title", async ({ page }) => {
+  await createAdmin();
+  await logIn(page);
+  // Blocking the app's JavaScript makes the form submit as plain HTML
+  await page.route("**/_app/**/*.js", route => route.abort());
+  await page.goto("/admin/articles");
+  const add = page.getByRole("group", { name: "Add an article" });
+
+  await add.getByLabel("Title").fill("How the Sand Falls");
+  await add.getByLabel("Summary").fill("One rule per material.");
+  await add.getByRole("button", { name: "Add" }).click();
+
+  await expect(page.getByLabel("Slug")).toHaveValue("how-the-sand-falls");
+});
+
+test("a slug another article uses is reported on the field", async ({ page }) => {
+  await insertArticle({ slug: "taken" });
+  await createAdmin();
+  await logIn(page);
+  await page.goto("/admin/articles");
+
+  const add = page.getByRole("group", { name: "Add an article" });
+  await add.getByLabel("Title").fill("Another");
+  await add.getByLabel("Slug").fill("taken");
+  await add.getByLabel("Summary").fill("Clashes.");
+  await add.getByRole("button", { name: "Add" }).click();
+
+  await expect(add.getByLabel("Slug")).toHaveAttribute("aria-invalid", "true");
+  await expect(add.getByLabel("Title")).toHaveValue("Another");
+});
+
+test("renaming a published article sends its old address to the new one", async ({ page }) => {
+  await insertArticle({ slug: "how-the-sand-falls" });
+  await createAdmin();
+  await logIn(page);
+  await openEditor(page);
+
+  await page.getByLabel("Slug").fill("falling-sand");
+  const saved = page.waitForResponse(response => response.request().method() === "POST");
+  await page.getByRole("button", { name: "Save" }).click();
+  await saved;
+
+  const response = await page.request.get("/articles/how-the-sand-falls", { maxRedirects: 0 });
+  expect(response.status()).toBe(301);
+  expect(response.headers()["location"]).toBe("/articles/falling-sand");
+  expect(response.headers()["cache-control"]).toBe("max-age=86400");
+});
+
+test("deleting an article asks first, then removes it from the admin and the site", async ({ page }) => {
+  await insertArticle({ slug: "how-the-sand-falls" });
+  await createAdmin();
+  await logIn(page);
+  await openEditor(page);
+
+  await page.locator("summary", { hasText: "Delete" }).click();
+  await page.getByRole("button", { name: "Keep" }).click();
+  await expect(page.getByRole("button", { name: "Delete How the sand falls" })).toBeHidden();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("How the sand falls");
+
+  await page.locator("summary", { hasText: "Delete" }).click();
+  await page.getByRole("button", { name: "Delete How the sand falls" }).click();
+
+  await expect(page).toHaveURL("/admin/articles");
+  await expect(page.getByRole("link", { name: "How the sand falls" })).toHaveCount(0);
+  const response = await page.goto("/articles/how-the-sand-falls");
+  expect(response?.status()).toBe(404);
+});
+
+test("Escape closes the delete question, and the Insert panel", async ({ page }) => {
+  await insertArticle({ slug: "how-the-sand-falls" });
+  await createAdmin();
+  await logIn(page);
+  await openEditor(page);
+
+  await page.locator("summary", { hasText: "Delete" }).click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "Delete How the sand falls" })).toBeHidden();
+
+  await page.locator("summary", { hasText: "Insert" }).click();
+  await expect(page.getByRole("heading", { name: "Insert" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("heading", { name: "Insert" })).toBeHidden();
+});
+
+for (const javaScript of [true, false]) {
+  test(`${javaScript ? "with" : "without"} JavaScript, a slug clash in the editor shows on the slug and keeps the body`, async ({ page }) => {
+    await insertArticle({ slug: "taken", title: "Taken" });
+    await insertArticle({ slug: "how-the-sand-falls", published: false, publishedAt: null });
+    await createAdmin();
+    await logIn(page);
+    // Blocking the app's JavaScript makes the form submit as plain HTML
+    if (!javaScript) await page.route("**/_app/**/*.js", route => route.abort());
+    await openEditor(page);
+
+    await page.getByLabel("Slug").fill("taken");
+    await page.getByLabel("Body").fill("A body that should still be here.");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page.getByLabel("Slug")).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByLabel("Body")).toHaveValue("A body that should still be here.");
+  });
+}

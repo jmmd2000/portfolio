@@ -1,0 +1,91 @@
+# Production stack, deployed to the VPS by Jenkins. The deploy writes IMAGE_TAG, GITHUB_USER, APP_NAME and DOMAIN
+# into .env, after the values from the Jenkins env credential.
+# Local dev runs only the db service (`pnpm db:start`), with docker-compose.override.yml on top.
+# The empty defaults (`:-`) only keep local commands quiet. A deploy always sets these values.
+name: ${APP_NAME:-portfolio}
+
+services:
+  db:
+    image: postgres:18
+    restart: always
+    environment:
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: portfolio
+    volumes:
+      - pgdata:/var/lib/postgresql
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Applies the migrations once, then exits. The profile keeps `docker compose up` from starting it:
+  # the deploy runs it on its own with `docker compose run`
+  migrate:
+    image: ghcr.io/${GITHUB_USER:-}/portfolio:${IMAGE_TAG:-}
+    profiles: ["migrate"]
+    command: ["node", "scripts/migrate.mjs"]
+    restart: "no"
+    environment:
+      DATABASE_URL_MIGRATE: postgres://portfolio:${POSTGRES_PASSWORD}@db:5432/portfolio
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  web:
+    image: ghcr.io/${GITHUB_USER:-}/portfolio:${IMAGE_TAG:-}
+    restart: always
+    env_file: .env
+    environment:
+      ORIGIN: https://${DOMAIN:-}
+      BETTER_AUTH_URL: https://${DOMAIN:-}
+      # Traefik replaces any X-Forwarded-For a visitor sends with the visitor's real address.
+      # The login limit and the visitor count use it
+      ADDRESS_HEADER: X-Forwarded-For
+      XFF_DEPTH: "1"
+      DATABASE_URL: postgres://portfolio:${POSTGRES_PASSWORD}@db:5432/portfolio
+      DATABASE_URL_MIGRATE: postgres://portfolio:${POSTGRES_PASSWORD}@db:5432/portfolio
+      PUBLIC_GLITCHTIP_DSN: ${GLITCHTIP_DSN:-}
+      PUBLIC_GLITCHTIP_ENVIRONMENT: ${GLITCHTIP_ENVIRONMENT:-}
+      PUBLIC_GIT_SHA: ${IMAGE_TAG:-}
+      PUBLIC_UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+      - web_proxy
+    # The image has no curl, so Node asks for the health check itself
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(response => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web_proxy"
+      - "traefik.http.routers.${APP_NAME:-portfolio}.rule=Host(`${DOMAIN:-}`)"
+      - "traefik.http.routers.${APP_NAME:-portfolio}.entrypoints=websecure"
+      - "traefik.http.routers.${APP_NAME:-portfolio}.tls.certresolver=myresolver"
+      - "traefik.http.services.${APP_NAME:-portfolio}.loadbalancer.server.port=3000"
+      # www gets its own certificate, then a permanent redirect to the same path on the apex
+      - "traefik.http.routers.${APP_NAME:-portfolio}-www.rule=Host(`www.${DOMAIN:-}`)"
+      - "traefik.http.routers.${APP_NAME:-portfolio}-www.entrypoints=websecure"
+      - "traefik.http.routers.${APP_NAME:-portfolio}-www.tls.certresolver=myresolver"
+      - "traefik.http.routers.${APP_NAME:-portfolio}-www.middlewares=${APP_NAME:-portfolio}-www"
+      - "traefik.http.middlewares.${APP_NAME:-portfolio}-www.redirectregex.regex=^https://www\\.(.+)"
+      - "traefik.http.middlewares.${APP_NAME:-portfolio}-www.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.${APP_NAME:-portfolio}-www.redirectregex.permanent=true"
+
+networks:
+  app_network:
+  web_proxy:
+    external: true
+
+volumes:
+  pgdata:

@@ -1,0 +1,121 @@
+<script lang="ts">
+  import { fitText } from "$lib/attachments/fitText";
+  import CopyButton from "$lib/components/contact/CopyButton.svelte";
+  import { linkText } from "$lib/components/contact/linkText";
+  import type { Social } from "$lib/server/content/socials";
+
+  interface Props {
+    socials: Social[];
+    /** The home page ends with the email filling the width and a Copy email button */
+    isHome: boolean;
+    /** Left out when null */
+    visitorCount: number | null;
+  }
+
+  let { socials, isHome, visitorCount }: Props = $props();
+
+  let emailSocial = $derived(socials.find(social => social.url.startsWith("mailto:")));
+  let otherSocials = $derived(socials.filter(social => social !== emailSocial));
+  let fittedEmail = $state<HTMLAnchorElement>();
+</script>
+
+<footer>
+  {#if emailSocial && isHome}
+    <a class="fitted-email fitted-line" href={emailSocial.url} rel="external" bind:this={fittedEmail} {@attach fitText(5.5)}><span class="part">{linkText(emailSocial.url)}</span></a>
+  {/if}
+  <div class="row">
+    <div class="links">
+      {#if emailSocial && isHome}
+        <CopyButton text={linkText(emailSocial.url)} label="Copy email" selectTarget={fittedEmail} />
+      {:else if emailSocial}
+        <a class="email label" href={emailSocial.url} rel="external">{linkText(emailSocial.url)}</a>
+      {/if}
+      <ul class="socials label">
+        {#each otherSocials as social (social.id)}
+          <li><a href={social.url} rel="external">{social.name}</a></li>
+        {/each}
+      </ul>
+    </div>
+    {#if visitorCount !== null}
+      <p class="visitors label">You are visitor {visitorCount.toLocaleString("en-GB")}</p>
+    {/if}
+  </div>
+</footer>
+
+<style>
+  /* The footer swaps in the band's colours, so every link, outline and button inside it reads on the dark band */
+  footer {
+    --ink: var(--band-ink);
+    --muted: var(--band-muted);
+    --red: var(--band-red);
+    --red-text: var(--band-red);
+
+    padding: var(--space-4) var(--page-padding) var(--space-5);
+    border-top: var(--rule-section);
+    background: var(--band);
+    color: var(--ink);
+  }
+
+  .fitted-email {
+    margin-bottom: var(--space-3);
+    /* Close to the fitted size, so the email barely moves when fitText runs */
+    font-size: min(5.5rem, 10vw);
+    text-decoration: underline;
+    text-decoration-color: var(--red);
+    text-decoration-thickness: 0.05em;
+    text-underline-offset: 0.08em;
+    transition: text-decoration-thickness var(--duration-quick) var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .fitted-email:hover {
+      text-decoration-thickness: 0.1em;
+    }
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .visitors {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .email {
+    overflow-wrap: anywhere;
+  }
+
+  .socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (hover: none) {
+    .row a {
+      display: inline-block;
+      padding-block: var(--space-1);
+    }
+  }
+
+  @media print {
+    footer {
+      display: none;
+    }
+  }
+</style>

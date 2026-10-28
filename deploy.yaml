@@ -1,0 +1,19 @@
+app: portfolio
+images:
+  - name: portfolio
+    dockerfile: Dockerfile
+    buildArgs:
+      GIT_SHA: "{tag}"
+      BUILT_AT: "{builtAt}"
+    buildSecrets:
+      glitchtip_token: glitchtip-token
+files: [docker-compose.yml, backup.sh]
+database: db
+migrate: migrate
+healthcheck: /api/health
+environments:
+  production:
+    dir: /home/james/portfolio/prod
+    domain: jamesmddoyle.com
+    envCredential: portfolio-env-prod
+    backup: true

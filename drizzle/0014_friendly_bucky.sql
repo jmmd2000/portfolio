@@ -1,0 +1,1 @@
+ALTER TABLE "live_settings" ADD COLUMN "spotify_shown" boolean DEFAULT false NOT NULL;

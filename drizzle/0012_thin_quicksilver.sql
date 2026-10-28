@@ -1,0 +1,2 @@
+ALTER TABLE "live_settings" ADD COLUMN "spotify_row_id" integer;--> statement-breakpoint
+ALTER TABLE "live_settings" ADD CONSTRAINT "live_settings_spotify_row_id_currently_id_fk" FOREIGN KEY ("spotify_row_id") REFERENCES "public"."currently"("id") ON DELETE set null ON UPDATE no action;

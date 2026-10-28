@@ -1,0 +1,242 @@
+import { sql } from "drizzle-orm";
+import { boolean, check, date, index, integer, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
+
+export const profile = pgTable(
+  "profile",
+  {
+    id: integer().primaryKey().default(1),
+    name: text().notNull(),
+    role: text().notNull(),
+    intro: text().notNull(),
+    location: text().notNull(),
+  },
+  table => [check("profile_singleton", sql`${table.id} = 1`)]
+);
+
+export const socials = pgTable("socials", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: text().notNull(),
+  url: text().notNull(),
+  sort: integer().notNull(),
+});
+
+export const experience = pgTable("experience", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  title: text().notNull(),
+  company: text().notNull(),
+  companyURL: text(),
+  location: text(),
+  logoURL: text().notNull(),
+  startDate: date().notNull(),
+  endDate: date(),
+  bullets: text().array().notNull().default([]),
+  tags: text().array().notNull().default([]),
+});
+
+export const skills = pgTable("skills", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  category: text().notNull(),
+  items: text().array().notNull().default([]),
+  sort: integer().notNull(),
+});
+
+export const education = pgTable("education", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  degree: text().notNull(),
+  institution: text().notNull(),
+  location: text(),
+  grade: text().notNull(),
+  startYear: integer().notNull(),
+  endYear: integer().notNull(),
+});
+
+export const projects = pgTable(
+  "projects",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    title: text().notNull(),
+    description: text().notNull(),
+    imageURL: text().notNull(),
+    sourceURL: text(),
+    liveURL: text(),
+    liveLabel: text(),
+    stack: text().array().notNull().default([]),
+    year: integer(),
+    highlights: text().array().notNull().default([]),
+    featured: boolean().notNull().default(false),
+    showOnCV: boolean().notNull().default(false),
+    published: boolean().notNull().default(false),
+    sort: integer().notNull(),
+  },
+  table => [check("projects_live_link", sql`(${table.liveURL} is null) = (${table.liveLabel} is null)`)]
+);
+
+export const articles = pgTable(
+  "articles",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    slug: text().notNull().unique(),
+    title: text().notNull(),
+    summary: text().notNull(),
+    body: text().notNull(),
+    published: boolean().notNull().default(false),
+    publishedAt: timestamp({ withTimezone: true }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  table => [check("articles_published_date", sql`not ${table.published} or ${table.publishedAt} is not null`)]
+);
+
+/** Each slug an article had before it was renamed, so its old address can redirect to the current one */
+export const articleSlugRedirects = pgTable("article_slug_redirects", {
+  oldSlug: text().primaryKey(),
+  articleID: integer()
+    .notNull()
+    .references(() => articles.id, { onDelete: "cascade" }),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
+export const currently = pgTable("currently", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  label: text().notNull(),
+  title: text().notNull(),
+  subtitle: text(),
+  url: text(),
+  imageURL: text(),
+  shown: boolean().notNull().default(true),
+  sort: integer().notNull(),
+});
+
+/** Running totals, one row per name, such as "visitors" */
+export const counters = pgTable("counters", {
+  name: text().primaryKey(),
+  count: integer().notNull(),
+});
+
+/** Settings for the live parts of the site. There is only ever one row */
+export const liveSettings = pgTable(
+  "live_settings",
+  {
+    id: integer().primaryKey().default(1),
+    visitorCountShown: boolean().notNull().default(true),
+    /** Whether the Listening row shows what's playing on Spotify */
+    spotifyShown: boolean().notNull().default(false),
+  },
+  table => [check("live_settings_singleton", sql`${table.id} = 1`)]
+);
+
+/** Plum, the cat every visitor shares. There is only ever one row. Each stat runs from 0 to 100, and higher is better */
+export const plum = pgTable(
+  "plum",
+  {
+    id: integer().primaryKey().default(1),
+    food: integer().notNull().default(80),
+    happiness: integer().notNull().default(80),
+    energy: integer().notNull().default(100),
+    /** When her stats last decayed. It moves on in whole 15-minute steps */
+    decayedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /** Someone woke her to play, so she stays awake until this time, whatever the hour or her energy */
+    awakeUntil: timestamp({ withTimezone: true }),
+    /** When someone last fed her. Nothing about who it was is kept */
+    lastFedAt: timestamp({ withTimezone: true }),
+  },
+  table => [
+    check("plum_singleton", sql`${table.id} = 1`),
+    check("plum_food_range", sql`${table.food} between 0 and 100`),
+    check("plum_happiness_range", sql`${table.happiness} between 0 and 100`),
+    check("plum_energy_range", sql`${table.energy} between 0 and 100`),
+  ]
+);
+
+/** When each of Plum's actions can next be done. One row per action, shared by every visitor */
+export const plumCooldowns = pgTable(
+  "plum_cooldowns",
+  {
+    action: text().primaryKey(),
+    readyAt: timestamp({ withTimezone: true }).notNull(),
+  },
+  table => [check("plum_cooldowns_action", sql`${table.action} in ('feed', 'pet', 'play')`)]
+);
+
+/** The secret that scrambles visitors' IPs on one Irish date. A new random one is made each day */
+export const visitorSecrets = pgTable("visitor_secrets", {
+  day: date().primaryKey(),
+  secret: text().notNull(),
+});
+
+/** The scrambled IP of each visitor counted on one Irish date */
+export const visitorHashes = pgTable(
+  "visitor_hashes",
+  {
+    day: date().notNull(),
+    hash: text().notNull(),
+  },
+  table => [primaryKey({ columns: [table.day, table.hash] })]
+);
+
+// Better-auth tables
+
+export const users = pgTable("users", {
+  id: text().primaryKey(),
+  name: text().notNull(),
+  email: text().notNull().unique(),
+  emailVerified: boolean().notNull().default(false),
+  image: text(),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: text().primaryKey(),
+    token: text().notNull().unique(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    ipAddress: text(),
+    userAgent: text(),
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true }).notNull(),
+  },
+  table => [index("sessions_user_id_index").on(table.userId)]
+);
+
+export const accounts = pgTable(
+  "accounts",
+  {
+    id: text().primaryKey(),
+    accountId: text().notNull(),
+    providerId: text().notNull(),
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    accessToken: text(),
+    refreshToken: text(),
+    idToken: text(),
+    accessTokenExpiresAt: timestamp({ withTimezone: true }),
+    refreshTokenExpiresAt: timestamp({ withTimezone: true }),
+    scope: text(),
+    password: text(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true }).notNull(),
+  },
+  table => [index("accounts_user_id_index").on(table.userId)]
+);
+
+export const verifications = pgTable(
+  "verifications",
+  {
+    id: text().primaryKey(),
+    identifier: text().notNull(),
+    value: text().notNull(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  table => [index("verifications_identifier_index").on(table.identifier)]
+);
