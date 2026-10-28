@@ -1,0 +1,18 @@
+app: portfolio
+images:
+  - name: portfolio
+    dockerfile: Dockerfile
+    buildArgs:
+      GIT_SHA: "{tag}"
+      BUILT_AT: "{builtAt}"
+files: [docker-compose.yml, backup.sh]
+database: db
+migrate: migrate
+healthcheck: /api/health
+environments:
+  production:
+    dir: /home/james/portfolio/prod
+    # A temporary address until the launch moves the site to jamesmddoyle.com
+    domain: portfolio.vps.jamesmddoyle.com
+    envCredential: portfolio-env-prod
+    backup: true
