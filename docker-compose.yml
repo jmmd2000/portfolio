@@ -72,7 +72,10 @@ services:
       - "traefik.http.routers.${APP_NAME:-portfolio}.rule=Host(`${DOMAIN:-}`)"
       - "traefik.http.routers.${APP_NAME:-portfolio}.entrypoints=websecure"
       - "traefik.http.routers.${APP_NAME:-portfolio}.tls.certresolver=myresolver"
+      - "traefik.http.routers.${APP_NAME:-portfolio}.middlewares=${APP_NAME:-portfolio}-compress"
       - "traefik.http.services.${APP_NAME:-portfolio}.loadbalancer.server.port=3000"
+      # Pages are made per request, so Traefik compresses them. Scripts and styles arrive already compressed and pass through
+      - "traefik.http.middlewares.${APP_NAME:-portfolio}-compress.compress=true"
       # www gets its own certificate, then a permanent redirect to the same path on the apex
       - "traefik.http.routers.${APP_NAME:-portfolio}-www.rule=Host(`www.${DOMAIN:-}`)"
       - "traefik.http.routers.${APP_NAME:-portfolio}-www.entrypoints=websecure"
