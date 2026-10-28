@@ -2,7 +2,7 @@ import type { PlumAction } from "$lib/plum/plumRules";
 
 /** What the visitor reads after each action. Each visitor sees them in turn, so a repeat action reads differently */
 const doneMessages: Record<PlumAction, string[]> = {
-  feed: ["You fed her just now. Everyone who visits will see it.", "You fed her. She ate the lot.", "You fed her. She ate half and saved the rest for later."],
+  feed: ["You fed her just now.", "You fed her. She ate the lot.", "You fed her. She ate half and saved the rest for later."],
   pet: ["You petted her. She's purring.", "You petted her. She leaned into it.", "You petted her. She pretended not to care."],
   play: ["You played with her. She's a bit tired now.", "You threw the ball. She brought it back, eventually.", "You played with her. She won."],
 };
