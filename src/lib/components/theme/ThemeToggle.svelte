@@ -36,7 +36,7 @@
     padding: 0;
     border: 0;
     background: none;
-    color: inherit;
+    color: var(--red);
     cursor: pointer;
     transition: color var(--duration-quick) var(--ease-out);
   }
@@ -73,7 +73,7 @@
 
   @media (hover: hover) {
     .theme-toggle:hover {
-      color: var(--red);
+      color: var(--ink);
     }
   }
 

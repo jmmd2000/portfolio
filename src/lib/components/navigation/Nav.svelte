@@ -59,6 +59,7 @@
     place-items: center;
     width: 2.25rem;
     height: 2.25rem;
+    color: var(--red);
     transition: color var(--duration-quick) var(--ease-out);
   }
 
@@ -68,7 +69,7 @@
     }
 
     .admin:hover {
-      color: var(--red);
+      color: var(--ink);
     }
   }
 
