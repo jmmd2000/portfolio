@@ -1,5 +1,6 @@
 import asleep from "$lib/assets/plum/asleep.png";
 import eating from "$lib/assets/plum/eating.png";
+import empty from "$lib/assets/plum/empty.png";
 import full from "$lib/assets/plum/full.png";
 import hungry from "$lib/assets/plum/hungry.png";
 import blink from "$lib/assets/plum/idle-blink.png";
@@ -22,7 +23,7 @@ export interface SpriteSheet {
   durations: number[];
 }
 
-export type PenSprite = "idle" | "watching" | "eating" | "purring" | "playing" | "hungry" | "full" | "asleep" | "blink" | "watchingBlink" | "sleepPurr" | IdleAnimation;
+export type PenSprite = "idle" | "watching" | "eating" | "purring" | "playing" | "hungry" | "full" | "asleep" | "blink" | "watchingBlink" | "sleepPurr" | "empty" | IdleAnimation;
 
 /** The short animations she plays now and then while idle. Each ends on her still idle pose */
 export const idleAnimations = ["earTwitch", "tailFlick", "pawLick"] as const;
@@ -56,4 +57,6 @@ export const penSprites: Record<PenSprite, SpriteSheet> = {
   earTwitch: sheet(earTwitch, [120, 100, 160, 100]),
   tailFlick: sheet(tailFlick, [120, 160, 140, 100]),
   pawLick: sheet(pawLick, [200, 200, 260, 180, 260, 180, 260, 200, 200, 100]),
+  // Just her bowl, for while she's out of her pen
+  empty: sheet(empty, [1000]),
 };

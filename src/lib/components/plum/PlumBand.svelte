@@ -53,6 +53,7 @@
     earTwitch: "twitching an ear",
     tailFlick: "flicking her tail",
     pawLick: "licking her paw",
+    empty: "out of her pen",
   };
 
   let latest = $state<PlumState | null>(untrack(() => plum));
