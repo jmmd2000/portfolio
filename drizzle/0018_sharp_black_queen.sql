@@ -1,0 +1,1 @@
+ALTER TABLE "plum" ADD COLUMN "last_fed_at" timestamp with time zone;

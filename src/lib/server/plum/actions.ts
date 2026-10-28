@@ -16,8 +16,10 @@ class RefusedAction extends Error {
 }
 
 export async function getPlumState(now: Date): Promise<PlumState> {
-  const { awakeUntil, ...stats } = await getPlum();
-  return { stats, cooldowns: await getCooldownsLeft(now), ...sleepState(stats.energy, awakeUntil, now) };
+  const { awakeUntil, lastFedAt, ...stats } = await getPlum();
+  // Counted by the server, so a visitor's wrong clock can't change the answer
+  const lastFedSecondsAgo = lastFedAt ? Math.max(0, Math.floor((now.getTime() - lastFedAt.getTime()) / 1000)) : null;
+  return { stats, cooldowns: await getCooldownsLeft(now), ...sleepState(stats.energy, awakeUntil, now), lastFedSecondsAgo };
 }
 
 async function getCooldownsLeft(now: Date): Promise<CooldownsLeft> {
@@ -87,7 +89,7 @@ async function changeStats(transaction: Transaction, action: PlumAction, now: Da
 
     await transaction
       .update(plum)
-      .set({ food: sql`least(100, ${plum.food} + 45)` })
+      .set({ food: sql`least(100, ${plum.food} + 45)`, lastFedAt: now })
       .where(eq(plum.id, 1));
     return "done";
   }

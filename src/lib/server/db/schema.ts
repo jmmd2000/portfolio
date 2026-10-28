@@ -140,6 +140,8 @@ export const plum = pgTable(
     decayedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     /** Someone woke her to play, so she stays awake until this time, whatever the hour or her energy */
     awakeUntil: timestamp({ withTimezone: true }),
+    /** When someone last fed her. Nothing about who it was is kept */
+    lastFedAt: timestamp({ withTimezone: true }),
   },
   table => [
     check("plum_singleton", sql`${table.id} = 1`),

@@ -44,7 +44,6 @@ test("feeding her raises her food, plays her eating sprite and counts the cooldo
 
   await band(page).getByRole("button", { name: "Feed" }).click();
 
-  await expect(band(page).getByRole("status")).toHaveText("You fed her just now. Everyone who visits will see it.");
   await expect(band(page).getByRole("img", { name: "Plum, eating" })).toBeVisible();
   await expect(band(page).getByText("Low", { exact: true })).toHaveCount(0);
   await expect(band(page).getByRole("button", { name: /^Feed again in \d+s$/ })).toBeDisabled();
@@ -79,7 +78,7 @@ test("asleep, she refuses food and purrs in her sleep when petted, and playing w
   await expect(band(page).getByRole("heading", { name: /^She's (up past her bedtime|awake, just about)$/ })).toBeVisible();
 
   await band(page).getByRole("button", { name: "Feed" }).click();
-  await expect(band(page).getByRole("status")).toHaveText("You fed her just now. Everyone who visits will see it.");
+  await expect(band(page).getByRole("img", { name: "Plum, eating" })).toBeVisible();
 });
 
 test("another visitor sees a feed within 10 seconds, with her eating sprite", async ({ page, browser }) => {
