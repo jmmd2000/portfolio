@@ -9,22 +9,24 @@ test("visitors are still counted while the count is hidden", async ({ page, brow
   await page.goto("/admin/live");
   const showCount = page.getByLabel("Show the visitor count in the footer");
   await showCount.uncheck();
+  const hidden = page.waitForResponse(response => response.request().method() === "POST");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Live parts saved.")).toBeVisible();
+  await hidden;
 
   // Headless Chrome counts as a crawler, so the visitor gets an ordinary browser's user agent
   const visitorContext = await browser.newContext({ userAgent: browserUserAgent, extraHTTPHeaders: { "x-forwarded-for": "203.0.113.7" } });
   const visitor = await visitorContext.newPage();
   await visitor.goto("/cv");
   await expect(visitor.getByRole("contentinfo").getByRole("link", { name: "GitHub" })).toBeVisible();
-  await expect(visitor.getByText(/^You are visitor/)).toHaveCount(0);
+  await expect(visitor.locator("footer .visitors")).toHaveCount(0);
   await visitorContext.close();
 
   await showCount.check();
+  const shown = page.waitForResponse(response => response.request().method() === "POST");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Live parts saved.")).toBeVisible();
+  await shown;
 
   // The signed-in admin isn't counted, so this shows only the visit made while the count was hidden
   await page.goto("/cv");
-  await expect(page.getByText("You are visitor 1", { exact: true })).toBeVisible();
+  await expect(page.locator("footer .visitors")).toHaveText(/\b1$/);
 });

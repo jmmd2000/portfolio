@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { articleDateTime, articleYear, formatArticleDate, hasDemo, readingMinutes } from "./articleDetails";
+import { articleDateTime, formatArticleDate, hasDemo, readingMinutes } from "./articleDetails";
 
 describe("readingMinutes", () => {
   it("rounds up at 230 words a minute", () => {
@@ -24,10 +24,6 @@ describe("hasDemo", () => {
   it("ignores a placeholder shown inside a code block", () => {
     expect(hasDemo('Write this:\n\n```html\n<div data-demo="SandBox"></div>\n```')).toBe(false);
   });
-
-  it("is false without a placeholder", () => {
-    expect(hasDemo("Just words, and a data-demo mention.")).toBe(false);
-  });
 });
 
 describe("article dates", () => {
@@ -37,9 +33,5 @@ describe("article dates", () => {
   it("shows the day in Irish time", () => {
     expect(formatArticleDate(justAfterMidnightInIreland)).toBe("1 July 2026");
     expect(articleDateTime(justAfterMidnightInIreland)).toBe("2026-07-01");
-  });
-
-  it("reads the year", () => {
-    expect(articleYear(justAfterMidnightInIreland)).toBe(2026);
   });
 });

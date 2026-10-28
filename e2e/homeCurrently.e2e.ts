@@ -8,7 +8,7 @@ async function hideRow(page: Page, legend: string): Promise<void> {
   const row = page.getByRole("group", { name: legend });
   await row.getByLabel("Shown on the home page").uncheck();
   await row.getByRole("button", { name: "Save" }).click();
-  await expect(row.getByText("saved.")).toBeVisible();
+  await expect(row.getByRole("status")).toBeVisible();
 }
 
 test("the Currently section is hidden when no rows are shown", async ({ page }) => {

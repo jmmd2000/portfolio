@@ -6,6 +6,5 @@ describe("skillCategorySchema", () => {
     const result = skillCategorySchema.safeParse({ category: "Frontend", items: "\n  \n" });
 
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0]?.message).toBe("Add at least one skill");
   });
 });

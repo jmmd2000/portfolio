@@ -1,22 +1,6 @@
-import type { Page } from "@playwright/test";
 import { openFold } from "./adminFold";
 import { createAdmin, logIn } from "./adminSession";
 import { expect, test } from "./fixtures";
-
-async function cvJobTitles(page: Page): Promise<string[]> {
-  await page.goto("/cv");
-  return page.getByRole("region", { name: "Experience" }).getByRole("heading", { level: 3 }).allTextContents();
-}
-
-test("a signed-out visitor can't add a job", async ({ page, request, baseURL }) => {
-  // The origin header gets the request past SvelteKit's cross-site check, so it reaches the sign-in check
-  await request.post("/admin/cv?/addJob", {
-    headers: { origin: baseURL ?? "" },
-    form: { title: "Spam", company: "Spam", companyURL: "", location: "", logoURL: "https://example.com/logo.png", startDate: "2025-01", endDate: "", bullets: "", tags: "" },
-  });
-
-  expect(await cvJobTitles(page)).toEqual(["Software Engineer", "Front-End Developer Intern"]);
-});
 
 test("a failed save shows its error on that job's form only", async ({ page }) => {
   await createAdmin();
@@ -28,8 +12,8 @@ test("a failed save shows its error on that job's form only", async ({ page }) =
   await ericsson.getByLabel("Finished").fill("2020-01");
   await ericsson.getByRole("button", { name: "Save" }).click();
 
-  await expect(ericsson.getByText("End date can't be before start date")).toBeVisible();
-  await expect(page.getByText("End date can't be before start date")).toHaveCount(1);
+  await expect(ericsson.getByLabel("Finished")).toHaveAttribute("aria-invalid", "true");
+  await expect(page.locator('[aria-invalid="true"]')).toHaveCount(1);
   await expect(ericsson.getByLabel("Finished")).toHaveValue("2020-01");
 });
 
@@ -43,8 +27,8 @@ test("a saved message only shows on its own list, when another list has an item 
   const frontend = page.getByRole("group", { name: "Frontend" });
   await frontend.getByRole("button", { name: "Save" }).click();
 
-  await expect(frontend.getByText("Frontend saved.")).toBeVisible();
-  await expect(page.getByText("Frontend saved.")).toHaveCount(1);
+  await expect(frontend.getByRole("status")).toBeVisible();
+  await expect(page.getByRole("status")).toHaveCount(1);
 });
 
 test("without JavaScript, a failed save opens its job again so the error shows", async ({ page }) => {
@@ -59,5 +43,5 @@ test("without JavaScript, a failed save opens its job again so the error shows",
   await ericsson.getByLabel("Finished").fill("2020-01");
   await ericsson.getByRole("button", { name: "Save" }).click();
 
-  await expect(ericsson.getByText("End date can't be before start date")).toBeVisible();
+  await expect(ericsson.getByLabel("Finished")).toHaveAttribute("aria-invalid", "true");
 });

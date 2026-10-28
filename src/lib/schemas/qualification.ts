@@ -1,4 +1,3 @@
-// Rules for a qualification on the CV.
 import { z } from "zod";
 import { optionalText } from "./optionalText";
 import { requiredText } from "./requiredText";

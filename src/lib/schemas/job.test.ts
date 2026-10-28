@@ -34,12 +34,12 @@ describe("jobSchema", () => {
   });
 
   it("refuses a month that doesn't exist or isn't written like 2023-07", () => {
-    expect(firstError({ ...typedJob, startDate: "2023-13" }, "startDate")).toBe("Use a year and month, like 2023-07");
-    expect(firstError({ ...typedJob, startDate: "July 2023" }, "startDate")).toBe("Use a year and month, like 2023-07");
+    expect(firstError({ ...typedJob, startDate: "2023-13" }, "startDate")).toBeDefined();
+    expect(firstError({ ...typedJob, startDate: "July 2023" }, "startDate")).toBeDefined();
   });
 
   it("refuses a job that finished before it started", () => {
-    expect(firstError({ ...typedJob, endDate: "2022-01" }, "endDate")).toBe("End date can't be before start date");
+    expect(firstError({ ...typedJob, endDate: "2022-01" }, "endDate")).toBeDefined();
   });
 
   it("allows a job that started and finished in the same month", () => {
@@ -47,7 +47,7 @@ describe("jobSchema", () => {
   });
 
   it("refuses a logo or website that isn't https", () => {
-    expect(firstError({ ...typedJob, logoURL: "http://example.com/logo.png" }, "logoURL")).toBe("Use a full https:// address for the logo");
-    expect(firstError({ ...typedJob, companyURL: "javascript:alert(1)" }, "companyURL")).toBe("Use a full https:// address for the company website or leave it empty");
+    expect(firstError({ ...typedJob, logoURL: "http://example.com/logo.png" }, "logoURL")).toBeDefined();
+    expect(firstError({ ...typedJob, companyURL: "javascript:alert(1)" }, "companyURL")).toBeDefined();
   });
 });

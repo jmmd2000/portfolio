@@ -1,4 +1,3 @@
-// Rules for a row in the Currently section
 import { z } from "zod";
 import { checkbox } from "./checkbox";
 import { optionalHTTPSURL } from "./httpsURL";

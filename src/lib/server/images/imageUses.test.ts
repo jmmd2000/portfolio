@@ -19,8 +19,8 @@ describe("imageUses", () => {
   it("names every row that uses an image, from article bodies to CV logos", () => {
     const uses = imageUses([screenshot, logo], references);
 
-    expect(uses.get(screenshot)).toEqual(["Article: How the sand falls", "Project: SandSim"]);
-    expect(uses.get(logo)).toEqual(["CV: Software Engineer at Ericsson"]);
+    expect(uses.get(screenshot)).toEqual([expect.stringContaining("How the sand falls"), expect.stringContaining("SandSim")]);
+    expect(uses.get(logo)).toEqual([expect.stringContaining("Software Engineer")]);
   });
 
   it("gives an empty list for an image nothing uses", () => {

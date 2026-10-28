@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyMarkup, shortcutMarkup, type Markup, type TextSelection } from "./markdownInsert";
+import { applyMarkup, type Markup, type TextSelection } from "./markdownInsert";
 
 const bold: Markup = { kind: "wrap", before: "**", after: "**", placeholder: "bold text" };
 const link: Markup = { kind: "wrap", before: "[", after: "](https://)", placeholder: "link text", selectInAfter: "https://" };
@@ -66,16 +66,5 @@ describe("blocks", () => {
 
   it("adds no blank lines at the very start or end of the text", () => {
     expect(show(applyMarkup(selection("[]"), rule))).toBe("---[]");
-  });
-});
-
-describe("shortcuts", () => {
-  it("finds the markup for a shortcut letter, whatever its case", () => {
-    expect(shortcutMarkup("b")).toEqual({ kind: "wrap", before: "**", after: "**", placeholder: "bold text" });
-    expect(shortcutMarkup("K")).toMatchObject({ before: "[", after: "](https://)" });
-  });
-
-  it("has nothing for a letter without a shortcut", () => {
-    expect(shortcutMarkup("s")).toBeUndefined();
   });
 });

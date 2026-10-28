@@ -12,7 +12,6 @@ export interface RateLimiter {
   check(key: string): RateLimitResult;
   /** Counts one attempt against the key. It never refuses anything, so call `check` first. */
   record(key: string): void;
-  /** How many keys are being tracked. */
   trackedKeyCount(): number;
 }
 

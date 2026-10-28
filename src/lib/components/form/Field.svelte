@@ -8,7 +8,6 @@
       error?: string;
       /** A short note under the field, like "Optional". An error replaces it */
       hint?: string;
-      /** Several lines of text, for longer content */
       multiline?: boolean;
     };
 

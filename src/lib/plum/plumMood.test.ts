@@ -4,17 +4,13 @@ import { moodLine, restingSprite, statWord } from "./plumMood";
 const awake = { sleep: null, wokenFrom: null };
 
 describe("statWord", () => {
-  it("gives a word for each band of 20, from the bottom of each band", () => {
-    expect(statWord(100)).toBe("Great");
-    expect(statWord(80)).toBe("Great");
-    expect(statWord(79)).toBe("Good");
-    expect(statWord(60)).toBe("Good");
-    expect(statWord(59)).toBe("Okay");
-    expect(statWord(40)).toBe("Okay");
-    expect(statWord(39)).toBe("Low");
-    expect(statWord(20)).toBe("Low");
-    expect(statWord(19)).toBe("Critical");
-    expect(statWord(0)).toBe("Critical");
+  it("gives a new word at the bottom of each band of 20", () => {
+    for (const bottom of [20, 40, 60, 80]) {
+      expect(statWord(bottom - 1)).not.toBe(statWord(bottom));
+      expect(statWord(bottom + 19)).toBe(statWord(bottom));
+    }
+    expect(statWord(0)).toBe(statWord(19));
+    expect(statWord(100)).toBe(statWord(80));
   });
 });
 
@@ -30,15 +26,25 @@ describe("restingSprite", () => {
 });
 
 describe("moodLine", () => {
-  const stats = { food: 10, happiness: 90, energy: 10 };
+  const hungry = { food: 39, happiness: 90, energy: 50 };
+  const happy = { food: 40, happiness: 80, energy: 50 };
+  const content = { food: 40, happiness: 79, energy: 50 };
 
   it("puts sleep first, then being woken, then hunger, then happiness", () => {
-    expect(moodLine({ stats, sleep: "night", wokenFrom: null })).toBe("She's asleep for the night");
-    expect(moodLine({ stats, sleep: "nap", wokenFrom: null })).toBe("She's having a nap");
-    expect(moodLine({ stats, sleep: null, wokenFrom: "night" })).toBe("She's up past her bedtime");
-    expect(moodLine({ stats, sleep: null, wokenFrom: "nap" })).toBe("She's awake, just about");
-    expect(moodLine({ stats: { food: 39, happiness: 90, energy: 50 }, ...awake })).toBe("She's getting hungry");
-    expect(moodLine({ stats: { food: 40, happiness: 80, energy: 50 }, ...awake })).toBe("She's very happy");
-    expect(moodLine({ stats: { food: 40, happiness: 79, energy: 50 }, ...awake })).toBe("She's content");
+    expect(moodLine({ stats: hungry, sleep: "night", wokenFrom: null })).toBe(moodLine({ stats: happy, sleep: "night", wokenFrom: null }));
+    expect(moodLine({ stats: hungry, sleep: null, wokenFrom: "nap" })).toBe(moodLine({ stats: happy, sleep: null, wokenFrom: "nap" }));
+    expect(moodLine({ stats: hungry, ...awake })).not.toBe(moodLine({ stats: happy, ...awake }));
+    expect(moodLine({ stats: happy, ...awake })).not.toBe(moodLine({ stats: content, ...awake }));
+  });
+
+  it("gives each kind of sleep and waking its own line", () => {
+    const lines = [
+      moodLine({ stats: happy, sleep: "night", wokenFrom: null }),
+      moodLine({ stats: happy, sleep: "nap", wokenFrom: null }),
+      moodLine({ stats: happy, sleep: null, wokenFrom: "night" }),
+      moodLine({ stats: happy, sleep: null, wokenFrom: "nap" }),
+    ];
+
+    expect(new Set(lines).size).toBe(4);
   });
 });

@@ -44,7 +44,6 @@ export function toScriptJSON(data: object): string {
   return JSON.stringify(data).replaceAll("<", "\\u003c");
 }
 
-/** A complete JSON-LD script tag for the page head. */
 export function jsonLDScriptTag(data: object): string {
   return `<script type="application/ld+json">${toScriptJSON(data)}</script>`;
 }

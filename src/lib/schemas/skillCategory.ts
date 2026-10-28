@@ -1,4 +1,3 @@
-// Rules for a skill category on the CV.
 import { z } from "zod";
 import { lineList } from "./lineList";
 import { requiredText } from "./requiredText";

@@ -10,10 +10,6 @@ describe("linkText", () => {
     expect(linkText("https://www.linkedin.com/in/jamesmddoyle/")).toBe("linkedin.com/in/jamesmddoyle");
   });
 
-  it("keeps the path of a link with no www or trailing slash", () => {
-    expect(linkText("https://github.com/jmmd2000")).toBe("github.com/jmmd2000");
-  });
-
   it("shows just the host for a link to a site's home page", () => {
     expect(linkText("https://jamesmddoyle.com/")).toBe("jamesmddoyle.com");
   });

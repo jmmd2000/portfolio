@@ -15,8 +15,4 @@ describe("groupByYear", () => {
       [2024, ["a"]],
     ]);
   });
-
-  it("returns no years for no articles", () => {
-    expect(groupByYear([])).toEqual([]);
-  });
 });

@@ -28,6 +28,9 @@ describe("isWorthRestoring", () => {
 
 describe("formatDraftTime", () => {
   it("shows Irish summer time, an hour ahead of UTC", () => {
-    expect(formatDraftTime(new Date("2026-07-01T13:05:00Z"))).toBe("14:05 on 1 July");
+    const time = formatDraftTime(new Date("2026-07-01T13:05:00Z"));
+
+    expect(time).toContain("14:05");
+    expect(time).toContain("1 July");
   });
 });

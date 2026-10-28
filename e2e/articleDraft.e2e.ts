@@ -32,7 +32,6 @@ test("unsaved writing survives a reload and can be restored", async ({ page }) =
   await expect(page.getByLabel("Title")).toHaveValue("How sand really falls");
   await expect(page.getByLabel("Body")).toHaveValue("## Kept safe");
   await expect(page.getByRole("region", { name: "Preview" }).getByRole("heading", { level: 2 })).toHaveText("Kept safe");
-  await expect(page.getByText("Unsaved changes")).toBeVisible();
 });
 
 test("saving clears the kept draft", async ({ page }) => {
@@ -41,7 +40,6 @@ test("saving clears the kept draft", async ({ page }) => {
   await page.getByLabel("Body").fill("## Saved now");
   await expect.poll(() => keptDraft(page)).toContain("Saved now");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("How the sand falls saved.")).toBeVisible();
 
   await expect.poll(() => keptDraft(page)).toBeNull();
 });

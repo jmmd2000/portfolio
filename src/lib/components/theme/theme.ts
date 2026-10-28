@@ -18,7 +18,7 @@ export function setTheme(theme: Theme): void {
   try {
     localStorage.setItem(storageKey, theme);
   } catch {
-    ////
+    // Without storage the theme still shows, it just isn't kept for the next visit
   }
 }
 

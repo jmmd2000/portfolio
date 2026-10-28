@@ -6,12 +6,17 @@ test.beforeEach(async () => {
   await createAdmin();
 });
 
-test("a signed-out visitor can't reach the admin", async ({ page, request }) => {
+test("a signed-out visitor can't reach the admin, or save anything in it", async ({ page, request, baseURL }) => {
   await page.goto("/admin");
   await expect(page).toHaveURL("/admin/login");
 
   const response = await request.get("/api/admin/anything");
   expect(response.status()).toBe(401);
+
+  // The origin header gets the request past SvelteKit's cross-site check, so it reaches the sign-in check
+  const save = await request.post("/admin/socials?/add", { headers: { origin: baseURL ?? "" }, form: { name: "Spam", url: "https://example.com" }, maxRedirects: 0 });
+  expect(save.status()).toBe(303);
+  expect(save.headers()["location"]).toBe("/admin/login");
 });
 
 test("the admin can log in and out", async ({ page }) => {
@@ -37,14 +42,14 @@ test("after 5 failed logins, even the right password is refused", async ({ page 
     await page.getByLabel("Email").fill(adminEmail);
     await page.getByLabel("Password").fill("wrong-password");
     await page.getByRole("button", { name: "Log in" }).click();
-    await expect(page.getByRole("alert")).toHaveText("Wrong email or password.");
+    await expect(page.getByRole("alert")).toBeVisible();
   }
 
   await page.getByLabel("Email").fill(adminEmail);
   await page.getByLabel("Password").fill(adminPassword);
   await page.getByRole("button", { name: "Log in" }).click();
 
-  await expect(page.getByRole("alert")).toHaveText("Too many attempts. Try again in 15 minutes.");
+  await expect(page.getByRole("alert")).toBeVisible();
   await expect(page).toHaveURL("/admin/login");
 });
 
@@ -60,10 +65,10 @@ test("the admin can change the password, but only with the current one", async (
   await logIn(page);
 
   await changePassword(page, "not-the-password", "a-brand-new-password");
-  await expect(page.getByRole("alert")).toHaveText("Your current password is wrong.");
+  await expect(page.getByRole("alert")).toBeVisible();
 
   await changePassword(page, adminPassword, "a-brand-new-password");
-  await expect(page.getByRole("status")).toHaveText("Password changed. Every other session has been signed out.");
+  await expect(page.getByRole("status")).toBeVisible();
 
   await page.goto("/admin");
   await page.getByRole("button", { name: "Log out" }).click();

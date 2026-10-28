@@ -20,7 +20,6 @@ function redirectTo(location: string): Response {
   return new Response(null, { status: 303, headers: { location } });
 }
 
-/** Only look up the signed in admin when the cookie is present */
 async function findAdmin(request: Request): Promise<User | null> {
   if (!getSessionCookie(request)) return null;
 

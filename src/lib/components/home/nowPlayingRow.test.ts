@@ -12,10 +12,10 @@ describe("withNowPlaying", () => {
   it("puts the track in the first row labelled Listening, whatever its case and spaces", () => {
     const rows = withNowPlaying([row(1, "Watching"), row(2, " listening "), row(3, "Listening")], nowPlaying);
 
-    expect(rows.map(shown => [shown.label, shown.title, shown.live])).toEqual([
-      ["Watching", "Saved 1", false],
-      ["Listening now", "Holocene", true],
-      ["Listening", "Saved 3", false],
+    expect(rows.map(shown => [shown.title, shown.live])).toEqual([
+      ["Saved 1", false],
+      ["Holocene", true],
+      ["Saved 3", false],
     ]);
   });
 

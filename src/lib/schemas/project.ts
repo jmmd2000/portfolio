@@ -1,4 +1,3 @@
-// Rules for a project
 import { z } from "zod";
 import { checkbox } from "./checkbox";
 import { httpsURL, optionalHTTPSURL } from "./httpsURL";

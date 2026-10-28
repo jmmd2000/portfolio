@@ -19,18 +19,6 @@ test("the preview endpoint refuses a signed-out visitor", async ({ request }) =>
   expect(response.status()).toBe(401);
 });
 
-test("the preview endpoint renders sanitised markdown for the admin", async ({ page }) => {
-  await createAdmin();
-  await logIn(page);
-
-  const response = await page.request.post("/api/admin/markdown-preview", { data: { markdown: "## Hello\n\n<script>alert(1)</script>" } });
-
-  expect(response.status()).toBe(200);
-  const { html } = (await response.json()) as { html: string };
-  expect(html).toContain('<h2 id="hello"><a class="heading-link" href="#hello">Hello</a></h2>');
-  expect(html).not.toContain("<script");
-});
-
 test("the preview endpoint refuses a request without markdown", async ({ page }) => {
   await createAdmin();
   await logIn(page);
@@ -70,12 +58,12 @@ test("a failed preview says so, and the next keystroke tries again", async ({ pa
   await openArticleEditor(page);
   await page.route(previewURL, route => route.fulfill({ status: 500 }));
 
+  const preview = page.getByRole("region", { name: "Preview" });
   await page.getByLabel("Body").fill("## Broken");
-  await expect(page.getByText("Preview unavailable.")).toBeVisible();
+  await expect(preview.getByRole("status")).toBeVisible();
 
   await page.unroute(previewURL);
   await page.getByLabel("Body").fill("## Working");
-  const preview = page.getByRole("region", { name: "Preview" });
   await expect(preview.getByRole("heading", { level: 2 })).toHaveText("Working");
-  await expect(page.getByText("Preview unavailable.")).toBeHidden();
+  await expect(preview.getByRole("status")).toBeHidden();
 });

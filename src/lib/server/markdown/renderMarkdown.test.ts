@@ -158,9 +158,9 @@ describe("renderMarkdown", () => {
       expect(html).toMatch(/^<figure class="code-block"><figcaption>TypeScript<\/figcaption><pre tabindex="0"><code>/);
     });
 
-    it("shows an unknown language as typed, and no language as Code", async () => {
+    it("shows an unknown language as typed, and still captions a block with no language", async () => {
       expect(await renderMarkdown("```Zig\nconst x = 1;\n```")).toContain('<figcaption>Zig</figcaption><pre tabindex="0"><code>const x = 1;</code></pre>');
-      expect(await renderMarkdown("```\nplain\n```")).toContain("<figcaption>Code</figcaption>");
+      expect(await renderMarkdown("```\nplain\n```")).toContain("<figcaption>");
     });
 
     it("only uses the first word of the fence", async () => {

@@ -6,7 +6,6 @@ export const navigationLinks = [
   { label: "CV", path: "/cv" },
 ] as const;
 
-/** The main pages to show now. */
 export function shownNavigationLinks(hasArticles: boolean) {
   return navigationLinks.filter(link => hasArticles || link.path !== "/articles");
 }

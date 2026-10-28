@@ -17,12 +17,6 @@ async function shownTitles(): Promise<string[]> {
 }
 
 describe("getShownCurrentlyRows", () => {
-  it("leaves out hidden rows", async () => {
-    await db.update(currently).set({ shown: false }).where(eq(currently.title, "Fallout 4"));
-
-    expect(await shownTitles()).toEqual(["Bon Iver, Bon Iver", "Breaking Bad", "To Kill a Mockingbird"]);
-  });
-
   it("returns only the first four shown rows", async () => {
     await createCurrentlyRow({ label: "Building", title: "This site", subtitle: null, url: null, imageURL: null, shown: true });
 

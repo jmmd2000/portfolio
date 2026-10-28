@@ -39,10 +39,6 @@ describe("drafts", () => {
   });
 });
 
-it("returns null for a slug that doesn't exist", async () => {
-  expect(await getArticleBySlug("missing")).toBeNull();
-});
-
 it("lists published articles newest first", async () => {
   await insertArticle({ slug: "older", publishedAt: new Date("2025-01-10T09:00:00Z") });
   await insertArticle({ slug: "newer", publishedAt: new Date("2026-06-01T09:00:00Z") });

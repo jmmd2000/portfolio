@@ -1,4 +1,3 @@
-// Rules for a job on the CV. The CV admin's job actions check every save with them.
 import { z } from "zod";
 import { httpsURL, optionalHTTPSURL } from "./httpsURL";
 import { lineList } from "./lineList";

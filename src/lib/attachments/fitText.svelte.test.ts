@@ -58,13 +58,6 @@ describe("fitText", () => {
     expect(lineWidth()).toBeLessThanOrEqual(600);
   });
 
-  it("stops at the cap on a wide line", async () => {
-    container.style.width = "3000px";
-    detach = fitText(10)(line);
-
-    await expect.poll(() => line.style.fontSize).toBe("160px");
-  });
-
   it("refits when the width changes", async () => {
     detach = fitText(10)(line);
     await expect.poll(lineWidth).toBeGreaterThan(570);

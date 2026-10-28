@@ -5,7 +5,6 @@ import postgres from "postgres";
 import { articleSlugRedirects, articles } from "$lib/server/db/schema";
 import { e2eEnvironment } from "./environment";
 
-// sample article creation for testing
 export async function insertArticle(overrides: Partial<typeof articles.$inferInsert> = {}): Promise<void> {
   const client = postgres(e2eEnvironment.DATABASE_URL_TEST_E2E, { max: 1, onnotice: () => {} });
   const database = drizzle(client, { casing: "snake_case" });

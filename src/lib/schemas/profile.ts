@@ -1,4 +1,3 @@
-// Rules for the profile text. The profile form's action checks every save with them.
 import { z } from "zod";
 import { requiredText } from "./requiredText";
 

@@ -6,7 +6,6 @@
     period: string;
     /** Where it happened, under the period */
     place?: string | null;
-    /** Turns the place into a link */
     placeURL?: string | null;
     /** Shown above the period, like a company's logo */
     logo?: Snippet;

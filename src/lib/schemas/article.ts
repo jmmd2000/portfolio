@@ -1,4 +1,3 @@
-// Rules for an article
 import { z } from "zod";
 import { slugify } from "$lib/slugify";
 import { checkbox } from "./checkbox";
