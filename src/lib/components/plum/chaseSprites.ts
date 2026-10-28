@@ -26,3 +26,11 @@ export const ballSheet: SpriteSheet = { src: ball, frameWidth: 8, frameHeight: 8
 
 /** How many sprite pixels the ball rolls before it shows its next frame */
 export const ballPixelsPerFrame = 2;
+
+/**
+ * The size of one sprite pixel out of the pen, in CSS pixels: 0.2% of the window's width, from 3 to 6. It's always
+ * a whole number, so neighbouring frames never show at the edges.
+ */
+export function spritePixel(windowWidth: number): number {
+  return Math.round(Math.min(Math.max(windowWidth * 0.002, 3), 6));
+}

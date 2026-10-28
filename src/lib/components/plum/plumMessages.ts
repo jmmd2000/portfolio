@@ -36,6 +36,11 @@ export const othersSleepMessages = {
 
 export const coolingMessage = "Someone else got there first.";
 
+export const outMessages = {
+  mood: "She's out chasing her ball",
+  reducedMotion: "She's staying in, since your device is set to reduce motion.",
+};
+
 export const unreachableMessage = "Plum couldn't be reached. Try again in a minute.";
 
 /** The message for the visitor's `count`th time doing an action, starting from 0 */

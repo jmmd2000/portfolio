@@ -133,6 +133,17 @@ test.describe("with reduced motion", () => {
     expect(new Set(framesShown)).toEqual(new Set(["0"]));
   });
 
+  test("she stays in her pen when let out, and says why", async ({ page }) => {
+    await setPlum({ food: 80, happiness: 80, energy: 100 });
+    await page.goto("/");
+
+    await band(page).getByRole("button", { name: "Let her out" }).click();
+
+    await expect(band(page).getByRole("status")).toBeVisible();
+    await expect(band(page).getByRole("img", { name: "Plum, sitting" })).toBeVisible();
+    await expect(page.locator(".plum-ball")).toHaveCount(0);
+  });
+
   test("she plays no idle animations", async ({ page }) => {
     await setPlum({ food: 80, happiness: 80, energy: 100 });
     await page.clock.install();
