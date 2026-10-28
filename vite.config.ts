@@ -13,6 +13,10 @@ export default defineConfig({
     __GIT_SHA__: JSON.stringify(process.env.GIT_SHA ?? "dev"),
     __BUILT_AT__: JSON.stringify(process.env.BUILT_AT ?? ""),
   },
+  build: {
+    // "hidden" writes the maps without linking them from the bundles. The Docker build uploads them, then deletes them.
+    sourcemap: "hidden",
+  },
   plugins: [
     sveltekit({
       compilerOptions: {

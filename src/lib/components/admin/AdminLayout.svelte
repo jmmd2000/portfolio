@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+  import { onMount, type Snippet } from "svelte";
   import { resolve } from "$app/paths";
   import { buildInfo, formatBuiltAt } from "$lib/buildInfo";
   import ThemeToggle from "$lib/components/theme/ThemeToggle.svelte";
@@ -13,6 +13,15 @@
   }
 
   let { currentPath, signedIn, children }: Props = $props();
+
+  // Umami ignores a browser with this set, so the admin's own visits to the public pages don't count
+  onMount(() => {
+    try {
+      localStorage.setItem("umami.disabled", "1");
+    } catch {
+      // Storage can be blocked, and then those visits count
+    }
+  });
 
   const sectionLinks = [
     { label: "Profile", path: "/admin/profile" },

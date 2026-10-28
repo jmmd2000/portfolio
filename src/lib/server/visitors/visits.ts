@@ -3,6 +3,7 @@ import { eq, lt, sql } from "drizzle-orm";
 import { isbot } from "isbot";
 import { db } from "$lib/server/db";
 import { counters, visitorHashes, visitorSecrets } from "$lib/server/db/schema";
+import { reportServerError } from "$lib/server/errorReporting";
 import { irishDate } from "./irishDate";
 import { visitorAddress } from "./visitorAddress";
 
@@ -86,5 +87,6 @@ async function cleanUpVisitorDays(): Promise<void> {
     await deleteEarlierVisitorDays(new Date());
   } catch (error) {
     console.error("Couldn't delete earlier days' visitor data:", error);
+    reportServerError(error, { job: "visitor-cleanup" });
   }
 }
