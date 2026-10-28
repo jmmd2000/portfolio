@@ -4,6 +4,8 @@
   import { fitText } from "$lib/attachments/fitText";
   import PageHead from "$lib/components/head/PageHead.svelte";
   import SiteLayout from "$lib/components/layout/SiteLayout.svelte";
+  import { ballSheet, chaseSprites } from "$lib/components/plum/chaseSprites";
+  import PlumSprite from "$lib/components/plum/PlumSprite.svelte";
 
   const notFound = $derived(page.status === 404);
   const hasArticles = $derived(page.data.hasArticles ?? false);
@@ -33,6 +35,15 @@
         <a href={resolve("/articles")}>Articles</a>
       {/if}
     </div>
+    {#if notFound}
+      <div class="plum">
+        <div class="chase" aria-hidden="true">
+          <PlumSprite sheet={chaseSprites.run} frame={0} label="Plum" />
+          <PlumSprite sheet={ballSheet} frame={2} label="Plum's ball" />
+        </div>
+        <p>Plum got out too. She went after the ball.</p>
+      </div>
+    {/if}
   </section>
 </SiteLayout>
 
@@ -71,6 +82,21 @@
     flex-wrap: wrap;
     gap: var(--space-1) var(--space-3);
     margin-top: var(--space-3);
+  }
+
+  .plum {
+    margin-top: var(--space-5);
+    font-weight: 700;
+  }
+
+  .chase {
+    --plum-scale: 4;
+
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-4);
+    margin-bottom: var(--space-2);
+    filter: drop-shadow(4px 0 0 var(--sprite-rim)) drop-shadow(-4px 0 0 var(--sprite-rim)) drop-shadow(0 4px 0 var(--sprite-rim)) drop-shadow(0 -4px 0 var(--sprite-rim));
   }
 
   @media (hover: none) {
