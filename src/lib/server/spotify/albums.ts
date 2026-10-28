@@ -8,6 +8,7 @@ const albumSearchSchema = z.object({
     items: z.array(
       z.object({
         name: z.string().min(1),
+        external_urls: z.object({ spotify: httpsURL }).optional(),
         release_date: z.string(),
         artists: z.array(z.object({ name: z.string() })),
         images: z.array(z.object({ url: httpsURL, width: z.number().nullable() })),
@@ -16,7 +17,7 @@ const albumSearchSchema = z.object({
   }),
 });
 
-/** The albums in a Spotify search that have a cover: the 300px cover as the thumbnail and the largest as the cover */
+/** The albums in a Spotify search that have a cover: the 300px cover as the thumbnail, the largest as the cover, and the album's Spotify page */
 export function parseAlbums(body: unknown): CoverResult[] {
   const results: CoverResult[] = [];
   for (const album of albumSearchSchema.parse(body).albums.items) {
@@ -26,7 +27,14 @@ export function parseAlbums(body: unknown): CoverResult[] {
 
     const thumbnail = largestFirst.findLast(image => (image.width ?? 0) >= 300) ?? largest;
     const artists = album.artists.map(artist => artist.name).join(", ");
-    results.push({ title: album.name, subtitle: joinSubtitle(artists, album.release_date.slice(0, 4)), thumbnailURL: thumbnail.url, coverURL: largest.url });
+    results.push({
+      title: album.name,
+      subtitle: joinSubtitle(artists, album.release_date.slice(0, 4)),
+      maker: artists || null,
+      pageURL: album.external_urls?.spotify ?? null,
+      thumbnailURL: thumbnail.url,
+      coverURL: largest.url,
+    });
   }
   return results.slice(0, maxCoverResults);
 }

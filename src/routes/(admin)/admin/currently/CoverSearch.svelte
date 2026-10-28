@@ -2,7 +2,8 @@
   @component
   A Find cover button that opens a search of Spotify, Steam, TVmaze or Open Library. It starts with the row's title
   and guesses the source from its label. Picking a result copies its cover into the image library, then calls
-  `onpick` with the copy's address.
+  `onpick` with the copy's address and fills the row's title, subtitle and link from the result. A result with no
+  maker or no page leaves that field as it was.
 -->
 <script lang="ts">
   import X from "@lucide/svelte/icons/x";
@@ -49,6 +50,14 @@
   function formValue(name: string): string {
     const field = opener?.closest("form")?.elements.namedItem(name);
     return field instanceof HTMLInputElement ? field.value.trim() : "";
+  }
+
+  /** Puts a value in a field of the form this button sits in, and tells the form, as typing would */
+  function fillFormValue(name: string, value: string): void {
+    const field = opener?.closest("form")?.elements.namedItem(name);
+    if (!(field instanceof HTMLInputElement)) return;
+    field.value = value;
+    field.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
   function open(): void {
@@ -104,6 +113,9 @@
     // Closes first, so the dialog gives focus back to its button before the form moves it somewhere else
     dialog?.close();
     onpick(copied.data.url);
+    fillFormValue("title", result.title);
+    if (result.maker) fillFormValue("subtitle", result.maker);
+    if (result.pageURL) fillFormValue("url", result.pageURL);
   }
 
   function chooseSource(value: CoverSource): void {

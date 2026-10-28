@@ -6,13 +6,15 @@ function game(id: number, name: string, windows = true) {
 }
 
 describe("parseSteamGames", () => {
-  it("keeps the Windows games, each with its library cover and no subtitle", () => {
+  it("keeps the Windows games, each with its library cover and store page, and no maker", () => {
     const games = parseSteamGames({ total: 2, items: [game(377160, "Fallout 4"), game(400, "Mac only", false)] });
 
     expect(games).toEqual([
       {
         title: "Fallout 4",
         subtitle: null,
+        maker: null,
+        pageURL: "https://store.steampowered.com/app/377160/",
         thumbnailURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/377160/library_600x900.jpg",
         coverURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/377160/library_600x900.jpg",
       },

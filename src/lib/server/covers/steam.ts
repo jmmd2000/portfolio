@@ -21,7 +21,14 @@ export function parseSteamGames(body: unknown): CoverResult[] {
   return storeSearchSchema
     .parse(body)
     .items.filter(item => item.platforms.windows)
-    .map(item => ({ title: item.name, subtitle: null, thumbnailURL: libraryCoverURL(item.id), coverURL: libraryCoverURL(item.id) }));
+    .map(item => ({
+      title: item.name,
+      subtitle: null,
+      maker: null,
+      pageURL: `https://store.steampowered.com/app/${item.id}/`,
+      thumbnailURL: libraryCoverURL(item.id),
+      coverURL: libraryCoverURL(item.id),
+    }));
 }
 
 /**
