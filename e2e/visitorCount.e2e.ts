@@ -1,4 +1,4 @@
-import type { Browser } from "@playwright/test";
+import type { Browser, Page } from "@playwright/test";
 import postgres from "postgres";
 import { e2eEnvironment } from "./environment";
 import { expect, test } from "./fixtures";
@@ -23,12 +23,15 @@ test("only a browser that runs the page counts, and only once a day", async ({ b
     return row?.count ?? 0;
   };
 
+  const pages: Page[] = [];
   try {
     const withoutScripts = await visitor(browser, "203.0.113.20", false);
+    pages.push(withoutScripts);
     await withoutScripts.goto("/cv", { waitUntil: "networkidle" });
     expect(await visitorCount()).toBe(0);
 
     const withScripts = await visitor(browser, "203.0.113.21", true);
+    pages.push(withScripts);
     await withScripts.goto("/cv");
     await expect.poll(visitorCount).toBe(1);
 
@@ -37,6 +40,7 @@ test("only a browser that runs the page counts, and only once a day", async ({ b
     }
     expect(await visitorCount()).toBe(1);
   } finally {
+    await Promise.all(pages.map(page => page.context().close()));
     await client.end();
   }
 });
