@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { resolve } from "$app/paths";
+  import { buildInfo, formatBuiltAt } from "$lib/buildInfo";
   import ThemeToggle from "$lib/components/theme/ThemeToggle.svelte";
   import { siteName } from "$lib/site";
 
@@ -52,6 +53,11 @@
             </form>
           </li>
         </ul>
+        <p class="build">
+          <span>Version {buildInfo.version}</span>
+          <span>Commit {buildInfo.gitSHA}</span>
+          <span>{buildInfo.builtAt ? `Built ${formatBuiltAt(buildInfo.builtAt)}` : "Not built by a deploy"}</span>
+        </p>
       </nav>
       <main id="main">
         {@render children()}
@@ -141,6 +147,17 @@
     border-top: var(--rule-row);
   }
 
+  .build {
+    display: grid;
+    margin-top: var(--space-3);
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.4;
+    text-transform: none;
+  }
+
   main {
     min-width: 0;
     padding: var(--space-3) var(--page-gutter) var(--space-5);
@@ -199,6 +216,14 @@
       margin-top: 0;
       padding-top: 0;
       border-top: 0;
+    }
+
+    .build {
+      display: flex;
+      flex-wrap: wrap;
+      flex-basis: 100%;
+      column-gap: var(--space-2);
+      margin-top: 0;
     }
   }
 </style>
