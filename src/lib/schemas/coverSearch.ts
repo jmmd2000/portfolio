@@ -13,6 +13,8 @@ export const coverResultsSchema = z.array(
   z.object({
     title: z.string(),
     subtitle: z.string().nullable(),
+    maker: z.string().nullable(),
+    pageURL: z.url().nullable(),
     thumbnailURL: z.url(),
     coverURL: z.url(),
   })

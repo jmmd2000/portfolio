@@ -3,6 +3,10 @@ export interface CoverResult {
   title: string;
   /** Who made it and when, such as the artist and year. Null when the source doesn't say */
   subtitle: string | null;
+  /** Who made it on its own, such as the artist or author. Null when the source doesn't say */
+  maker: string | null;
+  /** The item's page on the source, such as the album on Spotify. Null when the source doesn't give one */
+  pageURL: string | null;
   /** A small version of the cover, for the search results */
   thumbnailURL: string;
   /** The full cover, which is copied into the image library when it's picked */

@@ -8,6 +8,7 @@ const showSearchSchema = z.array(
   z.object({
     show: z.object({
       name: z.string().min(1),
+      url: httpsURL.optional(),
       premiered: z.string().nullable(),
       network: channelSchema,
       webChannel: channelSchema,
@@ -16,7 +17,7 @@ const showSearchSchema = z.array(
   })
 );
 
-/** The shows in a TVmaze search that have a poster, with their channel and the year they first aired */
+/** The shows in a TVmaze search that have a poster, with their channel, the year they first aired and their TVmaze page */
 export function parseTVmazeShows(body: unknown): CoverResult[] {
   const results: CoverResult[] = [];
   for (const { show } of showSearchSchema.parse(body)) {
@@ -24,7 +25,14 @@ export function parseTVmazeShows(body: unknown): CoverResult[] {
 
     const channel = show.network?.name ?? show.webChannel?.name ?? null;
     const year = show.premiered?.slice(0, 4) ?? null;
-    results.push({ title: show.name, subtitle: joinSubtitle(channel, year), thumbnailURL: show.image.medium, coverURL: show.image.original });
+    results.push({
+      title: show.name,
+      subtitle: joinSubtitle(channel, year),
+      maker: channel,
+      pageURL: show.url ?? null,
+      thumbnailURL: show.image.medium,
+      coverURL: show.image.original,
+    });
   }
   return results.slice(0, maxCoverResults);
 }

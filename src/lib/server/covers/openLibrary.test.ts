@@ -2,12 +2,16 @@ import { describe, expect, it } from "vitest";
 import { parseOpenLibraryBooks } from "./openLibrary";
 
 describe("parseOpenLibraryBooks", () => {
-  it("builds the medium and large covers from the cover id, with the first author and year", () => {
-    const [book] = parseOpenLibraryBooks({ docs: [{ title: "To Kill a Mockingbird", author_name: ["Harper Lee", "Someone Else"], first_publish_year: 1960, cover_i: 14351077 }] });
+  it("builds the medium and large covers from the cover id, with the first author, year and page", () => {
+    const [book] = parseOpenLibraryBooks({
+      docs: [{ key: "/works/OL82563W", title: "To Kill a Mockingbird", author_name: ["Harper Lee", "Someone Else"], first_publish_year: 1960, cover_i: 14351077 }],
+    });
 
     expect(book).toEqual({
       title: "To Kill a Mockingbird",
       subtitle: "Harper Lee · 1960",
+      maker: "Harper Lee",
+      pageURL: "https://openlibrary.org/works/OL82563W",
       thumbnailURL: "https://covers.openlibrary.org/b/id/14351077-M.jpg",
       coverURL: "https://covers.openlibrary.org/b/id/14351077-L.jpg",
     });
