@@ -29,6 +29,7 @@
 
   const checkIntervalMilliseconds = 10_000;
   const messageMilliseconds = 10_000;
+  const shutterMilliseconds = 260;
   const actionSpriteMilliseconds = 3000;
   const idleWaitMilliseconds = { shortest: 8000, longest: 12000 };
   const blinkWaitMilliseconds = { shortest: 2500, longest: 5500 };
@@ -74,6 +75,8 @@
 
   let band = $state<HTMLElement>();
   let yard = $state<HTMLElement>();
+  let shutter = $state<HTMLElement>();
+  let swappingPhoto = false;
   let reducedMotion = false;
   let actionSpriteTimer: ReturnType<typeof setTimeout> | undefined;
   let idleTimer: ReturnType<typeof setTimeout> | undefined;
@@ -265,6 +268,35 @@
     setTimeout(() => (blinkStep = 0), 250);
   }
 
+  /**
+   * Swaps the pen between pixel Plum and her photo. An ink shutter slides across and covers the pen, the picture
+   * changes behind it, and the shutter slides off the other side. The shutter waits for the photo to load
+   */
+  async function togglePhoto(): Promise<void> {
+    if (swappingPhoto) return;
+    if (reducedMotion || !shutter) {
+      showingPhoto = !showingPhoto;
+      return;
+    }
+
+    swappingPhoto = true;
+    const timing: KeyframeAnimationOptions = { duration: shutterMilliseconds, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" };
+    const cover = shutter.animate([{ transform: "translateX(-101%)" }, { transform: "translateX(0)" }], timing);
+    await Promise.all([cover.finished, showingPhoto ? Promise.resolve() : loadPhoto()]);
+    showingPhoto = !showingPhoto;
+    await shutter.animate([{ transform: "translateX(0)" }, { transform: "translateX(101%)" }], timing).finished;
+    for (const animation of shutter.getAnimations()) animation.cancel();
+    swappingPhoto = false;
+  }
+
+  /** Loads and decodes her photo. It resolves even if that fails, so the shutter never gets stuck */
+  async function loadPhoto(): Promise<void> {
+    if (!realPlumPhotoURL) return;
+    const photo = new Image();
+    photo.src = realPlumPhotoURL;
+    await photo.decode().catch(() => undefined);
+  }
+
   /** Turns her head towards the pointer while it's over the band */
   function watchPointer(event: PointerEvent): void {
     if (reducedMotion || event.pointerType === "touch" || !band || !yard) return;
@@ -332,10 +364,11 @@
       {:else}
         <p>Nothing here yet.</p>
       {/if}
+      <div class="shutter" bind:this={shutter} aria-hidden="true"></div>
     </div>
     <div>
       <h3 class="mood">{latest ? moodLine(latest) : "She's asleep"}</h3>
-      <button type="button" class="real" disabled={!ready} onclick={() => (showingPhoto = !showingPhoto)}>{showingPhoto ? "Back to pixel Plum" : "See the real Plum"}</button>
+      <button type="button" class="real" disabled={!ready} onclick={togglePhoto}>{showingPhoto ? "Back to pixel Plum" : "See the real Plum"}</button>
       {#if latest}
         <PlumStats stats={latest.stats} />
       {/if}
@@ -389,12 +422,21 @@
   .yard {
     --plum-scale: 8;
 
+    position: relative;
     display: grid;
     place-items: center;
     width: min(100%, 22rem);
     aspect-ratio: 1;
+    overflow: hidden;
     outline: var(--rule-row);
     background: var(--paper);
+  }
+
+  .shutter {
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform: translateX(-101%);
   }
 
   .mood {
