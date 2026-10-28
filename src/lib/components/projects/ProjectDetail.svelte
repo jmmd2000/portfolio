@@ -65,7 +65,7 @@
 <style>
   .project {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: var(--space-4);
     align-items: start;
     padding-block: var(--space-4);
