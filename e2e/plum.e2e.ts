@@ -40,14 +40,14 @@ function band(page: Page) {
 test("feeding her raises her food, plays her eating sprite and counts the cooldown down", async ({ page }) => {
   await setPlum({ food: 30, happiness: 50, energy: 100 });
   await page.goto("/");
-  const foodWord = band(page).locator("dd").first();
-  const foodBefore = await foodWord.textContent();
+  const feedButton = band(page).getByRole("button", { name: "Feed" });
 
-  await band(page).getByRole("button", { name: "Feed" }).click();
+  await feedButton.click();
 
   await expect(band(page).getByRole("img", { name: "Plum, eating" })).toBeVisible();
-  await expect(foodWord).not.toHaveText(foodBefore ?? "");
-  await expect(band(page).getByRole("button", { name: /^Feed again in \d+s$/ })).toBeDisabled();
+  await expect(feedButton).toContainText("75%");
+  await expect(feedButton).toBeDisabled();
+  await expect(feedButton).toContainText(/\d+s/);
 });
 
 test("she refuses food when she's full, and the button stays free", async ({ page }) => {
@@ -93,7 +93,7 @@ test("another visitor sees a feed within 10 seconds, with her eating sprite", as
   await otherPage.clock.fastForward(10_000);
 
   await expect(band(otherPage).getByRole("img", { name: "Plum, eating" })).toBeVisible();
-  await expect(band(otherPage).getByRole("button", { name: /^Feed again in \d+s$/ })).toBeDisabled();
+  await expect(band(otherPage).getByRole("button", { name: "Feed" })).toBeDisabled();
   await otherPage.context().close();
 });
 
@@ -116,7 +116,7 @@ test("throwing her ball adds to the total in her pen", async ({ page }) => {
   }
   await page.mouse.up();
 
-  await expect(band(page).locator("dl > div").last().locator("dd")).toHaveText("1");
+  await expect(band(page).getByRole("button", { name: "Call her back" })).toContainText(/\b1\b/);
 });
 
 test("the server counts at most one throw a second from each visitor", async ({ request }) => {

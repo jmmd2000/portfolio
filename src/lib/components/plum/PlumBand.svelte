@@ -1,9 +1,10 @@
 <!--
   @component
-  Plum's red band on the home page: her pen, how she is, her stats, and Feed, Pet and Play. The visitor can swap
+  Plum's red band on the home page: how she is, her pen, and a grid of four buttons beside it. Feed, Pet and Play
+  each show the level they change, and Let her out shows how many times her ball was thrown. The visitor can swap
   the pen to a photo of the real Plum and back. Every visitor shares her. The band asks the server how she is
-  every 10 seconds while the tab is visible, and shows what other visitors did. Under the buttons, a message
-  after an action shows for 10 seconds, then the line goes back to when she was last fed. Awake, she blinks every
+  every 10 seconds while the tab is visible, and shows what other visitors did. Under the pen, a message after an
+  action shows for 10 seconds, then the line goes back to when she was last fed. Awake, she blinks every
   few seconds and plays a short animation now and then. Asleep, her ear flicks now and then. The visitor can let
   her out to chase her ball around the window, which leaves the pen empty and the actions off until she's back.
   None of this moves if the visitor asks for reduced motion. With no `plum` (her data couldn't load) she shows
@@ -12,7 +13,7 @@
 <script lang="ts">
   import { onMount, untrack } from "svelte";
   import { isHungry, moodLine, restingSprite } from "$lib/plum/plumMood";
-  import { plumActions, type PlumAction } from "$lib/plum/plumRules";
+  import { plumActions, type PlumAction, type PlumStats } from "$lib/plum/plumRules";
   import { actionResultSchema, plumStateSchema, throwResultSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
   import { actionsByOthers } from "./actionsByOthers";
   import { ballSheet, chaseSprites } from "./chaseSprites";
@@ -22,7 +23,6 @@
   import PlumChase from "./PlumChase.svelte";
   import PlumSprite from "./PlumSprite.svelte";
   import { lastFedLine } from "./lastFed";
-  import PlumStats from "./PlumStats.svelte";
   import { realPlumPhotoDescription, realPlumPhotoURL } from "./realPlumPhoto";
 
   interface Props {
@@ -39,6 +39,9 @@
   const blinkWaitMilliseconds = { shortest: 2500, longest: 5500 };
 
   const actionNames: Record<PlumAction, string> = { feed: "Feed", pet: "Pet", play: "Play" };
+  /** The level each button shows */
+  const actionStats: Record<PlumAction, keyof PlumStats> = { feed: "food", pet: "happiness", play: "energy" };
+  const statNames: Record<keyof PlumStats, string> = { food: "Food", happiness: "Happiness", energy: "Energy" };
   const actionSprites: Record<PlumAction, PenSprite> = { feed: "eating", pet: "purring", play: "playing" };
   const spriteDescriptions: Record<PenSprite, string> = {
     idle: "sitting",
@@ -124,10 +127,22 @@
     return Math.max(0, Math.ceil((readyAt[action] - now) / 1000));
   }
 
-  function buttonText(action: PlumAction): string {
-    const seconds = secondsLeft(action);
-    return seconds > 0 ? `${actionNames[action]} again in ${seconds}s` : actionNames[action];
+  function statLevel(action: PlumAction): number {
+    return latest ? Math.round(latest.stats[actionStats[action]]) : 0;
   }
+
+  /** The line under an action's name: its level, and how long until it can be done again */
+  function actionNote(action: PlumAction): string {
+    const level = `${statNames[actionStats[action]]} ${statLevel(action)}%`;
+    const seconds = secondsLeft(action);
+    if (seconds > 0) return `${level}, again in ${seconds}s`;
+    return action === "play" ? `${level}, play uses it` : level;
+  }
+
+  const throwsNote = $derived.by(() => {
+    if (!latest) return "";
+    return `Ball thrown ${latest.throws.toLocaleString("en-GB")} ${latest.throws === 1 ? "time" : "times"}`;
+  });
 
   const lastFedText = $derived.by(() => {
     if (!latest) return "";
@@ -351,9 +366,10 @@
     }
 
     const yardBox = yard.getBoundingClientRect();
-    // Her face sits a little above the middle of the pen
+    const scale = Number(getComputedStyle(yard).getPropertyValue("--plum-scale")) || 8;
+    // She sits on the bottom of the pen, with her face about 18 sprite pixels up
     const faceX = yardBox.left + yardBox.width / 2;
-    const faceY = yardBox.top + yardBox.height * 0.4;
+    const faceY = yardBox.bottom - 18 * scale;
     gaze = gazeAt(event.clientX - faceX, event.clientY - faceY, yardBox.width * 0.25);
   }
 
@@ -399,36 +415,42 @@
 
 <section class="plum" aria-labelledby="plum-heading" bind:this={band}>
   <h2 class="section-title" id="plum-heading">Plum</h2>
-  <div class="pen">
-    <div class="yard" bind:this={yard}>
-      {#if !showingPhoto}
-        <PlumSprite sheet={penSprites[sprite.name]} frame={sprite.frame} loop={sprite.loop} label="Plum, {spriteDescriptions[sprite.name]}" />
-      {:else if realPlumPhotoURL}
-        <img class="photo" src={realPlumPhotoURL} alt={realPlumPhotoDescription} />
-      {:else}
-        <p>Nothing here yet.</p>
-      {/if}
-      <div class="shutter" bind:this={shutter} aria-hidden="true"></div>
-    </div>
-    <div>
-      <h3 class="mood">{out ? outMessages.mood : latest ? moodLine(latest) : "She's asleep"}</h3>
-      <div class="links">
-        <button type="button" disabled={!ready} onclick={togglePhoto}>{showingPhoto ? "Back to pixel Plum" : "See the real Plum"}</button>
-        <button type="button" disabled={!ready || !latest} onclick={toggleOut}>{out ? "Call her back" : "Let her out"}</button>
+  <h3 class="mood">{out ? outMessages.mood : latest ? moodLine(latest) : "She's asleep"}</h3>
+  <div class="pen-block">
+    <div class="pen">
+      <div class="yard" bind:this={yard}>
+        {#if !showingPhoto}
+          <PlumSprite sheet={penSprites[sprite.name]} frame={sprite.frame} loop={sprite.loop} label="Plum, {spriteDescriptions[sprite.name]}" />
+        {:else if realPlumPhotoURL}
+          <img class="photo" src={realPlumPhotoURL} alt={realPlumPhotoDescription} />
+        {:else}
+          <p class="photo">Nothing here yet.</p>
+        {/if}
+        <div class="shutter" bind:this={shutter} aria-hidden="true"></div>
       </div>
-      {#if latest}
-        <PlumStats stats={latest.stats} throws={latest.throws} />
-      {/if}
-      <div class="actions">
+      <div class="controls">
         {#each plumActions as action (action)}
-          <button type="button" disabled={!ready || !latest || busy || out || secondsLeft(action) > 0} onclick={() => doAction(action)}>{buttonText(action)}</button>
+          <button type="button" class="control" disabled={!ready || !latest || busy || out || secondsLeft(action) > 0} onclick={() => doAction(action)}>
+            <span class="control-name">{actionNames[action]}</span>
+            {#if latest}
+              <span class="meter" aria-hidden="true"><span style:transform="scaleX({statLevel(action) / 100})"></span></span>
+              <span class="note">{actionNote(action)}</span>
+            {/if}
+          </button>
         {/each}
+        <button type="button" class="control out" disabled={!ready || !latest} onclick={toggleOut}>
+          <span class="control-name">{out ? "Call her back" : "Let her out"}</span>
+          {#if latest}<span class="note">{throwsNote}</span>{/if}
+        </button>
       </div>
+    </div>
+    <div class="under">
       <p class="message">
         <span role="status">{message}</span>
         <!-- Not announced: it changes every minute as the time goes on -->
         {#if !message}<span>{lastFedText}</span>{/if}
       </p>
+      <button type="button" class="photo-toggle" disabled={!ready} onclick={togglePhoto}>{showingPhoto ? "Back to pixel Plum" : "See the real Plum"}</button>
     </div>
   </div>
   {#if out}
@@ -459,14 +481,29 @@
   }
 
   .section-title {
+    margin-bottom: var(--space-2);
     color: var(--ink);
   }
 
+  .mood {
+    margin-bottom: var(--space-3);
+    font-size: var(--type-large);
+    font-weight: 900;
+    line-height: 0.95;
+  }
+
+  .pen-block {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  /* The 2px gaps show the ink background, so the pen and the buttons read as one block with ink lines between */
   .pen {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: var(--space-5);
-    align-items: center;
+    grid-template-columns: 18rem minmax(0, 36rem);
+    gap: 2px;
+    outline: var(--rule-row);
+    background: var(--ink);
   }
 
   .yard {
@@ -474,12 +511,29 @@
 
     position: relative;
     display: grid;
-    place-items: center;
-    width: min(100%, 22rem);
-    aspect-ratio: 1;
+    place-items: end center;
+    min-height: 16rem;
     overflow: hidden;
-    outline: var(--rule-row);
     background: var(--paper);
+
+    /* Her sprites have two empty rows under her feet, so this sets her on the bottom of the pen */
+    > :global(.sprite) {
+      margin-bottom: calc(var(--plum-scale) * -2px);
+    }
+  }
+
+  .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    object-fit: cover;
+  }
+
+  p.photo {
+    display: grid;
+    place-items: center;
   }
 
   .shutter {
@@ -489,26 +543,94 @@
     transform: translateX(-101%);
   }
 
-  .mood {
-    font-size: var(--type-large);
-    font-weight: 900;
-    line-height: 0.95;
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px;
   }
 
-  .photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .control {
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    padding: var(--space-2) 1.25rem 1.25rem;
+    border: none;
+    border-radius: 0;
+    background: var(--red);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) var(--ease-out),
+      color var(--duration-quick) var(--ease-out);
+
+    &:focus-visible {
+      outline-offset: -6px;
+    }
+
+    &:disabled {
+      cursor: default;
+
+      > * {
+        opacity: 0.5;
+      }
+    }
   }
 
-  .links {
+  .out {
+    background: var(--ink);
+    color: var(--paper);
+
+    &:focus-visible {
+      outline-color: var(--paper);
+    }
+  }
+
+  .control-name {
+    font: 900 1.75rem / 0.95 var(--font-display);
+    text-transform: uppercase;
+  }
+
+  .meter {
+    height: 0.5rem;
+    overflow: hidden;
+    background: var(--red-deep);
+    transition: background-color var(--duration-quick) var(--ease-out);
+
+    > span {
+      display: block;
+      height: 100%;
+      background: var(--ink);
+      transform-origin: left;
+      transition:
+        transform var(--duration-lift) var(--ease-out),
+        background-color var(--duration-quick) var(--ease-out);
+    }
+  }
+
+  .note {
+    font-size: var(--type-small);
+    font-weight: 700;
+  }
+
+  .under {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
     gap: 0 var(--space-3);
     margin-top: var(--space-2);
   }
 
-  .links button {
+  .message {
+    min-width: 0;
+    min-height: 1.5em;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .photo-toggle {
     padding: var(--space-1) 0;
     border: none;
     background: none;
@@ -526,74 +648,47 @@
     }
   }
 
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1);
-    margin-top: var(--space-3);
-
-    button {
-      min-height: 3rem;
-      padding: 0.75rem 1.5rem;
-      border: var(--rule-row);
-      border-radius: 0;
-      background: transparent;
-      color: var(--ink);
-      font: 900 var(--type-label) / 1 var(--font-display);
-      text-transform: uppercase;
-      cursor: pointer;
-      transition:
-        transform var(--duration-quick) var(--ease-out),
-        box-shadow var(--duration-quick) var(--ease-out);
-
-      &:first-child {
-        background: var(--ink);
-        color: var(--paper);
-      }
-
-      &:disabled {
-        opacity: 0.55;
-        cursor: default;
-      }
-
-      &:active:not(:disabled) {
-        transform: none;
-        box-shadow: none;
-      }
-    }
-  }
-
-  .message {
-    min-height: 1.5em;
-    margin: var(--space-2) 0 0;
-    font-weight: 700;
-  }
-
   @media (hover: hover) {
-    .links button:hover:not(:disabled) {
-      text-decoration-thickness: 6px;
+    .control:not(.out):hover:not(:disabled) {
+      background: var(--ink);
+      color: var(--paper);
+
+      .meter {
+        background: color-mix(in oklch, var(--paper) 25%, var(--ink));
+      }
+
+      .meter > span {
+        background: var(--paper);
+      }
     }
 
-    .actions button:hover:not(:disabled) {
-      transform: translate(-3px, -3px);
-      box-shadow: 3px 3px 0 var(--ink);
+    .out:hover:not(:disabled) {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .photo-toggle:hover:not(:disabled) {
+      text-decoration-thickness: 6px;
     }
   }
 
   @media (max-width: 47.5rem) {
+    .pen-block {
+      width: auto;
+    }
+
     .pen {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--space-3);
     }
 
-    .yard {
-      width: min(100%, 18rem);
-    }
-  }
-
-  @media (max-width: 22rem) {
     .yard {
       --plum-scale: 6;
+
+      min-height: 13rem;
+    }
+
+    .control-name {
+      font-size: 1.5rem;
     }
   }
 </style>
