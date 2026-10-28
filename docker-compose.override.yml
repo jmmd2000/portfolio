@@ -1,9 +1,9 @@
+# Local dev: only the db service runs (`pnpm db:start`)
 services:
   db:
     ports:
       - "5437:5432"
     environment:
-      POSTGRES_USER: portfolio
       POSTGRES_PASSWORD: portfolio
     volumes:
       - ./scripts/init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql

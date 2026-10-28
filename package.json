@@ -1,7 +1,7 @@
 {
   "name": "portfolio",
   "private": true,
-  "version": "0.40.0",
+  "version": "0.40.1",
   "type": "module",
   "packageManager": "pnpm@11.14.0",
   "engines": {
@@ -21,6 +21,7 @@
     "test:unit": "vitest run --project client --project server",
     "test:integration": "NODE_ENV=test vitest run --project integration",
     "test:e2e": "NODE_ENV=test playwright test",
+    "db:start": "docker compose up -d db",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
