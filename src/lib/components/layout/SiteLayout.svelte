@@ -13,7 +13,7 @@
     currentPath: string | null;
     socials: Social[];
     hasArticles: boolean;
-    /** Needed on the home page, which shows the name and intro in place of the slim bar */
+    /** Needed on the home page, which shows the name and intro under the bar */
     profile?: Profile;
     /** The footer leaves the count out when this is missing or null */
     visitorCount?: number | null;
@@ -27,15 +27,17 @@
 
 <div class="site">
   <a class="skip-link label" href="#main">Skip to content</a>
-  {#if isHome && profile}
-    <HomeHeader {profile} {hasArticles} />
-  {:else}
-    <header class="bar">
+  <!-- The home page leaves the name out of the bar, since its header shows the name just below -->
+  <header class="bar" class:home-bar={isHome}>
+    {#if !isHome}
       <a class="home label" href={resolve("/")}>{siteName}</a>
-      <Nav {currentPath} {hasArticles} />
-    </header>
-  {/if}
+    {/if}
+    <Nav {currentPath} {hasArticles} />
+  </header>
   <main id="main">
+    {#if isHome && profile}
+      <HomeHeader {profile} />
+    {/if}
     {@render children()}
   </main>
   <Footer {socials} {isHome} {visitorCount} />
@@ -56,6 +58,10 @@
     gap: var(--space-2) var(--space-3);
     padding: var(--space-2) var(--page-padding);
     border-bottom: var(--rule-section);
+  }
+
+  .home-bar {
+    justify-content: flex-end;
   }
 
   .home {
