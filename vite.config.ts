@@ -1,9 +1,18 @@
+import { readFileSync } from "node:fs";
 import adapter from "@sveltejs/adapter-node";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
+const packageJSON: { version: string } = JSON.parse(readFileSync("./package.json", "utf8"));
+
 export default defineConfig({
+  // The build the admin shows. The Docker build passes GIT_SHA and BUILT_AT in
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJSON.version),
+    __GIT_SHA__: JSON.stringify(process.env.GIT_SHA ?? "dev"),
+    __BUILT_AT__: JSON.stringify(process.env.BUILT_AT ?? ""),
+  },
   plugins: [
     sveltekit({
       compilerOptions: {
