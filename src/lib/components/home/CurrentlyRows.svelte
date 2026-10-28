@@ -77,32 +77,36 @@
     rect {
       transform-box: fill-box;
       transform-origin: bottom;
-      transition: transform 250ms var(--ease-out);
     }
   }
 
-  /* The bars only change when the visitor points at or focuses the row */
+  /* The bars only show while a track is playing, so a slow wave runs along them the whole time */
   @media (prefers-reduced-motion: no-preference) {
-    a.row:focus-visible .bars {
-      rect:nth-child(odd) {
-        transform: scaleY(0.5);
+    .bars rect {
+      animation: wave 2.4s ease-in-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.3s;
       }
 
-      rect:nth-child(even) {
-        transform: scaleY(1.15);
+      &:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      &:nth-child(4) {
+        animation-delay: 0.9s;
       }
     }
   }
 
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    a.row:hover .bars {
-      rect:nth-child(odd) {
-        transform: scaleY(0.5);
-      }
+  @keyframes wave {
+    0%,
+    100% {
+      transform: scaleY(1);
+    }
 
-      rect:nth-child(even) {
-        transform: scaleY(1.15);
-      }
+    50% {
+      transform: scaleY(0.35);
     }
   }
 
