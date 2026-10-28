@@ -97,6 +97,28 @@ test("another visitor sees a feed within 10 seconds, with her eating sprite", as
   await otherPage.context().close();
 });
 
+test("throwing her ball adds to the total in her pen", async ({ page }) => {
+  await setPlum({ food: 80, happiness: 80, energy: 100 });
+  // Its own address, so the one-throw-a-second limit can't refuse this throw
+  await page.setExtraHTTPHeaders({ "x-forwarded-for": "203.0.113.10" });
+  await page.goto("/");
+  await band(page).getByRole("button", { name: "Let her out" }).click();
+
+  const ball = await page.locator(".plum-ball").boundingBox();
+  if (!ball) throw new Error("The ball isn't on the page");
+  const start = { x: ball.x + ball.width / 2, y: ball.y + ball.height / 2 };
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  // Small waits between moves, so the pointer has a speed when it lets go
+  for (let step = 1; step <= 4; step++) {
+    await page.mouse.move(start.x - 60 * step, start.y - 50 * step);
+    await page.waitForTimeout(16);
+  }
+  await page.mouse.up();
+
+  await expect(band(page).locator("dl > div").last().locator("dd")).toHaveText("1");
+});
+
 test("the server counts at most one throw a second from each visitor", async ({ request }) => {
   // Its own address, so this limit can't refuse another test's throws
   const headers = { "x-forwarded-for": "203.0.113.9" };

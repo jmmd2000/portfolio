@@ -13,7 +13,7 @@
   import { onMount, untrack } from "svelte";
   import { isHungry, moodLine, restingSprite } from "$lib/plum/plumMood";
   import { plumActions, type PlumAction } from "$lib/plum/plumRules";
-  import { actionResultSchema, plumStateSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
+  import { actionResultSchema, plumStateSchema, throwResultSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
   import { actionsByOthers } from "./actionsByOthers";
   import { ballSheet, chaseSprites } from "./chaseSprites";
   import { gazeAt, gazeFrame, type GazeDirection } from "./gaze";
@@ -326,6 +326,19 @@
     }
   }
 
+  /** Counts a throw on the server and shows the new total. A refused or failed throw is skipped */
+  async function saveThrow(): Promise<void> {
+    try {
+      const response = await fetch("/api/plum/throws", { method: "POST" });
+      if (!response.ok) return;
+
+      const { throws } = throwResultSchema.parse(await response.json());
+      if (latest) latest = { ...latest, throws };
+    } catch {
+      // The next check brings the total up to date
+    }
+  }
+
   /** Turns her head towards the pointer while it's over the band */
   function watchPointer(event: PointerEvent): void {
     if (out || reducedMotion || event.pointerType === "touch" || !band || !yard) return;
@@ -419,7 +432,7 @@
     </div>
   </div>
   {#if out}
-    <PlumChase penX={outFromX} onhome={() => (out = false)} bind:this={chase} />
+    <PlumChase penX={outFromX} onhome={() => (out = false)} onthrow={saveThrow} bind:this={chase} />
   {/if}
 </section>
 
