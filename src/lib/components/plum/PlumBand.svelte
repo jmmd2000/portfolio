@@ -3,19 +3,23 @@
   Plum's red band on the home page: her pen, how she is, her stats, and Feed, Pet and Play. The visitor can swap
   the pen to a photo of the real Plum and back. Every visitor shares her. The band asks the server how she is
   every 10 seconds while the tab is visible, and shows what other visitors did. Under the buttons, a message
-  after an action shows for 10 seconds, then the line goes back to when she was last fed. Awake, she blinks every few seconds and plays a short animation now and then. Asleep, her ear
-  flicks now and then. Neither happens if the visitor asks for reduced motion. With no `plum` (her data couldn't
-  load) she shows asleep with the buttons off.
+  after an action shows for 10 seconds, then the line goes back to when she was last fed. Awake, she blinks every
+  few seconds and plays a short animation now and then. Asleep, her ear flicks now and then. The visitor can let
+  her out to chase her ball around the window, which leaves the pen empty and the actions off until she's back.
+  None of this moves if the visitor asks for reduced motion. With no `plum` (her data couldn't load) she shows
+  asleep with the buttons off.
 -->
 <script lang="ts">
   import { onMount, untrack } from "svelte";
   import { isHungry, moodLine, restingSprite } from "$lib/plum/plumMood";
   import { plumActions, type PlumAction } from "$lib/plum/plumRules";
-  import { actionResultSchema, plumStateSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
+  import { actionResultSchema, plumStateSchema, throwResultSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
   import { actionsByOthers } from "./actionsByOthers";
+  import { ballSheet, chaseSprites } from "./chaseSprites";
   import { gazeAt, gazeFrame, type GazeDirection } from "./gaze";
   import { idleAnimations, penSprites, type IdleAnimation, type PenSprite } from "./penSprites";
-  import { coolingMessage, doneMessage, hungryMessages, othersMessages, othersSleepMessages, refusalMessages, sleepMessages, unreachableMessage } from "./plumMessages";
+  import { coolingMessage, doneMessage, hungryMessages, othersMessages, othersSleepMessages, outMessages, refusalMessages, sleepMessages, unreachableMessage } from "./plumMessages";
+  import PlumChase from "./PlumChase.svelte";
   import PlumSprite from "./PlumSprite.svelte";
   import { lastFedLine } from "./lastFed";
   import PlumStats from "./PlumStats.svelte";
@@ -53,6 +57,7 @@
     earTwitch: "twitching an ear",
     tailFlick: "flicking her tail",
     pawLick: "licking her paw",
+    empty: "out of her pen",
   };
 
   let latest = $state<PlumState | null>(untrack(() => plum));
@@ -72,6 +77,10 @@
   let blinkStep = $state(0);
   let gaze = $state<GazeDirection | null>(null);
   let showingPhoto = $state(false);
+  let out = $state(false);
+  /** The middle of her pen across the window when she was let out, where she jumps out */
+  let outFromX = $state(0);
+  let chase = $state<ReturnType<typeof PlumChase>>();
 
   let band = $state<HTMLElement>();
   let yard = $state<HTMLElement>();
@@ -87,6 +96,7 @@
   const actionCounts: Record<PlumAction, number> = { feed: 0, pet: 0, play: 0 };
 
   const sprite = $derived.by((): { name: PenSprite; frame?: number; loop?: boolean } => {
+    if (out) return { name: "empty" };
     if (!latest) return { name: "asleep" };
     if (actionSprite) return { name: actionSprite };
     if (gaze && !latest.sleep) {
@@ -297,9 +307,41 @@
     await photo.decode().catch(() => undefined);
   }
 
+  /** The middle of her pen across the window */
+  function penX(): number {
+    if (!yard) return window.innerWidth / 2;
+    const yardBox = yard.getBoundingClientRect();
+    return yardBox.left + yardBox.width / 2;
+  }
+
+  /** Lets her out to chase her ball, or calls her back once she's out. She stays in with reduced motion */
+  function toggleOut(): void {
+    if (out) {
+      chase?.callBack(penX());
+    } else if (reducedMotion) {
+      say(outMessages.reducedMotion);
+    } else {
+      outFromX = penX();
+      out = true;
+    }
+  }
+
+  /** Counts a throw on the server and shows the new total. A refused or failed throw is skipped */
+  async function saveThrow(): Promise<void> {
+    try {
+      const response = await fetch("/api/plum/throws", { method: "POST" });
+      if (!response.ok) return;
+
+      const { throws } = throwResultSchema.parse(await response.json());
+      if (latest) latest = { ...latest, throws };
+    } catch {
+      // The next check brings the total up to date
+    }
+  }
+
   /** Turns her head towards the pointer while it's over the band */
   function watchPointer(event: PointerEvent): void {
-    if (reducedMotion || event.pointerType === "touch" || !band || !yard) return;
+    if (out || reducedMotion || event.pointerType === "touch" || !band || !yard) return;
 
     const bandBox = band.getBoundingClientRect();
     const isOverBand = event.clientX >= bandBox.left && event.clientX <= bandBox.right && event.clientY >= bandBox.top && event.clientY <= bandBox.bottom;
@@ -321,6 +363,8 @@
     if (!reducedMotion) {
       waitForIdle();
       waitForBlink();
+      // Loads her chase sprites early, so she has them the moment she's let out
+      for (const sheet of [...Object.values(chaseSprites), ballSheet]) new Image().src = sheet.src;
     }
 
     const clock = setInterval(() => (now = Date.now()), 1000);
@@ -367,14 +411,17 @@
       <div class="shutter" bind:this={shutter} aria-hidden="true"></div>
     </div>
     <div>
-      <h3 class="mood">{latest ? moodLine(latest) : "She's asleep"}</h3>
-      <button type="button" class="real" disabled={!ready} onclick={togglePhoto}>{showingPhoto ? "Back to pixel Plum" : "See the real Plum"}</button>
+      <h3 class="mood">{out ? outMessages.mood : latest ? moodLine(latest) : "She's asleep"}</h3>
+      <div class="links">
+        <button type="button" disabled={!ready} onclick={togglePhoto}>{showingPhoto ? "Back to pixel Plum" : "See the real Plum"}</button>
+        <button type="button" disabled={!ready || !latest} onclick={toggleOut}>{out ? "Call her back" : "Let her out"}</button>
+      </div>
       {#if latest}
-        <PlumStats stats={latest.stats} />
+        <PlumStats stats={latest.stats} throws={latest.throws} />
       {/if}
       <div class="actions">
         {#each plumActions as action (action)}
-          <button type="button" disabled={!ready || !latest || busy || secondsLeft(action) > 0} onclick={() => doAction(action)}>{buttonText(action)}</button>
+          <button type="button" disabled={!ready || !latest || busy || out || secondsLeft(action) > 0} onclick={() => doAction(action)}>{buttonText(action)}</button>
         {/each}
       </div>
       <p class="message">
@@ -384,6 +431,9 @@
       </p>
     </div>
   </div>
+  {#if out}
+    <PlumChase penX={outFromX} onhome={() => (out = false)} onthrow={saveThrow} bind:this={chase} />
+  {/if}
 </section>
 
 <style>
@@ -451,8 +501,14 @@
     object-fit: cover;
   }
 
-  .real {
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-3);
     margin-top: var(--space-2);
+  }
+
+  .links button {
     padding: var(--space-1) 0;
     border: none;
     background: none;
@@ -514,7 +570,7 @@
   }
 
   @media (hover: hover) {
-    .real:hover:not(:disabled) {
+    .links button:hover:not(:disabled) {
       text-decoration-thickness: 6px;
     }
 

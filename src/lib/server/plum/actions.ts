@@ -5,6 +5,7 @@ import { cooldownSeconds, fullFrom, plumActions, type PlumAction } from "$lib/pl
 import { sleepState, wokenUpMilliseconds } from "$lib/plum/plumSleep";
 import type { ActionOutcome, ActionResult, CooldownsLeft, PlumState } from "$lib/schemas/plumState";
 import { ensurePlum, getPlum } from "./plum";
+import { getThrowCount } from "./throws";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -19,7 +20,7 @@ export async function getPlumState(now: Date): Promise<PlumState> {
   const { awakeUntil, lastFedAt, ...stats } = await getPlum();
   // Counted by the server, so a visitor's wrong clock can't change the answer
   const lastFedSecondsAgo = lastFedAt ? Math.max(0, Math.floor((now.getTime() - lastFedAt.getTime()) / 1000)) : null;
-  return { stats, cooldowns: await getCooldownsLeft(now), ...sleepState(stats.energy, awakeUntil, now), lastFedSecondsAgo };
+  return { stats, cooldowns: await getCooldownsLeft(now), ...sleepState(stats.energy, awakeUntil, now), lastFedSecondsAgo, throws: await getThrowCount() };
 }
 
 async function getCooldownsLeft(now: Date): Promise<CooldownsLeft> {

@@ -57,6 +57,8 @@
   --red: light-dark(oklch(0.6 0.21 32), oklch(0.66 0.2 33));
   --red-text: light-dark(oklch(0.55 0.2 32), oklch(0.66 0.2 33));
   --red-deep: oklch(0.72 0.12 32);
+  /* Around Plum's sprites, so the black cat shows on the dark page */
+  --sprite-rim: light-dark(transparent, oklch(0.32 0.01 60));
   --line: light-dark(oklch(0.82 0.006 80), oklch(0.34 0.008 40));
   --sunken: light-dark(oklch(0.92 0.006 80), oklch(0.22 0.008 40));
 

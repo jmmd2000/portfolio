@@ -9,7 +9,7 @@ const sleepReason = z.enum(["night", "nap"]).nullable();
 /**
  * What every visitor sees of Plum: her stats, the seconds left on each action's cooldown (0 when it's ready), why
  * she's asleep (null when she's awake), what someone woke her from (null unless she's only awake because of it),
- * and how many seconds ago she was last fed (null if nobody has fed her yet).
+ * how many seconds ago she was last fed (null if nobody has fed her yet), and how many times her ball was thrown.
  */
 export const plumStateSchema = z.object({
   stats: z.object({ food: stat, happiness: stat, energy: stat }),
@@ -17,6 +17,7 @@ export const plumStateSchema = z.object({
   sleep: sleepReason,
   wokenFrom: sleepReason,
   lastFedSecondsAgo: z.number().int().min(0).nullable(),
+  throws: z.number().int().min(0),
 });
 
 /**
@@ -28,6 +29,8 @@ export const actionResultSchema = plumStateSchema.extend({
 });
 
 export const actionRequestSchema = z.object({ action: z.enum(plumActions) });
+
+export const throwResultSchema = z.object({ throws: z.number().int().min(0) });
 
 export type PlumState = z.infer<typeof plumStateSchema>;
 export type CooldownsLeft = PlumState["cooldowns"];

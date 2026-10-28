@@ -60,7 +60,6 @@
   /* On the dark theme a faint rim keeps the black cat from vanishing into the page */
   .plum {
     --plum-scale: 5;
-    --sprite-rim: light-dark(transparent, oklch(0.32 0.01 60));
 
     filter: drop-shadow(2px 0 0 var(--sprite-rim)) drop-shadow(-2px 0 0 var(--sprite-rim)) drop-shadow(0 2px 0 var(--sprite-rim)) drop-shadow(0 -2px 0 var(--sprite-rim));
   }
