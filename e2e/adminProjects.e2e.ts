@@ -15,5 +15,5 @@ test("without JavaScript, a failed save keeps what was typed, including the chec
 
   await expect(page.getByLabel("Live link text")).toHaveAttribute("aria-invalid", "true");
   await expect(page.getByLabel("Shown on the CV")).toBeChecked();
-  await expect(page.getByLabel("Live link", { exact: true })).toHaveValue("https://jamesmddoyle.com/sand-sim/");
+  await expect(page.getByLabel("Live link", { exact: true })).toHaveValue("https://sandsim.jamesmddoyle.com/");
 });

@@ -14,7 +14,6 @@ healthcheck: /api/health
 environments:
   production:
     dir: /home/james/portfolio/prod
-    # A temporary address until the launch moves the site to jamesmddoyle.com
-    domain: portfolio.vps.jamesmddoyle.com
+    domain: jamesmddoyle.com
     envCredential: portfolio-env-prod
     backup: true

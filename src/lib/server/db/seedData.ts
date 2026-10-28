@@ -132,7 +132,7 @@ export const seedData: SeedData = {
       description: "Falling sand simulation with a number of different materials and interactions between them.",
       imageURL: "https://assets.jamesmddoyle.com/sandsim.webp",
       sourceURL: "https://github.com/jmmd2000/sand-sim",
-      liveURL: "https://jamesmddoyle.com/sand-sim/",
+      liveURL: "https://sandsim.jamesmddoyle.com/",
       liveLabel: "Try it",
       stack: ["Rust", "TypeScript", "React", "WebAssembly"],
       featured: true,
