@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { resolve } from "$app/paths";
+  import { env } from "$env/dynamic/public";
+  import { parseUmamiWebsiteID, umamiScriptURL } from "$lib/analyticsConfig";
   import HomeHeader from "$lib/components/home/HomeHeader.svelte";
   import Footer from "$lib/components/navigation/Footer.svelte";
   import Nav from "$lib/components/navigation/Nav.svelte";
@@ -23,7 +25,14 @@
   let { currentPath, socials, hasArticles, profile, visitorCount = null, children }: Props = $props();
 
   const isHome = $derived(currentPath === "/");
+  const umamiWebsiteID = parseUmamiWebsiteID(env);
 </script>
+
+<svelte:head>
+  {#if umamiWebsiteID}
+    <script defer src={umamiScriptURL} data-website-id={umamiWebsiteID}></script>
+  {/if}
+</svelte:head>
 
 <div class="site">
   <a class="skip-link label" href="#main">Skip to content</a>

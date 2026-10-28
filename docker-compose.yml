@@ -53,6 +53,7 @@ services:
       PUBLIC_GLITCHTIP_DSN: ${GLITCHTIP_DSN:-}
       PUBLIC_GLITCHTIP_ENVIRONMENT: ${GLITCHTIP_ENVIRONMENT:-}
       PUBLIC_GIT_SHA: ${IMAGE_TAG:-}
+      PUBLIC_UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:-}
     depends_on:
       db:
         condition: service_healthy

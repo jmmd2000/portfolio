@@ -2,6 +2,7 @@ import type { Handle, HandleServerError, ServerInit } from "@sveltejs/kit";
 import type { User } from "better-auth";
 import { getSessionCookie } from "better-auth/cookies";
 import { env } from "$env/dynamic/public";
+import { parseUmamiWebsiteID } from "$lib/analyticsConfig";
 import { parseErrorReportingConfig } from "$lib/errorReportingConfig";
 import { auth } from "$lib/server/auth";
 import { reportServerError, startServerErrorReporting } from "$lib/server/errorReporting";
@@ -12,6 +13,8 @@ const loginPath = "/admin/login";
 
 export const init: ServerInit = () => {
   startServerErrorReporting(parseErrorReportingConfig(env));
+  // Throws on an ID that isn't a UUID, so a bad value stops the site at startup and not on every page
+  parseUmamiWebsiteID(env);
   startVisitorCleanup();
   startPlumDecay();
 };
