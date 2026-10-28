@@ -85,6 +85,26 @@
     }
   }
 
+  @media screen and (max-width: 47.5rem) {
+    /* One item per line, each at least 44px tall so the links are easy to tap */
+    .contact {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+
+      li:not(.site),
+      a {
+        display: flex;
+        align-items: center;
+        min-height: 2.75rem;
+      }
+
+      a {
+        padding-block: 0;
+      }
+    }
+  }
+
   @media print {
     .masthead {
       padding: 0 0 var(--space-2);
