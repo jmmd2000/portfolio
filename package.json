@@ -35,8 +35,10 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@inquirer/password": "5.2.2",
+    "@jridgewell/remapping": "2.3.5",
     "@lucide/svelte": "1.52.0",
     "@playwright/test": "1.63.0",
+    "@sentry/cli": "3.8.0",
     "@sveltejs/adapter-node": "5.5.7",
     "@sveltejs/kit": "2.70.3",
     "@sveltejs/vite-plugin-svelte": "7.3.1",
