@@ -1,11 +1,14 @@
 <script lang="ts">
-  import type { ComponentProps } from "svelte";
+  import type { ComponentProps, Snippet } from "svelte";
   import Field from "$lib/components/form/Field.svelte";
   import ImagePicker from "./ImagePicker.svelte";
 
-  type Props = ComponentProps<typeof Field>;
+  type Props = ComponentProps<typeof Field> & {
+    /** More ways to find an image, shown after Choose image. It gets the function that fills the field */
+    tools?: Snippet<[fill: (url: string) => void]>;
+  };
 
-  let fieldProps: Props = $props();
+  let { tools, ...fieldProps }: Props = $props();
 
   let wrapper = $state<HTMLDivElement>();
 
@@ -23,6 +26,7 @@
   <Field {...fieldProps} />
   <div class="choose">
     <ImagePicker onpick={fill} small />
+    {@render tools?.(fill)}
   </div>
 </div>
 
@@ -34,6 +38,9 @@
   }
 
   .choose {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
     justify-self: start;
   }
 </style>
