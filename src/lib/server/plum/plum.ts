@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { plum } from "$lib/server/db/schema";
+import { reportServerError } from "$lib/server/errorReporting";
 import type { PlumStats } from "$lib/plum/plumRules";
 import { isNight } from "$lib/plum/plumSleep";
 
@@ -64,5 +65,6 @@ async function decayPlumNow(): Promise<void> {
     await decayPlum(new Date());
   } catch (error) {
     console.error("Couldn't decay Plum's stats:", error);
+    reportServerError(error, { job: "plum-decay" });
   }
 }

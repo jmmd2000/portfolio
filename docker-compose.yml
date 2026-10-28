@@ -50,6 +50,9 @@ services:
       XFF_DEPTH: "1"
       DATABASE_URL: postgres://portfolio:${POSTGRES_PASSWORD}@db:5432/portfolio
       DATABASE_URL_MIGRATE: postgres://portfolio:${POSTGRES_PASSWORD}@db:5432/portfolio
+      PUBLIC_GLITCHTIP_DSN: ${GLITCHTIP_DSN:-}
+      PUBLIC_GLITCHTIP_ENVIRONMENT: ${GLITCHTIP_ENVIRONMENT:-}
+      PUBLIC_GIT_SHA: ${IMAGE_TAG:-}
     depends_on:
       db:
         condition: service_healthy
