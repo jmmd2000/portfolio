@@ -97,6 +97,14 @@ test("another visitor sees a feed within 10 seconds, with her eating sprite", as
   await otherPage.context().close();
 });
 
+test("the server counts at most one throw a second from each visitor", async ({ request }) => {
+  // Its own address, so this limit can't refuse another test's throws
+  const headers = { "x-forwarded-for": "203.0.113.9" };
+
+  expect((await request.post("/api/plum/throws", { headers })).status()).toBe(200);
+  expect((await request.post("/api/plum/throws", { headers })).status()).toBe(429);
+});
+
 test.describe("with reduced motion", () => {
   test.use({ reducedMotion: "reduce" });
 

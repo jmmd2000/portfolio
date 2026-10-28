@@ -370,7 +370,7 @@
       <h3 class="mood">{latest ? moodLine(latest) : "She's asleep"}</h3>
       <button type="button" class="real" disabled={!ready} onclick={togglePhoto}>{showingPhoto ? "Back to pixel Plum" : "See the real Plum"}</button>
       {#if latest}
-        <PlumStats stats={latest.stats} />
+        <PlumStats stats={latest.stats} throws={latest.throws} />
       {/if}
       <div class="actions">
         {#each plumActions as action (action)}

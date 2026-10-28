@@ -4,9 +4,11 @@
 
   interface Props {
     stats: PlumStats;
+    /** How many times her ball was thrown. The row is left out without it */
+    throws?: number;
   }
 
-  let { stats }: Props = $props();
+  let { stats, throws }: Props = $props();
 
   const rows = $derived([
     { name: "Food", value: stats.food },
@@ -25,6 +27,12 @@
       </dd>
     </div>
   {/each}
+  {#if throws !== undefined}
+    <div>
+      <dt>Balls thrown</dt>
+      <dd><span>{throws.toLocaleString("en-GB")}</span></dd>
+    </div>
+  {/if}
 </dl>
 
 <style>
