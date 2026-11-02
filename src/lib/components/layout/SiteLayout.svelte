@@ -49,7 +49,7 @@
     {/if}
     {@render children()}
   </main>
-  <Footer {socials} {isHome} {visitorCount} />
+  <Footer {socials} {visitorCount} />
 </div>
 
 <style>
