@@ -21,16 +21,14 @@ export const plumStateSchema = z.object({
 });
 
 /**
- * What came of an action, and how she is afterwards. She refuses food when she's full or asleep. "woke" means
- * playing woke her up. "cooling" means someone did it within its cooldown.
+ * What came of an action, and how she is afterwards. She refuses food when she's full, or asleep and not hungry.
+ * "woke" means playing woke her up. "cooling" means someone did it within its cooldown.
  */
 export const actionResultSchema = plumStateSchema.extend({
   outcome: z.enum(["done", "full", "asleep", "woke", "cooling"]),
 });
 
 export const actionRequestSchema = z.object({ action: z.enum(plumActions) });
-
-export const throwResultSchema = z.object({ throws: z.number().int().min(0) });
 
 export type PlumState = z.infer<typeof plumStateSchema>;
 export type CooldownsLeft = PlumState["cooldowns"];

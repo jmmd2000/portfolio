@@ -12,8 +12,11 @@ export type PlumAction = (typeof plumActions)[number];
 /** How long each action waits before anyone can do it again */
 export const cooldownSeconds: Record<PlumAction, number> = { feed: 25, pet: 12, play: 35 };
 
-/** She refuses food from this much food up */
-export const fullFrom = 90;
+/** She refuses food once her food is this high */
+export const fullAt = 100;
+
+/** Below this much food she's hungry. Asleep, she still wakes up to be fed */
+export const hungryBelow = 40;
 
 /** Below this much energy she naps */
 export const asleepBelow = 25;

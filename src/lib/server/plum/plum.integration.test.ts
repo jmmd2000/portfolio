@@ -42,7 +42,7 @@ describe("decayPlum", () => {
 
     await decayPlum(minutesLater(47));
 
-    expect(await getStats()).toEqual({ food: 44, happiness: 47, energy: 65 });
+    expect(await getStats()).toEqual({ food: 44, happiness: 47, energy: 80 });
     expect(await getDecayedAt()).toEqual(minutesLater(45));
   });
 
@@ -62,7 +62,7 @@ describe("decayPlum", () => {
 
     await decayPlum(new Date(midnight.getTime() + 30 * 60_000));
 
-    expect(await getStats()).toEqual({ food: 46, happiness: 48, energy: 70 });
+    expect(await getStats()).toEqual({ food: 46, happiness: 48, energy: 90 });
   });
 
   it("keeps every stat between 0 and 100", async () => {
@@ -80,6 +80,6 @@ describe("decayPlum", () => {
 
     await Promise.all(Array.from({ length: 10 }, () => decayPlum(minutesLater(30))));
 
-    expect(await getStats()).toEqual({ food: 46, happiness: 48, energy: 60 });
+    expect(await getStats()).toEqual({ food: 46, happiness: 48, energy: 70 });
   });
 });

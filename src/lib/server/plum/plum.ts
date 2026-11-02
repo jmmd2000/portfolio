@@ -9,7 +9,7 @@ const decayStepMinutes = 15;
 const decayCheckIntervalMilliseconds = 60_000;
 
 /** How much each stat changes every 15 minutes. She gets hungrier and lonelier, and rests, twice as fast at night */
-const decayPerStep = { food: -2, happiness: -1, energy: 5, nightEnergy: 10 };
+const decayPerStep = { food: -2, happiness: -1, energy: 10, nightEnergy: 20 };
 
 /** Her stats, until when someone's kept her awake, and when she was last fed */
 export interface PlumRow extends PlumStats {

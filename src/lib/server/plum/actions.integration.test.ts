@@ -39,7 +39,7 @@ describe("act", () => {
     const result = await act("feed", now);
 
     expect(result.outcome).toBe("done");
-    expect(result.stats).toEqual({ food: 75, happiness: 50, energy: 50 });
+    expect(result.stats).toEqual({ food: 80, happiness: 55, energy: 50 });
     expect(result.cooldowns).toEqual({ feed: 25, pet: 0, play: 0 });
   });
 
@@ -52,29 +52,41 @@ describe("act", () => {
     expect(result.stats).toEqual({ food: 50, happiness: 100, energy: 10 });
   });
 
-  it("refuses food when she's full, without using up the cooldown", async () => {
-    await setPlum({ food: 90, happiness: 50, energy: 50 });
+  it("feeds her up to 100, then refuses food without using up the cooldown", async () => {
+    await setPlum({ food: 95, happiness: 50, energy: 50 });
 
-    const result = await act("feed", now);
+    const fed = await act("feed", now);
+    const refused = await act("feed", secondsLater(25));
 
-    expect(result.outcome).toBe("full");
-    expect(result.stats.food).toBe(90);
-    expect(result.cooldowns.feed).toBe(0);
+    expect(fed.outcome).toBe("done");
+    expect(fed.stats.food).toBe(100);
+    expect(refused.outcome).toBe("full");
+    expect(refused.cooldowns.feed).toBe(0);
   });
 
-  it("refuses food while she's asleep, without using up the cooldown", async () => {
-    await setPlum({ food: 30, happiness: 50, energy: 100 });
+  it("refuses food while she's asleep and not hungry, without using up the cooldown", async () => {
+    await setPlum({ food: 40, happiness: 50, energy: 100 });
 
     const result = await act("feed", night);
 
     expect(result.outcome).toBe("asleep");
     expect(result.sleep).toBe("night");
-    expect(result.stats.food).toBe(30);
+    expect(result.stats.food).toBe(40);
     expect(result.cooldowns.feed).toBe(0);
   });
 
+  it("feeds her while she's asleep and hungry, and she stays asleep", async () => {
+    await setPlum({ food: 39, happiness: 50, energy: 100 });
+
+    const result = await act("feed", night);
+
+    expect(result.outcome).toBe("done");
+    expect(result).toMatchObject({ sleep: "night", wokenFrom: null });
+    expect(result.stats.food).toBe(89);
+  });
+
   it("naps by day below 25 energy", async () => {
-    await setPlum({ food: 30, happiness: 50, energy: 24 });
+    await setPlum({ food: 50, happiness: 50, energy: 24 });
 
     const result = await act("feed", now);
 
@@ -116,7 +128,7 @@ describe("act", () => {
     expect(tooSoon.outcome).toBe("cooling");
     expect(tooSoon.cooldowns.feed).toBe(1);
     expect(later.outcome).toBe("done");
-    expect(later.stats.food).toBe(90);
+    expect(later.stats.food).toBe(100);
   });
 
   it("feeds her once when several visitors feed her at the same moment", async () => {
@@ -127,7 +139,7 @@ describe("act", () => {
 
     expect(results.filter(result => result.outcome === "done")).toHaveLength(1);
     expect(results.filter(result => result.outcome === "cooling")).toHaveLength(9);
-    expect((await getStats()).food).toBe(55);
+    expect((await getStats()).food).toBe(60);
   });
 
   it("applies different actions at the same moment together", async () => {
@@ -136,7 +148,7 @@ describe("act", () => {
 
     await Promise.all([act("feed", now), act("pet", now), act("play", now)]);
 
-    expect(await getStats()).toEqual({ food: 55, happiness: 90, energy: 30 });
+    expect(await getStats()).toEqual({ food: 60, happiness: 95, energy: 30 });
   });
 });
 

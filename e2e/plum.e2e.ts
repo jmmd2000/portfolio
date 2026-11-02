@@ -45,13 +45,13 @@ test("feeding her raises her food, plays her eating sprite and counts the cooldo
   await feedButton.click();
 
   await expect(band(page).getByRole("img", { name: "Plum, eating" })).toBeVisible();
-  await expect(feedButton).toContainText("75%");
+  await expect(feedButton).toContainText("80%");
   await expect(feedButton).toBeDisabled();
   await expect(feedButton).toContainText(/\d+s/);
 });
 
 test("she refuses food when she's full, and the button stays free", async ({ page }) => {
-  await setPlum({ food: 95, happiness: 50, energy: 100 });
+  await setPlum({ food: 100, happiness: 50, energy: 100 });
   await page.goto("/");
 
   await band(page).getByRole("button", { name: "Feed" }).click();
@@ -61,7 +61,7 @@ test("she refuses food when she's full, and the button stays free", async ({ pag
 });
 
 test("asleep, she refuses food and purrs in her sleep when petted, and playing wakes her up", async ({ page }) => {
-  await setPlum({ food: 30, happiness: 50, energy: 10, asleep: true });
+  await setPlum({ food: 50, happiness: 50, energy: 10, asleep: true });
   await page.goto("/");
   await expect(band(page).getByRole("img", { name: "Plum, asleep" })).toBeVisible();
 

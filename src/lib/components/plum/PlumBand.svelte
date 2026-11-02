@@ -5,8 +5,9 @@
   the pen to a photo of the real Plum and back. Every visitor shares her. The band asks the server how she is
   every 10 seconds while the tab is visible, and shows what other visitors did. Under the pen, a message after an
   action shows for 10 seconds, then the line goes back to when she was last fed. Awake, she blinks every
-  few seconds and plays a short animation now and then. Asleep, her ear flicks now and then. The visitor can let
-  her out to chase her ball around the window, which leaves the pen empty and the actions off until she's back.
+  few seconds and plays a short animation now and then. Asleep, her ear flicks now and then. While she's awake,
+  the visitor can let her out to chase her ball around the window, which leaves the pen empty and the actions off
+  until she's back. Each throw updates her levels.
   None of this moves if the visitor asks for reduced motion. With no `plum` (her data couldn't load) she shows
   asleep with the buttons off.
 -->
@@ -14,7 +15,7 @@
   import { onMount, untrack } from "svelte";
   import { isHungry, moodLine, restingSprite } from "$lib/plum/plumMood";
   import { plumActions, type PlumAction, type PlumStats } from "$lib/plum/plumRules";
-  import { actionResultSchema, plumStateSchema, throwResultSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
+  import { actionResultSchema, plumStateSchema, type ActionOutcome, type CooldownsLeft, type PlumState } from "$lib/schemas/plumState";
   import { actionsByOthers } from "./actionsByOthers";
   import { ballSheet, chaseSprites } from "./chaseSprites";
   import { gazeAt, gazeFrame, type GazeDirection } from "./gaze";
@@ -136,7 +137,7 @@
     const level = `${statNames[actionStats[action]]} ${statLevel(action)}%`;
     const seconds = secondsLeft(action);
     if (seconds > 0) return `${level}, again in ${seconds}s`;
-    return action === "play" ? `${level}, play uses it` : level;
+    return level;
   }
 
   const throwsNote = $derived.by(() => {
@@ -180,7 +181,7 @@
    * Shows her reaction to the visitor's action and says what happened.
    *
    * @param before how she was just before, so a hungry cat's messages mention her food
-   * @param after how she is afterwards, so a pet while she's asleep shows her purring in her sleep
+   * @param after how she is afterwards, so a pet or a feed while she's asleep shows how she sleeps through it
    */
   function showOutcome(action: PlumAction, outcome: ActionOutcome, before: PlumState | null, after: PlumState): void {
     if (outcome === "cooling") {
@@ -194,6 +195,10 @@
     } else if (outcome === "woke") {
       showSprite("playing");
       say(sleepMessages.woken);
+    } else if (action === "feed" && after.sleep) {
+      showSprite("eating");
+      say(sleepMessages.fed);
+      ownFeedAt = fedAt;
     } else if (action === "pet" && after.sleep) {
       showSprite("sleepPurr");
       say(sleepMessages.petted);
@@ -213,6 +218,9 @@
     if (action === "pet" && after.sleep) {
       showSprite("sleepPurr");
       say(othersSleepMessages.petted);
+    } else if (action === "feed" && after.sleep) {
+      showSprite("eating");
+      say(othersSleepMessages.fed);
     } else if (action === "play" && before?.sleep && !after.sleep) {
       showSprite("playing");
       say(othersSleepMessages.woken);
@@ -341,14 +349,13 @@
     }
   }
 
-  /** Counts a throw on the server and shows the new total. A refused or failed throw is skipped */
+  /** Counts a throw on the server and shows the new total and levels. A refused or failed throw is skipped */
   async function saveThrow(): Promise<void> {
     try {
       const response = await fetch("/api/plum/throws", { method: "POST" });
       if (!response.ok) return;
 
-      const { throws } = throwResultSchema.parse(await response.json());
-      if (latest) latest = { ...latest, throws };
+      remember(plumStateSchema.parse(await response.json()));
     } catch {
       // The next check brings the total up to date
     }
@@ -438,7 +445,7 @@
             {/if}
           </button>
         {/each}
-        <button type="button" class="control out" disabled={!ready || !latest} onclick={toggleOut}>
+        <button type="button" class="control out" disabled={!ready || !latest || (!out && latest.sleep !== null)} onclick={toggleOut}>
           <span class="control-name">{out ? "Call her back" : "Let her out"}</span>
           {#if latest}<span class="note">{throwsNote}</span>{/if}
         </button>

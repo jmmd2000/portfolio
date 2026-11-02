@@ -20,6 +20,7 @@ export const hungryMessages = {
 
 export const sleepMessages = {
   petted: "You petted her. She purred without waking up.",
+  fed: "She woke up to eat, then went back to sleep.",
   woken: "You woke her up to play. She'll be up for an hour.",
 };
 
@@ -31,6 +32,7 @@ export const othersMessages: Record<PlumAction, string> = {
 
 export const othersSleepMessages = {
   petted: "Someone petted her in her sleep.",
+  fed: "Someone fed her in her sleep.",
   woken: "Someone woke her up to play.",
 };
 

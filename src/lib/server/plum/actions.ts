@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { plum, plumCooldowns } from "$lib/server/db/schema";
-import { cooldownSeconds, fullFrom, plumActions, type PlumAction } from "$lib/plum/plumRules";
+import { cooldownSeconds, fullAt, hungryBelow, plumActions, type PlumAction } from "$lib/plum/plumRules";
 import { sleepState, wokenUpMilliseconds } from "$lib/plum/plumSleep";
 import type { ActionOutcome, ActionResult, CooldownsLeft, PlumState } from "$lib/schemas/plumState";
 import { ensurePlum, getPlum } from "./plum";
@@ -76,8 +76,9 @@ async function claimCooldown(transaction: Transaction, action: PlumAction, now: 
 
 /**
  * Changes her stats for the action, each in one update kept between 0 and 100. Her row is locked first, so
- * whether she's asleep or full can't change before the update. Feeding is refused while she's asleep or full,
- * by throwing RefusedAction. Playing while she's asleep wakes her for an hour. Petting her never wakes her.
+ * whether she's asleep or full can't change before the update. Feeding is refused while she's full, or asleep and
+ * not hungry, by throwing RefusedAction. Feeding her while she's asleep and hungry doesn't keep her awake. Playing
+ * while she's asleep wakes her for an hour. Petting her never wakes her.
  */
 async function changeStats(transaction: Transaction, action: PlumAction, now: Date): Promise<"done" | "woke"> {
   const [current] = await transaction.select({ food: plum.food, energy: plum.energy, awakeUntil: plum.awakeUntil }).from(plum).for("update");
@@ -85,12 +86,12 @@ async function changeStats(transaction: Transaction, action: PlumAction, now: Da
   const { sleep } = sleepState(current.energy, current.awakeUntil, now);
 
   if (action === "feed") {
-    if (sleep) throw new RefusedAction("asleep");
-    if (current.food >= fullFrom) throw new RefusedAction("full");
+    if (sleep && current.food >= hungryBelow) throw new RefusedAction("asleep");
+    if (current.food >= fullAt) throw new RefusedAction("full");
 
     await transaction
       .update(plum)
-      .set({ food: sql`least(100, ${plum.food} + 45)`, lastFedAt: now })
+      .set({ food: sql`least(100, ${plum.food} + 50)`, happiness: sql`least(100, ${plum.happiness} + 5)`, lastFedAt: now })
       .where(eq(plum.id, 1));
     return "done";
   }

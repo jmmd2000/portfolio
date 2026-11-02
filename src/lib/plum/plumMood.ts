@@ -1,8 +1,7 @@
 import type { PlumState } from "$lib/schemas/plumState";
+import { hungryBelow } from "./plumRules";
 
 export type StatWord = "Great" | "Good" | "Okay" | "Low" | "Critical";
-
-const hungryBelow = 40;
 
 export function statWord(value: number): StatWord {
   if (value >= 80) return "Great";
