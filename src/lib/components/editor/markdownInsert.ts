@@ -75,6 +75,7 @@ export const markdownGroups: MarkdownGroup[] = [
     entries: [
       { name: "Image", syntax: "![alt](https://…)", markup: { kind: "block", block: "![Alt text](https://)", select: "Alt text" } },
       { name: "Demo", syntax: '<div data-demo="Name">', markup: { kind: "block", block: '<div data-demo="Name"></div>', select: "Name" } },
+      { name: "Album", syntax: '<div data-spotify-album="ID">', markup: { kind: "block", block: '<div data-spotify-album="ID"></div>', select: "ID" } },
     ],
   },
 ];
