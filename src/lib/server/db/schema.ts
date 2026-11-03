@@ -111,6 +111,16 @@ export const currently = pgTable("currently", {
 });
 
 /** Running totals, one row per name, such as "visitors" */
+/** Albums shown in articles, keyed by Spotify's album ID. Each one is copied from Spotify the first time it appears */
+export const spotifyAlbums = pgTable("spotify_albums", {
+  id: text().primaryKey(),
+  name: text().notNull(),
+  artists: text().array().notNull(),
+  releaseYear: integer().notNull(),
+  coverURL: text(),
+  fetchedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
 export const counters = pgTable("counters", {
   name: text().primaryKey(),
   count: integer().notNull(),

@@ -39,6 +39,9 @@ export interface SpotifyAlbum {
   coverURL: string | null;
 }
 
+/** What's known about an album in an article: its details, that Spotify has no such album, or that Spotify couldn't be asked */
+export type AlbumLookup = { status: "found"; album: SpotifyAlbum } | { status: "unknown" } | { status: "unreachable" };
+
 const albumIDPattern = /^[0-9A-Za-z]{22}$/;
 const albumLinkPattern = /^(?:https?:\/\/)?open\.spotify\.com\/(?:intl-[a-z-]+\/)?album\/([0-9A-Za-z]{22})(?:[/?#].*)?$/;
 
