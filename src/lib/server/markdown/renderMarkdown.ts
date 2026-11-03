@@ -1,12 +1,21 @@
 import { Marked, type Token, type Tokens } from "marked";
 import sanitizeHtml from "sanitize-html";
+import type { AlbumLookup } from "$lib/server/spotify/albums";
 import { slugify } from "$lib/slugify";
+import { albumIDsIn, replaceAlbumTags } from "./albumCards";
 import { createCodeBlockRenderer } from "./highlightCode";
 
 const siteHost = "jamesmddoyle.com";
 
 const topHeadingLevel = 2;
 const bottomHeadingLevel = 4;
+
+interface RenderOptions {
+  /** Finds the albums in the article. Without it, each album shows a card with only its link */
+  lookUpAlbums?: (ids: string[]) => Promise<Map<string, AlbumLookup>>;
+  /** Adds a note where an album tag can't be shown, for the editor */
+  showProblems?: boolean;
+}
 
 /**
  * Turns a heading's text into an id for its link: "Getting started" becomes "getting-started". HTML entities
@@ -60,10 +69,13 @@ function isHTTPSImage(src: string | undefined): boolean {
 /**
  * Turns an article's markdown into HTML. marked does not sanitise, so sanitize-html runs
  * last over everything with a strict allowlist. Headings get ids from their text and link to themselves, links
- * keep only safe addresses, images only load over https, and code blocks are highlighted.
+ * keep only safe addresses, images only load over https, and code blocks are highlighted. Album tags become album
+ * cards, which go through the same sanitising as the rest.
  */
-export async function renderMarkdown(markdown: string): Promise<string> {
+export async function renderMarkdown(markdown: string, options: RenderOptions = {}): Promise<string> {
+  const { lookUpAlbums, showProblems = false } = options;
   const renderCodeBlock = await createCodeBlockRenderer();
+  let albumLookups = new Map<string, AlbumLookup>();
   // The ids this render made, so a hand-written id in raw HTML can be told apart and dropped
   const headingIDs = new Set<string>();
 
@@ -85,10 +97,21 @@ export async function renderMarkdown(markdown: string): Promise<string> {
       code({ text, lang }: Tokens.Code): string {
         return renderCodeBlock(text, lang);
       },
+      html({ text }: Tokens.HTML | Tokens.Tag): string {
+        return replaceAlbumTags(text, albumLookups, showProblems);
+      },
     },
   });
 
-  const html = marked.parse(markdown, { async: false });
+  // The albums have to be looked up before the render, which can't wait for anything
+  const tokens = marked.lexer(markdown);
+  const albumIDs: string[] = [];
+  void marked.walkTokens(tokens, token => {
+    if (token.type === "html") albumIDs.push(...albumIDsIn(token.text));
+  });
+  if (lookUpAlbums) albumLookups = await lookUpAlbums(albumIDs);
+
+  const html = marked.parser(tokens);
 
   /** Keeps a heading's id only when this render made it, and only on the first heading that has it */
   function keepGeneratedID(tagName: string, attribs: sanitizeHtml.Attributes): sanitizeHtml.Tag {
@@ -140,9 +163,10 @@ export async function renderMarkdown(markdown: string): Promise<string> {
       pre: [{ name: "tabindex", values: ["0"] }],
     },
     allowedClasses: {
-      a: ["heading-link"],
+      a: ["heading-link", "album-card"],
       figure: ["code-block"],
-      span: ["line", "keyword", "comment", "string", "constant", "function", "type"],
+      p: ["album-problem"],
+      span: ["line", "keyword", "comment", "string", "constant", "function", "type", "album-card-cover", "album-card-text", "album-card-name", "album-card-meta", "album-card-listen"],
     },
     allowedSchemes: ["http", "https", "mailto"],
     allowProtocolRelative: false,

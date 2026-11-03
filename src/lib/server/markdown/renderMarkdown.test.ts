@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { AlbumLookup } from "$lib/server/spotify/albums";
 import { renderMarkdown } from "./renderMarkdown";
 
 /** The text a browser shows for some HTML: the tags removed and the entities turned back into characters */
@@ -90,6 +91,140 @@ describe("renderMarkdown", () => {
 
     it("drops the tag of any other div but keeps its text", async () => {
       expect(await renderMarkdown('<div class="note">Just text</div>')).toBe("Just text");
+    });
+  });
+
+  describe("album cards", () => {
+    const id = "7EJ0OT5ZqybXxcYRa6mccM";
+    const tag = `<div data-spotify-album="${id}"></div>`;
+    const found: AlbumLookup = {
+      status: "found",
+      album: { id, name: "For Emma, Forever Ago", artists: ["Bon Iver", "S. Carey"], releaseYear: 2008, coverURL: "https://i.scdn.co/image/300" },
+    };
+
+    function lookUpWith(lookup: AlbumLookup) {
+      return async (ids: string[]) => new Map(ids.map(albumID => [albumID, lookup]));
+    }
+
+    function render(markdown: string, lookup: AlbumLookup = found, showProblems = false): Promise<string> {
+      return renderMarkdown(markdown, { lookUpAlbums: lookUpWith(lookup), showProblems });
+    }
+
+    it("shows the cover, name, artists, year and one link to the album", async () => {
+      const html = await render(tag);
+
+      expect(html.match(/<a /g)).toHaveLength(1);
+      expect(html).toContain(`href="https://open.spotify.com/album/${id}"`);
+      expect(html).toContain('src="https://i.scdn.co/image/300"');
+      expect(visibleText(html)).toContain("For Emma, Forever Ago");
+      expect(visibleText(html)).toContain("Bon Iver, S. Carey · 2008");
+    });
+
+    it("reads the album ID from a share link", async () => {
+      const html = await render(`<div data-spotify-album="https://open.spotify.com/album/${id}?si=abc123"></div>`);
+
+      expect(html).toContain(`href="https://open.spotify.com/album/${id}"`);
+    });
+
+    it.each([
+      ["directly above a line of text", `${tag}\nThe next line`],
+      ["directly below a line of text", `<div>Some text</div>\n${tag}`],
+      ["inside a list item", `- An item\n\n  ${tag}`],
+      ["inside a quote", `> ${tag}`],
+    ])("finds a tag %s", async (_, markdown) => {
+      expect(await render(markdown)).toContain('class="album-card"');
+    });
+
+    it("shows a card for every tag in one block", async () => {
+      const html = await render(`${tag}\n<div data-spotify-album="4bJCKmpKgti10f3ltz6LLl"></div>`);
+
+      expect(html.match(/class="album-card"/g)).toHaveLength(2);
+    });
+
+    it("drops anything else written on or inside the tag", async () => {
+      const html = await render(`<div class="big" data-spotify-album="${id}" onclick="steal()">Stray <strong>text</strong><script>alert(1)</script></div>`);
+
+      expect(html).toContain('class="album-card"');
+      expect(html).not.toContain("big");
+      expect(html).not.toContain("steal");
+      expect(html).not.toContain("Stray");
+      expect(html).not.toContain("script");
+    });
+
+    it("escapes the details from Spotify", async () => {
+      const lookup: AlbumLookup = {
+        status: "found",
+        album: { id, name: "<b>Live</b>", artists: ['"><script>alert(1)</script>'], releaseYear: 2008, coverURL: 'https://i.scdn.co/"onerror="steal()' },
+      };
+      const html = await render(tag, lookup);
+
+      expect(html).not.toContain("<b>");
+      expect(html).not.toContain("<script");
+      expect(html).toContain('src="https://i.scdn.co/&quot;onerror=&quot;steal()"');
+      expect(visibleText(html)).toContain("<b>Live</b>");
+    });
+
+    it("leaves a tag shown as an example in a code block alone", async () => {
+      const html = await render("```html\n" + tag + "\n```");
+
+      expect(html).not.toContain('class="album-card"');
+      expect(codeIn(html)).toBe(tag);
+    });
+
+    it("shows nothing for a tag in the middle of a sentence", async () => {
+      const html = await render(`See ${tag} here`);
+
+      expect(html).not.toContain("album-card");
+      expect(visibleText(html)).toContain("See");
+      expect(visibleText(html)).toContain("here");
+    });
+
+    it("shows a card with only the link when Spotify can't be reached", async () => {
+      const html = await render(tag, { status: "unreachable" });
+
+      expect(html).toContain(`href="https://open.spotify.com/album/${id}"`);
+      expect(html).not.toContain("<img");
+      expect(visibleText(html)).toBe("Listen on Spotify");
+    });
+
+    it("keeps the cover's place in a card for an album with no cover", async () => {
+      const album = { id, name: "Bare", artists: [], releaseYear: 2008, coverURL: null };
+      const html = await render(tag, { status: "found", album });
+
+      expect(html).toContain('<span class="album-card-cover"></span>');
+      expect(visibleText(html)).toContain("Bare");
+    });
+
+    describe.each([
+      ["a value that isn't an album", '<div data-spotify-album="not an album"></div>', "not an album"],
+      ["an album Spotify doesn't know", tag, id],
+    ])("for %s", (_, markdown, shownValue) => {
+      const lookup: AlbumLookup = { status: "unknown" };
+
+      it("shows nothing on the public page", async () => {
+        expect(await render(markdown, lookup)).toBe("");
+      });
+
+      it("shows a note with the value in the editor", async () => {
+        const html = await render(markdown, lookup, true);
+
+        expect(html).toContain('class="album-problem"');
+        expect(visibleText(html)).toContain(shownValue);
+      });
+    });
+
+    it("escapes the value in the editor's note", async () => {
+      const html = await render('<div data-spotify-album="<img src=x onerror=steal()>"></div>', found, true);
+
+      expect(html).not.toContain("<img");
+    });
+
+    it("only looks up well-formed IDs", async () => {
+      const lookUpAlbums = vi.fn(lookUpWith(found));
+
+      await renderMarkdown(`<div data-spotify-album="half typed"></div>\n\n${tag}`, { lookUpAlbums });
+
+      expect(lookUpAlbums).toHaveBeenCalledWith([id]);
     });
   });
 

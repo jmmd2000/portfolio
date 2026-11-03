@@ -2,7 +2,7 @@ import { error, json } from "@sveltejs/kit";
 import { z } from "zod";
 import { requireAdmin } from "$lib/server/auth/requireAdmin";
 import { readingMinutes } from "$lib/server/content/articleDetails";
-import { renderMarkdown } from "$lib/server/markdown/renderMarkdown";
+import { renderArticle } from "$lib/server/content/renderArticle";
 import { articleBody } from "$lib/schemas/article";
 import type { RequestHandler } from "./$types";
 
@@ -17,5 +17,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   if (!result.success) error(400, "Send the markdown to preview, up to 100,000 characters");
 
   const { markdown } = result.data;
-  return json({ html: await renderMarkdown(markdown), readingMinutes: readingMinutes(markdown) });
+  return json({ html: await renderArticle(markdown, { showProblems: true }), readingMinutes: readingMinutes(markdown) });
 };

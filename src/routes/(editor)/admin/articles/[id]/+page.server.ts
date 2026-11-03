@@ -3,8 +3,8 @@ import { z } from "zod";
 import { requireAdmin } from "$lib/server/auth/requireAdmin";
 import { articleDateTime, formatArticleDate, readingMinutes } from "$lib/server/content/articleDetails";
 import { deleteArticle, getArticle, isSlugTaken, updateArticle } from "$lib/server/content/articles";
+import { renderArticle } from "$lib/server/content/renderArticle";
 import { formText } from "$lib/server/formText";
-import { renderMarkdown } from "$lib/server/markdown/renderMarkdown";
 import { articleSchema, slugTakenMessage, type ArticleInput } from "$lib/schemas/article";
 import type { Actions, PageServerLoad } from "./$types";
 
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   return {
     article,
     preview: {
-      html: await renderMarkdown(article.body),
+      html: await renderArticle(article.body, { showProblems: true }),
       readingMinutes: readingMinutes(article.body),
       date: formatArticleDate(shownDate),
       dateTime: articleDateTime(shownDate),
