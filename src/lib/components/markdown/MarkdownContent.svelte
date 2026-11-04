@@ -1,6 +1,7 @@
 <script lang="ts">
   import "@fontsource/monaspace-neon/latin-400.css";
   import "@fontsource/monaspace-neon/latin-600.css";
+  import ImageViewer from "./ImageViewer.svelte";
 
   interface Props {
     /** HTML from renderMarkdown, which has already sanitised it */
@@ -8,12 +9,31 @@
   }
 
   let { html }: Props = $props();
+
+  let viewer = $state<ImageViewer>();
+
+  /** Opens an image's link in the viewer. A click meant for a new tab or window still follows the link */
+  function openImage(event: MouseEvent): void {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || !(event.target instanceof Element)) return;
+
+    const link = event.target.closest(".image-link");
+    const image = link?.querySelector("img");
+    if (!link || !image) return;
+
+    event.preventDefault();
+    const caption = link.parentElement?.querySelector("figcaption")?.textContent ?? null;
+    viewer?.open({ url: image.src, alt: image.alt, caption });
+  }
 </script>
 
-<div class="markdown">
+<!-- The clicks come from links, which Enter also clicks -->
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+<div class="markdown" onclick={openImage}>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown sanitises the HTML on the server -->
   {@html html}
 </div>
+
+<ImageViewer bind:this={viewer} />
 
 <style>
   .markdown {
@@ -74,11 +94,11 @@
         }
       }
 
-      a:not(.heading-link, .album-card) {
+      a:not(.heading-link, .album-card, .image-link) {
         text-decoration-thickness: 2px;
       }
 
-      a[rel~="external"]:not(.album-card)::after {
+      a[rel~="external"]:not(.album-card, .image-link)::after {
         content: "";
         display: inline-block;
         width: 0.875em;
@@ -91,8 +111,30 @@
         transition: background var(--duration-quick) var(--ease-out);
       }
 
-      a[rel~="external"]:not(.album-card):focus-visible::after {
+      a[rel~="external"]:not(.album-card, .image-link):focus-visible::after {
         background: var(--red);
+      }
+
+      .image-link {
+        display: block;
+        cursor: zoom-in;
+
+        img {
+          transition:
+            transform var(--duration-quick) var(--ease-out),
+            box-shadow var(--duration-quick) var(--ease-out);
+        }
+
+        &:focus-visible {
+          outline: none;
+
+          img {
+            outline: 3px solid var(--red);
+            outline-offset: 3px;
+            transform: translate(-4px, -4px);
+            box-shadow: 4px 4px 0 var(--red);
+          }
+        }
       }
 
       figure:not(.code-block) {
@@ -320,6 +362,14 @@
         color: var(--code-foreground);
       }
 
+      /* Wider than the text and centred on it, as far as the page's content allows */
+      > .code-block {
+        --code-width: min(64rem, 100cqi);
+
+        width: var(--code-width);
+        margin-left: calc((100% - var(--code-width)) / 2);
+      }
+
       .code-block figcaption {
         padding: var(--space-1) var(--space-2);
         border-bottom: 1px solid color-mix(in oklch, var(--code-foreground) 20%, transparent);
@@ -372,8 +422,13 @@
       opacity: 1;
     }
 
-    .markdown :global(a[rel~="external"]:not(.album-card):hover::after) {
+    .markdown :global(a[rel~="external"]:not(.album-card, .image-link):hover::after) {
       background: var(--red);
+    }
+
+    .markdown :global(.image-link:hover img) {
+      transform: translate(-4px, -4px);
+      box-shadow: 4px 4px 0 var(--red);
     }
 
     .markdown :global(.album-card:hover .album-card-cover) {

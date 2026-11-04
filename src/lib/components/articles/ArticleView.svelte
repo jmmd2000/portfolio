@@ -66,8 +66,10 @@
     }
   }
 
+  /* A container, so a code block can be sized from the width of the page's content */
   .body {
     padding: var(--space-4) var(--page-padding) var(--space-5);
+    container-type: inline-size;
 
     > :global(*) {
       margin-inline: auto;

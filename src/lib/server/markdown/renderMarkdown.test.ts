@@ -70,7 +70,9 @@ describe("renderMarkdown", () => {
 
   describe("images", () => {
     it("keeps an https image from any site with its alt text, loading lazily and without a referrer", async () => {
-      expect(await renderMarkdown("![A cat](https://example.com/cat.png)")).toBe('<p><img src="https://example.com/cat.png" alt="A cat" loading="lazy" referrerpolicy="no-referrer" /></p>\n');
+      const html = await renderMarkdown("![A cat](https://example.com/cat.png)");
+
+      expect(html).toContain('<img src="https://example.com/cat.png" alt="A cat" loading="lazy" referrerpolicy="no-referrer" />');
     });
 
     it("replaces loading and referrer settings written into the HTML by hand", async () => {
@@ -109,7 +111,7 @@ describe("renderMarkdown", () => {
     it("leaves an image without a title in a paragraph", async () => {
       const html = await renderMarkdown(`${image})`);
 
-      expect(html).toContain("<p><img");
+      expect(html).toContain("<p>");
       expect(html).not.toContain("<figure");
     });
 
@@ -133,6 +135,35 @@ describe("renderMarkdown", () => {
 
     it("leaves no empty caption behind an image that's dropped", async () => {
       expect(await renderMarkdown('![A cat](http://example.com/cat.png "Plum")')).not.toContain("figure");
+    });
+  });
+
+  describe("image links", () => {
+    it("links an image alone on its line to its own file", async () => {
+      const html = await renderMarkdown("![A cat](https://example.com/cat.png)");
+
+      expect(html).toContain('<a class="image-link" href="https://example.com/cat.png"');
+    });
+
+    it("links a captioned image too, and keeps the caption outside the link", async () => {
+      const html = await renderMarkdown('![A cat](https://example.com/cat.png "Plum")');
+
+      expect(html).toMatch(/<figure><a class="image-link"[^>]*><img[^>]*><\/a><figcaption>Plum<\/figcaption><\/figure>/);
+    });
+
+    it("leaves an image inside a sentence without a link", async () => {
+      expect(await renderMarkdown("A cat ![A cat](https://example.com/cat.png) on a desk")).not.toContain("image-link");
+    });
+
+    it("doesn't put a link inside a link", async () => {
+      const html = await renderMarkdown("[![A cat](https://example.com/cat.png)](https://example.com)");
+
+      expect(html.match(/<a /g)).toHaveLength(1);
+      expect(html).not.toContain("image-link");
+    });
+
+    it("leaves no link behind an image that's dropped", async () => {
+      expect(await renderMarkdown("![A cat](http://example.com/cat.png)")).not.toContain("<a ");
     });
   });
 

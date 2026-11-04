@@ -70,8 +70,8 @@ function isHTTPSImage(src: string | undefined): boolean {
  * Turns an article's markdown into HTML. marked does not sanitise, so sanitize-html runs
  * last over everything with a strict allowlist. Headings get ids from their text and link to themselves, links
  * keep only safe addresses, images only load over https, and code blocks are highlighted. An image alone on its line
- * with a title gets that title as a caption. Album tags become album cards, which go through the same sanitising as
- * the rest.
+ * links to its own file, so it can be enlarged, and its title becomes a caption. Album tags become album cards, which
+ * go through the same sanitising as the rest.
  */
 export async function renderMarkdown(markdown: string, options: RenderOptions = {}): Promise<string> {
   const { lookUpAlbums, showProblems = false } = options;
@@ -101,11 +101,11 @@ export async function renderMarkdown(markdown: string, options: RenderOptions = 
       paragraph({ tokens }: Tokens.Paragraph): string {
         const content = this.parser.parseInline(tokens);
         const [image] = tokens;
-        // An image alone on its line with a title shows the title as its caption. A figure can't go inside a paragraph
-        if (tokens.length === 1 && image.type === "image" && image.title && isHTTPSImage(image.href)) {
-          return `<figure>${content}<figcaption>${escapeHTML(image.title)}</figcaption></figure>\n`;
-        }
-        return `<p>${content}</p>\n`;
+        if (tokens.length !== 1 || image.type !== "image" || !isHTTPSImage(image.href)) return `<p>${content}</p>\n`;
+
+        const link = `<a class="image-link" href="${escapeHTML(image.href)}">${content}</a>`;
+        // A figure can't go inside a paragraph
+        return image.title ? `<figure>${link}<figcaption>${escapeHTML(image.title)}</figcaption></figure>\n` : `<p>${link}</p>\n`;
       },
       html({ text }: Tokens.HTML | Tokens.Tag): string {
         return replaceAlbumTags(text, albumLookups, showProblems);
@@ -173,7 +173,7 @@ export async function renderMarkdown(markdown: string, options: RenderOptions = 
       pre: [{ name: "tabindex", values: ["0"] }],
     },
     allowedClasses: {
-      a: ["heading-link", "album-card"],
+      a: ["heading-link", "album-card", "image-link"],
       figure: ["code-block"],
       p: ["album-problem"],
       span: ["line", "keyword", "comment", "string", "constant", "function", "type", "album-card-cover", "album-card-text", "album-card-name", "album-card-meta", "album-card-listen"],

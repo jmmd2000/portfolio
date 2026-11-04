@@ -54,7 +54,7 @@ export const markdownGroups: MarkdownGroup[] = [
       { name: "Italic", syntax: "*text*", markup: { kind: "wrap", before: "*", after: "*", placeholder: "italic text" }, shortcut: "I" },
       { name: "Strikethrough", syntax: "~~text~~", markup: { kind: "wrap", before: "~~", after: "~~", placeholder: "struck text" } },
       { name: "Link", syntax: "[text](https://…)", markup: { kind: "wrap", before: "[", after: "](https://)", placeholder: "link text", selectInAfter: "https://" }, shortcut: "K" },
-      { name: "Inline code", syntax: "`code`", markup: { kind: "wrap", before: "`", after: "`", placeholder: "code" } },
+      { name: "Inline code", syntax: "`code`", markup: { kind: "wrap", before: "`", after: "`", placeholder: "code" }, shortcut: "E" },
     ],
   },
   {
@@ -65,7 +65,7 @@ export const markdownGroups: MarkdownGroup[] = [
       { name: "List", syntax: "- item", markup: { kind: "line", prefix: "- " } },
       { name: "Numbered list", syntax: "1. item", markup: { kind: "line", prefix: "1. " } },
       { name: "Quote", syntax: "> quote", markup: { kind: "line", prefix: "> " } },
-      { name: "Code block", syntax: "```ts … ```", markup: { kind: "block", block: "```ts\ncode\n```", select: "code" } },
+      { name: "Code block", syntax: "```ts … ```", markup: { kind: "block", block: "```ts\ncode\n```", select: "code" }, shortcut: "J" },
       { name: "Table", syntax: "| a | b |", markup: { kind: "block", block: "| Column | Column |\n| --- | --- |\n| Cell | Cell |", select: "Column" } },
       { name: "Rule", syntax: "---", markup: { kind: "block", block: "---", select: "" } },
     ],
