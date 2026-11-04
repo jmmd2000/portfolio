@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import { articleDateTime, formatArticleDate, readingMinutes } from "$lib/server/content/articleDetails";
 import { getArticleBySlug, getSlugRedirect } from "$lib/server/content/articles";
-import { renderMarkdown } from "$lib/server/markdown/renderMarkdown";
+import { renderArticle } from "$lib/server/content/renderArticle";
 import type { PageServerLoad } from "./$types";
 
 // A day, so a browser that cached a redirect follows the article if it's renamed back
@@ -36,6 +36,6 @@ export const load: PageServerLoad = async ({ params, setHeaders, locals }) => {
       // Only the signed-in admin gets a link to the editor
       editID: signedIn ? article.id : null,
     },
-    html: await renderMarkdown(article.body),
+    html: await renderArticle(article.body),
   };
 };

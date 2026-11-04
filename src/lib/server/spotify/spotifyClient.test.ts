@@ -1,6 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createSpotifyClient } from "./spotifyClient";
 
+const album = {
+  id: "7EJ0OT5ZqybXxcYRa6mccM",
+  name: "For Emma, Forever Ago",
+  release_date: "2008-02-19",
+  artists: [{ name: "Bon Iver" }],
+  images: [{ url: "https://i.scdn.co/image/300", width: 300, height: 300 }],
+};
+
 const playingTrack = {
   is_playing: true,
   currently_playing_type: "track",
@@ -16,6 +24,9 @@ interface FakeSpotify {
   fetch: typeof fetch;
   tokenRequests: URLSearchParams[];
   playingRequests: string[];
+  albumRequests: string[];
+  /** What the next album requests get */
+  albumResponse: () => Response;
   /** What the next currently-playing requests get */
   playingResponse: () => Response;
   /** What the next token requests get */
@@ -27,6 +38,8 @@ function fakeSpotify(): FakeSpotify {
   const spotify: FakeSpotify = {
     tokenRequests: [],
     playingRequests: [],
+    albumRequests: [],
+    albumResponse: () => Response.json(album),
     playingResponse: () => Response.json(playingTrack),
     tokenResponse: () => {
       tokenNumber += 1;
@@ -37,6 +50,10 @@ function fakeSpotify(): FakeSpotify {
       if (url.endsWith("/api/token")) {
         spotify.tokenRequests.push(new URLSearchParams(String(init?.body)));
         return spotify.tokenResponse();
+      }
+      if (url.includes("/v1/albums/")) {
+        spotify.albumRequests.push(url);
+        return spotify.albumResponse();
       }
       spotify.playingRequests.push(new Headers(init?.headers).get("authorization") ?? "");
       return spotify.playingResponse();
@@ -138,5 +155,42 @@ describe("getNowPlaying", () => {
     await client.getNowPlaying();
 
     expect(spotify.tokenRequests.map(request => request.get("refresh_token"))).toEqual(["refresh-1", "refresh-2"]);
+  });
+});
+
+describe("getAlbum", () => {
+  it("asks for the album by its ID and gives its details", async () => {
+    const spotify = fakeSpotify();
+
+    const found = await clientFor(spotify).getAlbum("7EJ0OT5ZqybXxcYRa6mccM");
+
+    expect(spotify.albumRequests).toEqual(["https://api.spotify.com/v1/albums/7EJ0OT5ZqybXxcYRa6mccM"]);
+    expect(found?.name).toBe("For Emma, Forever Ago");
+  });
+
+  it.each([400, 404])("gives null when Spotify answers %i, since it has no such album", async status => {
+    const spotify = fakeSpotify();
+    spotify.albumResponse = () => Response.json({ error: { status } }, { status });
+
+    expect(await clientFor(spotify).getAlbum("7EJ0OT5ZqybXxcYRa6mccX")).toBeNull();
+  });
+
+  it("throws when Spotify fails", async () => {
+    const spotify = fakeSpotify();
+    spotify.albumResponse = () => new Response("Too many requests", { status: 429 });
+
+    await expect(clientFor(spotify).getAlbum("7EJ0OT5ZqybXxcYRa6mccM")).rejects.toThrow("Spotify answered 429");
+  });
+
+  it("drops an access token that Spotify rejects", async () => {
+    const spotify = fakeSpotify();
+    spotify.albumResponse = () => new Response(null, { status: 401 });
+    const client = clientFor(spotify);
+
+    await expect(client.getAlbum("7EJ0OT5ZqybXxcYRa6mccM")).rejects.toThrow("rejected");
+    spotify.albumResponse = () => Response.json(album);
+    await client.getAlbum("7EJ0OT5ZqybXxcYRa6mccM");
+
+    expect(spotify.tokenRequests).toHaveLength(2);
   });
 });

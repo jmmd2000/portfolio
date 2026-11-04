@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { coverRequestMilliseconds, maxCoverResults, type CoverResult } from "$lib/server/covers/coverResult";
-import { parseAlbums } from "./albums";
+import { parseAlbum, parseAlbums, type SpotifyAlbum } from "./albums";
 import { parseNowPlaying, type NowPlaying } from "./nowPlaying";
 
 export interface SpotifyClientOptions {
@@ -18,6 +18,8 @@ export interface SpotifyClient {
   getNowPlaying(): Promise<NowPlaying | null>;
   /** Albums matching the words, for the admin's cover search. Throws when Spotify fails, so the admin can be told */
   searchAlbums(query: string): Promise<CoverResult[]>;
+  /** One album by its ID, or null when Spotify has no album with that ID. Throws when Spotify fails */
+  getAlbum(id: string): Promise<SpotifyAlbum | null>;
 }
 
 const answerLifetimeMilliseconds = 30_000;
@@ -41,7 +43,7 @@ interface CachedAnswer {
 }
 
 /**
- * A Spotify client for the signed-in account's currently playing track, and for album searches. It keeps the access token until a minute
+ * A Spotify client for the signed-in account's currently playing track, and for looking up albums. It keeps the access token until a minute
  * before it expires, and it keeps each answer for 30 seconds, failures included, so a slow or failing Spotify holds
  * up at most one page load every 30 seconds. Each answer takes at most 1.5 seconds.
  */
@@ -117,6 +119,22 @@ export function createSpotifyClient(options: SpotifyClientOptions): SpotifyClien
       if (!response.ok) throw new Error(`Spotify answered ${response.status}`);
 
       return parseAlbums(await response.json());
+    },
+
+    async getAlbum(id) {
+      const signal = AbortSignal.timeout(timeoutMilliseconds);
+      const token = await getAccessToken(signal);
+      const response = await fetchFunction(`${apiURL}/v1/albums/${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${token}` }, signal });
+
+      if (response.status === 401) {
+        accessToken = null;
+        throw new Error("Spotify rejected the access token");
+      }
+      // Spotify answers 400 for a well-formed ID it can't decode, such as one that's too large, and 404 for one it doesn't know
+      if (response.status === 400 || response.status === 404) return null;
+      if (!response.ok) throw new Error(`Spotify answered ${response.status}`);
+
+      return parseAlbum(await response.json());
     },
   };
 }

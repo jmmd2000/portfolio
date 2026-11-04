@@ -47,7 +47,7 @@ function loadHighlighter(): Promise<Highlighter> {
   return highlighterLoading;
 }
 
-function escapeHTML(text: string): string {
+export function escapeHTML(text: string): string {
   return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 }
 

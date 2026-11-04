@@ -74,11 +74,11 @@
         }
       }
 
-      a:not(.heading-link) {
+      a:not(.heading-link, .album-card) {
         text-decoration-thickness: 2px;
       }
 
-      a[rel~="external"]::after {
+      a[rel~="external"]:not(.album-card)::after {
         content: "";
         display: inline-block;
         width: 0.875em;
@@ -91,8 +91,114 @@
         transition: background var(--duration-quick) var(--ease-out);
       }
 
-      a[rel~="external"]:focus-visible::after {
+      a[rel~="external"]:not(.album-card):focus-visible::after {
         background: var(--red);
+      }
+
+      .album-card {
+        display: grid;
+        grid-template-columns: 7rem minmax(0, 1fr);
+        gap: var(--space-3);
+        align-items: center;
+        margin-block: var(--space-3);
+        padding: var(--space-2);
+        /* The band is close to the dark page's colour, so it needs an edge there */
+        border: 2px solid light-dark(transparent, var(--band-ink));
+        background: var(--band);
+        color: var(--band-ink);
+        text-decoration: none;
+
+        & + .album-card {
+          margin-top: var(--space-2);
+        }
+
+        &:focus-visible .album-card-cover {
+          transform: translate(-4px, -4px);
+          box-shadow: 4px 4px 0 var(--band-red);
+        }
+
+        &:focus-visible .album-card-listen::after {
+          transform: translate(2px, -2px);
+        }
+      }
+
+      .album-card-cover {
+        display: block;
+        aspect-ratio: 1;
+        background: color-mix(in oklch, var(--band-ink) 12%, transparent);
+        transition:
+          transform var(--duration-quick) var(--ease-out),
+          box-shadow var(--duration-quick) var(--ease-out);
+
+        img {
+          width: 100%;
+          height: 100%;
+          outline: none;
+          object-fit: cover;
+        }
+      }
+
+      .album-card-text {
+        display: grid;
+        gap: 0.25rem;
+        min-width: 0;
+      }
+
+      .album-card-name {
+        font-family: var(--font-display);
+        font-size: var(--type-medium);
+        font-weight: 900;
+        line-height: 0.95;
+        text-transform: uppercase;
+        text-wrap: balance;
+      }
+
+      .album-card-meta {
+        color: var(--band-muted);
+        font-size: var(--type-small);
+        font-weight: 600;
+        line-height: 1.4;
+      }
+
+      .album-card-listen {
+        margin-top: var(--space-1);
+        color: var(--band-red);
+        font-size: var(--type-small);
+        font-weight: 800;
+        line-height: 1.4;
+
+        &::after {
+          content: "";
+          display: inline-block;
+          width: 1em;
+          height: 1em;
+          margin-inline-start: 0.25em;
+          background: currentColor;
+          vertical-align: -0.125em;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10v10'/%3E%3Cpath d='M7 17 17 7'/%3E%3C/svg%3E")
+            center / contain no-repeat;
+          transition: transform 250ms var(--ease-out);
+        }
+      }
+
+      .album-problem {
+        padding: var(--space-2);
+        border: 2px dashed var(--red-text);
+        color: var(--muted);
+        font-size: var(--type-small);
+        font-weight: 600;
+        line-height: 1.5;
+
+        strong {
+          display: block;
+          color: var(--red-text);
+        }
+
+        code {
+          display: block;
+          color: var(--ink);
+          overflow-wrap: anywhere;
+        }
       }
 
       strong {
@@ -256,8 +362,24 @@
       opacity: 1;
     }
 
-    .markdown :global(a[rel~="external"]:hover::after) {
+    .markdown :global(a[rel~="external"]:not(.album-card):hover::after) {
       background: var(--red);
+    }
+
+    .markdown :global(.album-card:hover .album-card-cover) {
+      transform: translate(-4px, -4px);
+      box-shadow: 4px 4px 0 var(--band-red);
+    }
+
+    .markdown :global(.album-card:hover .album-card-listen::after) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  @media (max-width: 47.5rem) {
+    .markdown :global(.album-card) {
+      grid-template-columns: 5rem minmax(0, 1fr);
+      gap: var(--space-2);
     }
   }
 </style>
