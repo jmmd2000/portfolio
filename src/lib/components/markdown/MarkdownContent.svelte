@@ -249,6 +249,8 @@
 
         code {
           display: block;
+          padding: 0;
+          background: none;
           color: var(--ink);
           overflow-wrap: anywhere;
         }
@@ -353,7 +355,9 @@
       }
 
       :not(pre) > code {
-        color: var(--red-text);
+        padding: 0.1em 0.3em;
+        background: var(--red-chip);
+        color: white;
       }
 
       .code-block {
@@ -362,12 +366,14 @@
         color: var(--code-foreground);
       }
 
-      /* Wider than the text and centred on it, as far as the page's content allows */
+      /* As wide as its longest line, from the text's width up to 64rem, and centred on the text */
       > .code-block {
-        --code-width: min(64rem, 100cqi);
-
-        width: var(--code-width);
-        margin-left: calc((100% - var(--code-width)) / 2);
+        position: relative;
+        left: 50%;
+        width: max-content;
+        min-width: 100%;
+        max-width: min(64rem, 100cqi);
+        translate: -50%;
       }
 
       .code-block figcaption {
