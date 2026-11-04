@@ -95,6 +95,17 @@
         background: var(--red);
       }
 
+      figure:not(.code-block) {
+        margin: var(--space-3) 0;
+
+        figcaption {
+          margin-top: var(--space-1);
+          color: var(--muted);
+          font-size: var(--type-small);
+          font-weight: 600;
+        }
+      }
+
       .album-card {
         display: grid;
         grid-template-columns: 7rem minmax(0, 1fr);
@@ -300,8 +311,7 @@
       }
 
       :not(pre) > code {
-        padding: 0.1em 0.3em;
-        background: var(--sunken);
+        color: var(--red-text);
       }
 
       .code-block {

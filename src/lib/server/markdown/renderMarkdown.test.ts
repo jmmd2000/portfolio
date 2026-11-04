@@ -94,6 +94,48 @@ describe("renderMarkdown", () => {
     });
   });
 
+  describe("image captions", () => {
+    const image = "![A cat](https://example.com/cat.png";
+
+    it("shows an image's title as its caption", async () => {
+      const html = await renderMarkdown(`${image} "Plum on the desk")`);
+
+      expect(html).toContain("<figure>");
+      expect(html).toContain("<figcaption>Plum on the desk</figcaption>");
+      expect(html).toContain('alt="A cat"');
+      expect(html).not.toContain("<p>");
+    });
+
+    it("leaves an image without a title in a paragraph", async () => {
+      const html = await renderMarkdown(`${image})`);
+
+      expect(html).toContain("<p><img");
+      expect(html).not.toContain("<figure");
+    });
+
+    it("gives no caption to an image inside a sentence", async () => {
+      const html = await renderMarkdown(`A cat ${image} "Plum") on a desk`);
+
+      expect(html).toContain("<p>A cat <img");
+      expect(html).not.toContain("figcaption");
+    });
+
+    it("escapes the caption", async () => {
+      const html = await renderMarkdown(`${image} "<script>alert(1)</script>")`);
+
+      expect(html).not.toContain("<script");
+      expect(visibleText(html)).toContain("<script>alert(1)</script>");
+    });
+
+    it("reads a quote inside a caption", async () => {
+      expect(visibleText(await renderMarkdown(`${image} "The \\"good\\" chair")`))).toContain('The "good" chair');
+    });
+
+    it("leaves no empty caption behind an image that's dropped", async () => {
+      expect(await renderMarkdown('![A cat](http://example.com/cat.png "Plum")')).not.toContain("figure");
+    });
+  });
+
   describe("album cards", () => {
     const id = "7EJ0OT5ZqybXxcYRa6mccM";
     const tag = `<div data-spotify-album="${id}"></div>`;

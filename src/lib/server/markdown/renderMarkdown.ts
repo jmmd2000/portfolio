@@ -3,7 +3,7 @@ import sanitizeHtml from "sanitize-html";
 import type { AlbumLookup } from "$lib/server/spotify/albums";
 import { slugify } from "$lib/slugify";
 import { albumIDsIn, replaceAlbumTags } from "./albumCards";
-import { createCodeBlockRenderer } from "./highlightCode";
+import { createCodeBlockRenderer, escapeHTML } from "./highlightCode";
 
 const siteHost = "jamesmddoyle.com";
 
@@ -69,8 +69,9 @@ function isHTTPSImage(src: string | undefined): boolean {
 /**
  * Turns an article's markdown into HTML. marked does not sanitise, so sanitize-html runs
  * last over everything with a strict allowlist. Headings get ids from their text and link to themselves, links
- * keep only safe addresses, images only load over https, and code blocks are highlighted. Album tags become album
- * cards, which go through the same sanitising as the rest.
+ * keep only safe addresses, images only load over https, and code blocks are highlighted. An image alone on its line
+ * with a title gets that title as a caption. Album tags become album cards, which go through the same sanitising as
+ * the rest.
  */
 export async function renderMarkdown(markdown: string, options: RenderOptions = {}): Promise<string> {
   const { lookUpAlbums, showProblems = false } = options;
@@ -96,6 +97,15 @@ export async function renderMarkdown(markdown: string, options: RenderOptions = 
       },
       code({ text, lang }: Tokens.Code): string {
         return renderCodeBlock(text, lang);
+      },
+      paragraph({ tokens }: Tokens.Paragraph): string {
+        const content = this.parser.parseInline(tokens);
+        const [image] = tokens;
+        // An image alone on its line with a title shows the title as its caption. A figure can't go inside a paragraph
+        if (tokens.length === 1 && image.type === "image" && image.title && isHTTPSImage(image.href)) {
+          return `<figure>${content}<figcaption>${escapeHTML(image.title)}</figcaption></figure>\n`;
+        }
+        return `<p>${content}</p>\n`;
       },
       html({ text }: Tokens.HTML | Tokens.Tag): string {
         return replaceAlbumTags(text, albumLookups, showProblems);
