@@ -42,6 +42,8 @@ test("a new article's slug follows its title until the slug is typed by hand", a
   await createAdmin();
   await logIn(page);
   await page.goto("/admin/articles");
+  // The slug only follows the title once the page's script has loaded
+  await page.waitForLoadState("networkidle");
   const add = page.getByRole("group", { name: "Add an article" });
 
   await add.getByLabel("Title").fill("How the Sand Falls!");
