@@ -13,6 +13,7 @@
   import { LivePreview } from "$lib/components/editor/livePreview.svelte";
   import MarkdownReference from "$lib/components/editor/MarkdownReference.svelte";
   import { applyMarkup, shortcutEntries, shortcutMarkup, type Markup } from "$lib/components/editor/markdownInsert";
+  import { blockIndexAt } from "$lib/components/editor/previewBlock";
   import { savedTimeLabel } from "$lib/components/editor/savedTime";
   import Button from "$lib/components/form/Button.svelte";
   import Field from "$lib/components/form/Field.svelte";
@@ -67,6 +68,9 @@
   );
 
   const draftDelay = 1000;
+  const cursorKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
+  // Moving the cursor can scroll the body, and that scroll shouldn't move the preview away from the cursor's block
+  const cursorScrollDelay = 500;
 
   let formElement = $state<HTMLFormElement>();
   let bodyField = $state<HTMLTextAreaElement>();
@@ -74,6 +78,7 @@
   let shownPane = $state<"write" | "preview">("write");
   let offeredDraft = $state<ArticleDraft | null>(null);
   let draftTimer: ReturnType<typeof setTimeout> | undefined;
+  let cursorMovedAt = 0;
 
   /** Reads the details from the form. The slug field and the switch can't bind to state, so the form holds their values */
   function readDetails(): void {
@@ -122,6 +127,7 @@
   async function insertMarkup(markup: Markup): Promise<void> {
     if (!bodyField) return;
 
+    cursorMovedAt = Date.now();
     const result = applyMarkup({ text: body, start: bodyField.selectionStart, end: bodyField.selectionEnd }, markup);
     body = result.text;
     preview.schedule(body);
@@ -151,6 +157,7 @@
   }
 
   function handleBodyKeydown(event: KeyboardEvent): void {
+    cursorMovedAt = Date.now();
     if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey) return;
 
     const markup = shortcutMarkup(event.key);
@@ -163,9 +170,25 @@
     preview.schedule(event.currentTarget.value);
   }
 
-  /** Scrolls the preview to the same share of the way down as the body */
+  function handleBodyKeyup(event: KeyboardEvent): void {
+    if (cursorKeys.includes(event.key)) followCursor();
+  }
+
+  /** Scrolls the preview so the block holding the cursor sits in the middle of it */
+  function followCursor(): void {
+    if (!bodyField || !previewPane) return;
+
+    const blocks = previewPane.querySelector(".markdown")?.children;
+    if (!blocks || blocks.length === 0) return;
+
+    const index = Math.min(blockIndexAt(body, bodyField.selectionStart), blocks.length - 1);
+    blocks[index].scrollIntoView({ block: "center" });
+  }
+
+  /** Scrolls the preview to the same share of the way down as the body, when the body was scrolled by hand */
   function followScroll(): void {
     if (!bodyField || !previewPane) return;
+    if (Date.now() - cursorMovedAt < cursorScrollDelay) return;
 
     const bodyRange = bodyField.scrollHeight - bodyField.clientHeight;
     const share = bodyRange > 0 ? bodyField.scrollTop / bodyRange : 0;
@@ -179,10 +202,10 @@
     }
   }
 
-  // A new render can change the preview's height, so it scrolls to match the body again
+  // A new render comes after typing, so the preview scrolls to the block being written
   $effect(() => {
     void preview.html;
-    followScroll();
+    untrack(followCursor);
   });
 
   /** Keeps every field after a save, the way `keepValues` does, then clears the kept draft once it matches what's saved */
@@ -297,6 +320,8 @@
         bind:this={bodyField}
         oninput={handleBodyInput}
         onkeydown={handleBodyKeydown}
+        onkeyup={handleBodyKeyup}
+        onclick={followCursor}
         onscroll={followScroll}></textarea>
       {#if form?.errors?.body}
         <p class="field-error">{form.errors.body[0]}</p>
