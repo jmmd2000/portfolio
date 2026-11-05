@@ -1,6 +1,7 @@
 <script lang="ts">
   import "@fontsource/monaspace-neon/latin-400.css";
   import "@fontsource/monaspace-neon/latin-600.css";
+  import { mountCharts } from "$lib/components/charts/mountCharts";
   import ImageViewer from "./ImageViewer.svelte";
 
   interface Props {
@@ -11,6 +12,12 @@
   let { html }: Props = $props();
 
   let viewer = $state<ImageViewer>();
+
+  /** Draws the charts in the HTML, and again whenever the HTML changes */
+  function chartsIn(element: HTMLElement): () => void {
+    void html;
+    return mountCharts(element);
+  }
 
   /** Opens an image's link in the viewer. A click meant for a new tab or window still follows the link */
   function openImage(event: MouseEvent): void {
@@ -28,7 +35,7 @@
 
 <!-- The clicks come from links, which Enter also clicks -->
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="markdown" onclick={openImage}>
+<div class="markdown" onclick={openImage} {@attach chartsIn}>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown sanitises the HTML on the server -->
   {@html html}
 </div>
@@ -146,6 +153,17 @@
           font-size: var(--type-small);
           font-weight: 600;
         }
+      }
+
+      [data-chart] {
+        aspect-ratio: var(--figure-ratio);
+      }
+
+      .chart-problem,
+      [data-chart] {
+        color: var(--muted);
+        font-size: var(--type-small);
+        font-weight: 600;
       }
 
       .album-card {

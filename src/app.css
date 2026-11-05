@@ -93,6 +93,14 @@
   --rule-section: 6px solid var(--ink);
   --rule-row: 2px solid var(--ink);
 
+  /* Article figures: charts now, and diagrams and marked-up images later. docs/DESIGN.md has the rules */
+  --figure-ratio: 16 / 10;
+  --figure-line: 3px;
+  --figure-limit-line: 2px;
+  --figure-limit-dash: 8 6;
+  --figure-marker: 12px;
+  --figure-label: 0.875rem;
+
   --font-display: "Big Shoulders Display Variable", "Big Shoulders Fallback", Impact, sans-serif;
   --font-body: "Albert Sans Variable", "Albert Sans Fallback", system-ui, sans-serif;
   --font-code: "Monaspace Neon", ui-monospace, monospace;
@@ -121,6 +129,13 @@
 }
 
 /* light-dark() only takes colours, so the screenshot dimming needs the system setting checked here too */
+/* Charts need more height on a phone, because their labels stay the same size */
+@media (max-width: 47.5rem) {
+  :root {
+    --figure-ratio: 4 / 3;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --filter-picture: brightness(0.82);

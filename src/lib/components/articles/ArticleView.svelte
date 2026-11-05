@@ -4,6 +4,7 @@
 
   interface Props {
     title: string;
+    summary: string;
     date: string;
     /** The date as YYYY-MM-DD, for the time element */
     dateTime: string;
@@ -16,12 +17,15 @@
     editID?: number | null;
   }
 
-  let { title, date, dateTime, readingMinutes, html, draft = false, editID = null }: Props = $props();
+  let { title, summary, date, dateTime, readingMinutes, html, draft = false, editID = null }: Props = $props();
 </script>
 
 <article>
   <header>
     <h1>{title}</h1>
+    {#if summary}
+      <p class="summary">{summary}</p>
+    {/if}
     <p class="meta">
       {#if draft}
         <strong>Draft</strong>
@@ -45,10 +49,17 @@
   }
 
   h1 {
-    max-width: 16ch;
     font-size: var(--type-section);
     font-weight: 900;
     line-height: 0.85;
+  }
+
+  .summary {
+    max-width: 40rem;
+    margin-top: var(--space-2);
+    color: var(--muted);
+    font-size: var(--type-label);
+    line-height: 1.4;
   }
 
   .meta {

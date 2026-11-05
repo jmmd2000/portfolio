@@ -333,7 +333,7 @@
         <p class="preview-failed" role="status">Preview unavailable. It tries again when you next type.</p>
       {/if}
       <div class="page">
-        <ArticleView title={title || "Untitled"} date={data.preview.date} dateTime={data.preview.dateTime} readingMinutes={preview.readingMinutes} html={preview.html} />
+        <ArticleView title={title || "Untitled"} {summary} date={data.preview.date} dateTime={data.preview.dateTime} readingMinutes={preview.readingMinutes} html={preview.html} />
         {#if body.trim() === ""}
           <p class="empty">The body shows here as you write.</p>
         {/if}
