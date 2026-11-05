@@ -3,6 +3,7 @@ import sanitizeHtml from "sanitize-html";
 import type { AlbumLookup } from "$lib/server/spotify/albums";
 import { slugify } from "$lib/slugify";
 import { albumIDsIn, replaceAlbumTags } from "./albumCards";
+import { renderChartBlock } from "./chartBlocks";
 import { createCodeBlockRenderer, escapeHTML } from "./highlightCode";
 
 const siteHost = "jamesmddoyle.com";
@@ -70,8 +71,8 @@ function isHTTPSImage(src: string | undefined): boolean {
  * Turns an article's markdown into HTML. marked does not sanitise, so sanitize-html runs
  * last over everything with a strict allowlist. Headings get ids from their text and link to themselves, links
  * keep only safe addresses, images only load over https, and code blocks are highlighted. An image alone on its line
- * links to its own file, so it can be enlarged, and its title becomes a caption. Album tags become album cards, which
- * go through the same sanitising as the rest.
+ * links to its own file, so it can be enlarged, and its title becomes a caption. Album tags become album cards, and
+ * chart blocks become chart placeholders, which go through the same sanitising as the rest.
  */
 export async function renderMarkdown(markdown: string, options: RenderOptions = {}): Promise<string> {
   const { lookUpAlbums, showProblems = false } = options;
@@ -96,6 +97,7 @@ export async function renderMarkdown(markdown: string, options: RenderOptions = 
         return `<h${level} id="${id}">${linkedContent}</h${level}>\n`;
       },
       code({ text, lang }: Tokens.Code): string {
+        if (lang === "chart") return renderChartBlock(text, showProblems);
         return renderCodeBlock(text, lang);
       },
       paragraph({ tokens }: Tokens.Paragraph): string {
@@ -169,13 +171,13 @@ export async function renderMarkdown(markdown: string, options: RenderOptions = 
       img: ["src", "alt", { name: "loading", values: ["lazy"] }, { name: "referrerpolicy", values: ["no-referrer"] }],
       th: [{ name: "align", values: ["left", "center", "right"] }],
       td: [{ name: "align", values: ["left", "center", "right"] }],
-      div: ["data-demo"],
+      div: ["data-demo", "data-chart"],
       pre: [{ name: "tabindex", values: ["0"] }],
     },
     allowedClasses: {
       a: ["heading-link", "album-card", "image-link"],
-      figure: ["code-block"],
-      p: ["album-problem"],
+      figure: ["code-block", "chart"],
+      p: ["album-problem", "chart-problem"],
       span: ["line", "keyword", "comment", "string", "constant", "function", "type", "album-card-cover", "album-card-text", "album-card-name", "album-card-meta", "album-card-listen"],
     },
     allowedSchemes: ["http", "https", "mailto"],
@@ -196,8 +198,8 @@ export async function renderMarkdown(markdown: string, options: RenderOptions = 
     },
     exclusiveFilter: frame => {
       if (frame.tag === "img") return !isHTTPSImage(frame.attribs.src);
-      // A div is only kept as a demo placeholder. Any other div keeps its content but loses the tag
-      if (frame.tag === "div" && frame.attribs["data-demo"] === undefined) return "excludeTag";
+      // A div is only kept as a demo or chart placeholder. Any other div keeps its content but loses the tag
+      if (frame.tag === "div" && frame.attribs["data-demo"] === undefined && frame.attribs["data-chart"] === undefined) return "excludeTag";
 
       return false;
     },

@@ -96,6 +96,25 @@ describe("renderMarkdown", () => {
     });
   });
 
+  describe("chart blocks", () => {
+    const block = 'type: line\nalt: A line\ncaption: A caption\nx: { min: 0, max: 1 }\ny: { min: 0, max: 1 }\nseries:\n  - { name: "<script>steal()</script>", points: [[0, 0], [1, 1]] }';
+
+    it("carries the spec in one figure, with its label still escaped after sanitising", async () => {
+      const html = await renderMarkdown(`\`\`\`chart\n${block}\n\`\`\``);
+
+      expect(html.match(/<figure/g)).toHaveLength(1);
+      expect(html).toContain("A line</div>");
+      expect(html).not.toContain("<script>");
+    });
+
+    it("shows a broken chart as a note in the editor and tells readers it's missing", async () => {
+      const broken = "```chart\ntype: [line\n```";
+
+      expect(await renderMarkdown(broken, { showProblems: true })).toContain("album-problem");
+      expect(await renderMarkdown(broken)).toContain("chart-problem");
+    });
+  });
+
   describe("image captions", () => {
     const image = "![A cat](https://example.com/cat.png";
 
