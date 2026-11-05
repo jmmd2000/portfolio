@@ -7,10 +7,11 @@ const datePartsFormat = new Intl.DateTimeFormat("en-GB", { year: "numeric", mont
 
 /**
  * Minutes to read some markdown at 230 words a minute, rounded up, and at least 1. Markdown symbols and code
- * count as words too, which adds a little.
+ * count as words too, which adds a little. Chart blocks don't count, since their data isn't read as text.
  */
 export function readingMinutes(markdown: string): number {
-  const words = markdown.split(/\s+/).filter(word => word !== "");
+  const withoutCharts = markdown.replace(/^ {0,3}(```|~~~)chart\s*\n[\s\S]*?^ {0,3}\1\s*$/gm, "");
+  const words = withoutCharts.split(/\s+/).filter(word => word !== "");
   return Math.max(1, Math.ceil(words.length / wordsPerMinute));
 }
 

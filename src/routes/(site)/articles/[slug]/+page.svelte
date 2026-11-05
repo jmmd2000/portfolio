@@ -11,6 +11,7 @@
 
 <ArticleView
   title={data.article.title}
+  summary={data.article.summary}
   date={data.article.date}
   dateTime={data.article.dateTime}
   readingMinutes={data.article.readingMinutes}

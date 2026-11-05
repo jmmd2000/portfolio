@@ -7,6 +7,14 @@ describe("readingMinutes", () => {
     expect(readingMinutes("word ".repeat(231))).toBe(2);
   });
 
+  it("doesn't count a chart block's data as words", () => {
+    expect(readingMinutes(`Text\n\n\`\`\`chart\n${"1 ".repeat(1000)}\n\`\`\``)).toBe(1);
+  });
+
+  it("doesn't count an indented or tilde chart block either", () => {
+    expect(readingMinutes(`Text\n\n  ~~~chart\n${"1 ".repeat(1000)}\n  ~~~`)).toBe(1);
+  });
+
   it("is at least one minute", () => {
     expect(readingMinutes("")).toBe(1);
   });

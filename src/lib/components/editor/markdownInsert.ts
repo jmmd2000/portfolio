@@ -75,6 +75,16 @@ export const markdownGroups: MarkdownGroup[] = [
     entries: [
       { name: "Image", syntax: "![alt](https://…)", markup: { kind: "block", block: "![Alt text](https://)", select: "Alt text" } },
       { name: "Captioned image", syntax: '![alt](https://… "Caption")', markup: { kind: "block", block: '![Alt text](https:// "Caption")', select: "Caption" } },
+      {
+        name: "Chart",
+        syntax: "```chart … ```",
+        markup: {
+          kind: "block",
+          block:
+            "```chart\ntype: line\nalt: What the chart shows\ncaption: Caption\nx: { label: Minutes, min: 0, max: 10 }\ny: { unit: GB, min: 0, max: 5 }\nseries:\n  - name: Series name\n    points: [[0, 0], [5, 4], [10, 2]]\nlines:\n  - { y: 4, label: Limit }\npoints:\n  - { x: 5, y: 4, label: Peak }\nranges:\n  - { from: 2, to: 6, label: Running }\nreplay: true\n```",
+          select: "What the chart shows",
+        },
+      },
       { name: "Demo", syntax: '<div data-demo="Name">', markup: { kind: "block", block: '<div data-demo="Name"></div>', select: "Name" } },
       { name: "Album", syntax: '<div data-spotify-album="ID">', markup: { kind: "block", block: '<div data-spotify-album="ID"></div>', select: "ID" } },
     ],
