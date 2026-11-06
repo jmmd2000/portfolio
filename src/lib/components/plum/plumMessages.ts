@@ -4,7 +4,7 @@ import type { PlumAction } from "$lib/plum/plumRules";
 const doneMessages: Record<PlumAction, string[]> = {
   feed: ["You fed her just now.", "You fed her. She ate the lot.", "You fed her. She ate half and saved the rest for later."],
   pet: ["You petted her. She's purring.", "You petted her. She leaned into it.", "You petted her. She pretended not to care."],
-  play: ["You played with her. She's a bit tired now.", "You threw the ball. She brought it back, eventually.", "You played with her. She won."],
+  play: ["You played with her. She's a bit tired now.", "You played with her. She brought the ball back, eventually.", "You played with her. She won."],
 };
 
 export const refusalMessages = {
@@ -40,6 +40,7 @@ export const coolingMessage = "Someone else got there first.";
 
 export const outMessages = {
   mood: "She's out chasing her ball",
+  throwHint: "Drag the ball and let go",
   reducedMotion: "She's staying in, since your device is set to reduce motion.",
 };
 
