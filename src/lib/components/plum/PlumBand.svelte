@@ -701,6 +701,29 @@
     }
   }
 
+  .control:not(.out):active:not(:disabled) {
+    background: var(--paper);
+    color: var(--ink);
+
+    .meter {
+      background: color-mix(in oklch, var(--ink) 25%, var(--paper));
+    }
+
+    .meter > span {
+      background: var(--ink);
+    }
+  }
+
+  .out:active:not(:disabled) {
+    background: var(--red);
+    color: var(--ink);
+  }
+
+  .control:active:not(:disabled) > *,
+  .photo-toggle:active:not(:disabled) {
+    translate: 0 2px;
+  }
+
   @media (max-width: 47.5rem) {
     .pen-block {
       width: auto;

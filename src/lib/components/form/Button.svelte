@@ -36,12 +36,9 @@
     cursor: pointer;
     transition:
       transform var(--duration-quick) var(--ease-out),
-      box-shadow var(--duration-quick) var(--ease-out);
-
-    &:active:not(:disabled) {
-      transform: none;
-      box-shadow: none;
-    }
+      box-shadow var(--duration-quick) var(--ease-out),
+      background-color var(--duration-quick) var(--ease-out),
+      color var(--duration-quick) var(--ease-out);
 
     &:disabled {
       opacity: 0.45;
@@ -79,5 +76,24 @@
       transform: translate(-2px, -2px);
       box-shadow: 2px 2px 0 var(--ink);
     }
+  }
+
+  /* After the hover rule, which would otherwise win while the button is held down */
+  button:active:not(:disabled) {
+    background: var(--ink);
+    color: var(--paper);
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+
+  .primary:active:not(:disabled) {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .destructive:active:not(:disabled) {
+    border-color: var(--red-chip);
+    background: var(--red-chip);
+    color: white;
   }
 </style>
