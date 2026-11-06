@@ -97,6 +97,18 @@ test("another visitor sees a feed within 10 seconds, with her eating sprite", as
   await otherPage.context().close();
 });
 
+test("asleep, pressing the ball button wakes her and lets her out", async ({ page }) => {
+  await setPlum({ food: 50, happiness: 50, energy: 10, asleep: true });
+  await page.goto("/");
+  await expect(band(page).getByRole("img", { name: "Plum, asleep" })).toBeVisible();
+
+  await band(page).getByRole("button", { name: "Throw her ball" }).click();
+  await expect(page.locator(".plum-ball")).toBeVisible();
+
+  await page.reload();
+  await expect(band(page).getByRole("img", { name: "Plum, sitting" })).toBeVisible();
+});
+
 test("throwing her ball adds to the total in her pen", async ({ page }) => {
   await setPlum({ food: 80, happiness: 80, energy: 100 });
   // Its own address, so the one-throw-a-second limit can't refuse this throw

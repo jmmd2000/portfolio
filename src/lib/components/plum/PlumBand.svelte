@@ -5,9 +5,9 @@
   the pen to a photo of the real Plum and back. Every visitor shares her. The band asks the server how she is
   every 10 seconds while the tab is visible, and shows what other visitors did. Under the pen, a message after an
   action shows for 10 seconds, then the line goes back to when she was last fed. Awake, she blinks every
-  few seconds and plays a short animation now and then. Asleep, her ear flicks now and then. While she's awake,
-  the visitor can let her out to chase her ball around the window, which leaves the pen empty and the actions off
-  until she's back. Each throw updates her levels.
+  few seconds and plays a short animation now and then. Asleep, her ear flicks now and then. The visitor can let
+  her out to chase her ball around the window, which wakes her if she's asleep, and leaves the pen empty and the
+  actions off until she's back. Each throw updates her levels.
   None of this moves if the visitor asks for reduced motion. With no `plum` (her data couldn't load) she shows
   asleep with the buttons off.
 -->
@@ -337,15 +337,37 @@
     return yardBox.left + yardBox.width / 2;
   }
 
-  /** Lets her out to chase her ball, or calls her back once she's out. She stays in with reduced motion */
-  function toggleOut(): void {
+  /** Lets her out to chase her ball, waking her first if she's asleep, or calls her back once she's out. She stays in with reduced motion */
+  async function toggleOut(): Promise<void> {
     if (out) {
       chase?.callBack(penX());
-    } else if (reducedMotion) {
+      return;
+    }
+    if (reducedMotion) {
       say(outMessages.reducedMotion);
-    } else {
-      outFromX = penX();
-      out = true;
+      return;
+    }
+    if (latest?.sleep && !(await wakeHer())) return;
+
+    outFromX = penX();
+    out = true;
+  }
+
+  /** Wakes her on the server. Returns false and says so if that fails, so she stays in */
+  async function wakeHer(): Promise<boolean> {
+    busy = true;
+    try {
+      const response = await fetch("/api/plum/wake", { method: "POST" });
+      if (!response.ok) throw new Error(`The server answered ${response.status}`);
+
+      remember(plumStateSchema.parse(await response.json()));
+      say(sleepMessages.woken);
+      return true;
+    } catch {
+      say(unreachableMessage);
+      return false;
+    } finally {
+      busy = false;
     }
   }
 
@@ -445,7 +467,7 @@
             {/if}
           </button>
         {/each}
-        <button type="button" class="control out" disabled={!ready || !latest || (!out && latest.sleep !== null)} onclick={toggleOut}>
+        <button type="button" class="control out" disabled={!ready || !latest || busy} onclick={toggleOut}>
           <span class="control-name">{out ? "Call her back" : "Throw her ball"}</span>
           {#if latest}<span class="note">{throwsNote}</span>{/if}
         </button>

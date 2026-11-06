@@ -3,7 +3,7 @@ import { db } from "$lib/server/db";
 import { plum } from "$lib/server/db/schema";
 import { testEnvironment } from "$lib/server/db/testEnvironment";
 import { wipeDatabase } from "$lib/server/db/wipe";
-import { act, getPlumState } from "./actions";
+import { act, getPlumState, wake } from "./actions";
 import { getPlum } from "./plum";
 
 // 10:00 in Ireland, when she's awake, and 00:30, when she's asleep for the night
@@ -149,6 +149,28 @@ describe("act", () => {
     await Promise.all([act("feed", now), act("pet", now), act("play", now)]);
 
     expect(await getStats()).toEqual({ food: 60, happiness: 95, energy: 30 });
+  });
+});
+
+describe("wake", () => {
+  it("wakes her for an hour without changing her stats or adding a throw", async () => {
+    await setPlum({ food: 50, happiness: 50, energy: 100 });
+
+    const woken = await wake(night);
+    const anHourLater = await getPlumState(new Date(night.getTime() + 60 * 60_000));
+
+    expect(woken).toMatchObject({ sleep: null, wokenFrom: "night", throws: 0 });
+    expect(woken.stats).toEqual({ food: 50, happiness: 50, energy: 100 });
+    expect(anHourLater).toMatchObject({ sleep: "night", wokenFrom: null });
+  });
+
+  it("doesn't add to the hour when she's already awake", async () => {
+    await setPlum({ food: 50, happiness: 50, energy: 100 });
+    await wake(night);
+
+    await wake(new Date(night.getTime() + 30 * 60_000));
+
+    expect(await getPlumState(new Date(night.getTime() + 60 * 60_000))).toMatchObject({ sleep: "night" });
   });
 });
 

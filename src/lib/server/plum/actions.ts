@@ -60,6 +60,28 @@ export async function act(action: PlumAction, now: Date): Promise<ActionResult> 
 }
 
 /**
+ * Wakes her for an hour if she's asleep, and changes nothing if she's awake. It costs her no energy and isn't a
+ * throw. Her row is locked first, so whether she's asleep can't change before the update. Returns how she is
+ * afterwards.
+ */
+export async function wake(now: Date): Promise<PlumState> {
+  await ensurePlum();
+
+  await db.transaction(async transaction => {
+    const [current] = await transaction.select({ energy: plum.energy, awakeUntil: plum.awakeUntil }).from(plum).for("update");
+    if (!current) throw new Error("Plum's row is missing");
+    if (!sleepState(current.energy, current.awakeUntil, now).sleep) return;
+
+    await transaction
+      .update(plum)
+      .set({ awakeUntil: new Date(now.getTime() + wokenUpMilliseconds) })
+      .where(eq(plum.id, 1));
+  });
+
+  return await getPlumState(now);
+}
+
+/**
  * Starts the action's cooldown, unless it's already running. Two claims at the same moment can't both win: the
  * second waits for the first, then finds the cooldown running.
  */
