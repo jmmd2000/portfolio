@@ -102,7 +102,7 @@ test("throwing her ball adds to the total in her pen", async ({ page }) => {
   // Its own address, so the one-throw-a-second limit can't refuse this throw
   await page.setExtraHTTPHeaders({ "x-forwarded-for": "203.0.113.10" });
   await page.goto("/");
-  await band(page).getByRole("button", { name: "Let her out" }).click();
+  await band(page).getByRole("button", { name: "Throw her ball" }).click();
 
   const ball = await page.locator(".plum-ball").boundingBox();
   if (!ball) throw new Error("The ball isn't on the page");
@@ -159,7 +159,7 @@ test.describe("with reduced motion", () => {
     await setPlum({ food: 80, happiness: 80, energy: 100 });
     await page.goto("/");
 
-    await band(page).getByRole("button", { name: "Let her out" }).click();
+    await band(page).getByRole("button", { name: "Throw her ball" }).click();
 
     await expect(band(page).getByRole("status")).toBeVisible();
     await expect(band(page).getByRole("img", { name: "Plum, sitting" })).toBeVisible();

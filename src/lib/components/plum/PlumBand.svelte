@@ -1,7 +1,7 @@
 <!--
   @component
   Plum's red band on the home page: how she is, her pen, and a grid of four buttons beside it. Feed, Pet and Play
-  each show the level they change, and Let her out shows how many times her ball was thrown. The visitor can swap
+  each show the level they change, and Throw her ball shows how many times her ball was thrown. The visitor can swap
   the pen to a photo of the real Plum and back. Every visitor shares her. The band asks the server how she is
   every 10 seconds while the tab is visible, and shows what other visitors did. Under the pen, a message after an
   action shows for 10 seconds, then the line goes back to when she was last fed. Awake, she blinks every
@@ -446,7 +446,7 @@
           </button>
         {/each}
         <button type="button" class="control out" disabled={!ready || !latest || (!out && latest.sleep !== null)} onclick={toggleOut}>
-          <span class="control-name">{out ? "Call her back" : "Let her out"}</span>
+          <span class="control-name">{out ? "Call her back" : "Throw her ball"}</span>
           {#if latest}<span class="note">{throwsNote}</span>{/if}
         </button>
       </div>
