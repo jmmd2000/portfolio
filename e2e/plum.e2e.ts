@@ -97,6 +97,21 @@ test("another visitor sees a feed within 10 seconds, with her eating sprite", as
   await otherPage.context().close();
 });
 
+/** Drags the ball up and lets go at speed */
+async function throwBall(page: Page): Promise<void> {
+  const ball = await page.locator(".plum-ball").boundingBox();
+  if (!ball) throw new Error("The ball isn't on the page");
+  const start = { x: ball.x + ball.width / 2, y: ball.y + ball.height / 2 };
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  // Small waits between moves, so the pointer has a speed when it lets go
+  for (let step = 1; step <= 4; step++) {
+    await page.mouse.move(start.x - 60 * step, start.y - 50 * step);
+    await page.waitForTimeout(16);
+  }
+  await page.mouse.up();
+}
+
 test("asleep, pressing the ball button wakes her and lets her out", async ({ page }) => {
   await setPlum({ food: 50, happiness: 50, energy: 10, asleep: true });
   await page.goto("/");
@@ -116,19 +131,26 @@ test("throwing her ball adds to the total in her pen", async ({ page }) => {
   await page.goto("/");
   await band(page).getByRole("button", { name: "Throw her ball" }).click();
 
-  const ball = await page.locator(".plum-ball").boundingBox();
-  if (!ball) throw new Error("The ball isn't on the page");
-  const start = { x: ball.x + ball.width / 2, y: ball.y + ball.height / 2 };
-  await page.mouse.move(start.x, start.y);
-  await page.mouse.down();
-  // Small waits between moves, so the pointer has a speed when it lets go
-  for (let step = 1; step <= 4; step++) {
-    await page.mouse.move(start.x - 60 * step, start.y - 50 * step);
-    await page.waitForTimeout(16);
-  }
-  await page.mouse.up();
+  await throwBall(page);
 
   await expect(band(page).getByRole("button", { name: "Call her back" })).toContainText(/\b1\b/);
+});
+
+test("the hint shows until the first throw and stays gone after a reload", async ({ page }) => {
+  await setPlum({ food: 80, happiness: 80, energy: 100 });
+  // Its own address, so the one-throw-a-second limit can't refuse this throw
+  await page.setExtraHTTPHeaders({ "x-forwarded-for": "203.0.113.11" });
+  await page.goto("/");
+  await band(page).getByRole("button", { name: "Throw her ball" }).click();
+  await expect(page.locator(".throw-hint")).toBeVisible();
+
+  await throwBall(page);
+  await expect(page.locator(".throw-hint")).toHaveCount(0);
+
+  await page.reload();
+  await band(page).getByRole("button", { name: "Throw her ball" }).click();
+  await expect(page.locator(".plum-ball")).toBeVisible();
+  await expect(page.locator(".throw-hint")).toHaveCount(0);
 });
 
 test("the server counts at most one throw a second from each visitor", async ({ request }) => {

@@ -23,8 +23,8 @@ export default defineConfig({
         runes: ({ filename }) => (filename.split(/[/\\]/).includes("node_modules") ? undefined : true),
       },
       adapter: adapter(),
-      // Every stylesheet is under 10kB, so all of a page's CSS goes in the HTML and nothing blocks the first paint
-      inlineStyleThreshold: 10_240,
+      // Every stylesheet is under 12kB, so all of a page's CSS goes in the HTML and nothing blocks the first paint
+      inlineStyleThreshold: 12_288,
       typescript: {
         // Type-check and lint the db scripts and drizzle config along with the app
         config: tsconfig => {

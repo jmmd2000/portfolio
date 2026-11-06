@@ -40,6 +40,7 @@ export const coolingMessage = "Someone else got there first.";
 
 export const outMessages = {
   mood: "She's out chasing her ball",
+  throwHint: "Drag the ball and let go",
   reducedMotion: "She's staying in, since your device is set to reduce motion.",
 };
 

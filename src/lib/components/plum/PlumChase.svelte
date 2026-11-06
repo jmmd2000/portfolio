@@ -2,7 +2,8 @@
   @component
   Plum out of her pen, chasing her ball around the window. She lives on a fixed layer over the whole window that
   ignores the pointer and is hidden from screen readers, so the page underneath still works. Only the ball takes the
-  pointer: the visitor drags it and lets go to throw it. Everything moves on the physics clock, which stops while
+  pointer: the visitor drags it and lets go to throw it. A hint beside the ball says so until this browser's first
+  throw. Everything moves on the physics clock, which stops while
   the tab is hidden and never jumps more than a tenth of a second, so she never jumps ahead when the tab comes back.
 -->
 <script lang="ts">
@@ -10,8 +11,10 @@
   import { ballFrame, ballRadius, isThrow, stepsFor, throwVelocity, type Ball, type Playground, type PointerSample } from "./ballPhysics";
   import { ballSheet, chaseSprites, spritePixel } from "./chaseSprites";
   import { frameAt } from "./frameAt";
+  import { outMessages } from "./plumMessages";
   import { callBack as walkBack, letOut, phaseSprites, stepChase, type Chase } from "./plumChase";
   import PlumSprite from "./PlumSprite.svelte";
+  import { hasThrownBefore, hintPlace, rememberThrow } from "./throwHint";
 
   interface Props {
     /** The middle of her pen across the window, where she jumps out */
@@ -35,11 +38,17 @@
   let samples: PointerSample[] = [];
   let leftOver = 0;
   let lastFrameTime: number | null = null;
+  let thrown = $state(hasThrownBefore());
+  let hintWidth = $state(0);
+  let hintHeight = $state(0);
 
   const plumSprite = $derived(chase ? phaseSprites[chase.plum.phase] : phaseSprites.sitting);
   const plumSheet = $derived(chaseSprites[plumSprite.name]);
   const plumFrame = $derived(chase ? frameAt(plumSheet.durations, chase.plum.phaseSeconds * 1000, plumSprite.loop) : 0);
   const grabSize = $derived(Math.max(smallestGrabArea, ballSheet.frameWidth * playground.pixel));
+
+  const showHint = $derived(chase !== null && !thrown && !chase.ballHeld && chase.plum.homeX === null);
+  const hint = $derived(chase ? hintPlace(chase.ball, chase.plum.x, { width: hintWidth, height: hintHeight }, playground) : null);
 
   /** Sends her walking back to `homeX`, the middle of her pen across the window, to jump back in */
   export function callBack(homeX: number): void {
@@ -95,7 +104,11 @@
     if (!chase?.ballHeld) return;
     const velocity = throwVelocity(samples);
     chase = { ...chase, ball: { ...chase.ball, ...velocity }, ballHeld: false };
-    if (isThrow(velocity)) onthrow?.();
+    if (!isThrow(velocity)) return;
+
+    thrown = true;
+    rememberThrow();
+    onthrow?.();
   }
 
   /** Lets go of the ball with no speed, for a drag the browser cancelled, such as when the tab changes mid-throw */
@@ -148,6 +161,11 @@
     >
       <PlumSprite sheet={ballSheet} frame={ballFrame(chase.ball.x, playground)} label="Plum's ball" />
     </div>
+    {#if showHint && hint}
+      <div class="throw-hint" data-side={hint.side} style:--notch-x="{hint.notchX}px" style:transform="translate({hint.x}px, {hint.y}px)" bind:offsetWidth={hintWidth} bind:offsetHeight={hintHeight}>
+        {outMessages.throwHint}
+      </div>
+    {/if}
   {/if}
 </div>
 
@@ -183,6 +201,45 @@
 
     &.held {
       cursor: grabbing;
+    }
+  }
+
+  .throw-hint {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: var(--space-1) 0.75rem;
+    border: var(--rule-row);
+    background: var(--red-chip);
+    color: white;
+    font-size: var(--type-small);
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+
+    /* The notch that points at the ball */
+    &::before {
+      content: "";
+      position: absolute;
+      border: 8px solid transparent;
+    }
+
+    &[data-side="right"]::before {
+      top: calc(50% - 8px);
+      right: 100%;
+      border-right-color: var(--red-chip);
+    }
+
+    &[data-side="left"]::before {
+      top: calc(50% - 8px);
+      left: 100%;
+      border-left-color: var(--red-chip);
+    }
+
+    &[data-side="above"]::before {
+      top: 100%;
+      left: calc(var(--notch-x) - 8px);
+      border-top-color: var(--red-chip);
     }
   }
 </style>
